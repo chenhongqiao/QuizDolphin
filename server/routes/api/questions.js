@@ -47,7 +47,11 @@ router.get('/', async (req, res) => {
     }
 });
 
-//Under construction: Not yet protected with authentication
+/*
+TODO:
+- Authenication
+- Duplicated uuid handle
+*/
 router.post('/', async (req, res) => {
     const questionsCollection = await loadQuestionsCollection();
     const answersCollection = await loadAnswersCollection();
@@ -63,5 +67,21 @@ router.post('/', async (req, res) => {
     await answersCollection.insertOne(newAnswer);
     res.send('Success!');
 });
+
+router.post('/judge', async (req, res) => {
+    const answersCollection = await loadAnswersCollection();
+    const questionsCollection = await loadQuestionsCollection();
+    let score = 0;
+    for (let answer of req.body.answers) {
+        const questionUuid = answer.uuid;
+        const correctAnswerArray = await answersCollection.find({ uuid: questionUuid }).toArray();
+        if (correctAnswerArray[0].answer === answer.answer) {
+            const questionPointsArray = await questionsCollection.find({ uuid: questionUuid }).toArray();
+            score += questionPointsArray[0].points;
+        }
+    }
+    res.send({ score });
+});
+
 
 module.exports = router;
