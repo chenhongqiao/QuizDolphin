@@ -5,5 +5,14 @@
   "repository": "git@github.com:chenhongqiao/FBLA21CP.git",
   "author": "Harry Chen <harrychen0314@gmail.com>",
   "license": "UNLICENSED",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongodb": "^3.6.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
 }
