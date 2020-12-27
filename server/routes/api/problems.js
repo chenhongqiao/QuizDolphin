@@ -5,7 +5,8 @@ const router = express.Router();
 
 async function loadProblemsCollection() {
     const client = await mongodb.MongoClient.connect('mongodb+srv://harry:3g2ZSNMaAGe7NDu6@fbla21-dev.lrnik.mongodb.net/problems?retryWrites=true&w=majority', {
-        useNewUrlParser: true
+        useNewUrlParser: true,
+        useUnifiedTopology: true
     });
     return client.db('problems').collection('inventory');
 }
@@ -14,23 +15,22 @@ function getRandomInteger(min, max) {
     return min + Math.floor(Math.random() * (max - min));
 }
 
-router.get('/random', async (req, res) => {
-    console.log(req.query.number);
+router.get('/', async (req, res) => {
     const problemsCollection = await loadProblemsCollection();
     const allProblems = await problemsCollection.find({}).toArray();
-    const allProblemsNumber = allProblems.length;
+    const allProblemsCount = allProblems.length;
     const userProblems = [];
-    const existedId = new Set();
-    let number = 0;
-    if (req.query.number > allProblemsNumber) {
-        res.send('Wrong Problem Numbers');
+    const existedIndexs = new Set();
+    let count = 0;
+    if (req.body.count > allProblemsCount) {
+        res.send('Wrong Problem Numbers!');
     } else {
-        while (number < req.query.number) {
-            const index = getRandomInteger(0, allProblemsNumber);
-            if (!existedId.has(index)) {
+        while (count < req.body.count) {
+            const index = getRandomInteger(0, allProblemsCount);
+            if (!existedIndexs.has(index)) {
                 userProblems.push(allProblems[index]);
-                existedId.add(index);
-                number++;
+                existedIndexs.add(index);
+                count++;
             }
         }
         res.send(userProblems);
