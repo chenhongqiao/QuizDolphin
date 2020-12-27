@@ -1,0 +1,9 @@
+{
+  "name": "FBLA21CP",
+  "version": "1.0.0",
+  "description": "FBLA 2021 Coding and Programming Project",
+  "repository": "git@github.com:chenhongqiao/FBLA21CP.git",
+  "author": "Harry Chen <harrychen0314@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true
+}
