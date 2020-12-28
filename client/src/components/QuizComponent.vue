@@ -13,7 +13,7 @@
       </div>
       <div>
         <h3>Options:</h3>
-        <v-radio-group v-model="answer[currentQuestion]" row>
+        <v-radio-group v-model="quizAnswers[currentQuestion]" row>
           <v-radio
             v-for="option in quizData[currentQuestion].options"
             :key="option"
@@ -22,8 +22,11 @@
           ></v-radio>
         </v-radio-group>
       </div>
-      <div class="text-right">
-        <v-btn class="text-right" @click="currentQuestion++">Next</v-btn>
+      <div class="text-right" v-if="currentQuestion < quizData.length - 1">
+        <v-btn class="text-right" @click="nextQuestion">Next</v-btn>
+      </div>
+      <div class="text-right" v-if="currentQuestion === quizData.length -1">
+        <v-btn class="text-right" @click="submitQuiz">Submit!</v-btn>
       </div>
     </v-col>
   </v-row>
@@ -32,10 +35,19 @@
 <script>
 export default {
   name: "QuizComponent",
-  props: ["quizData"],
+  props: ["quizData", "quizAnswers"],
   data: () => ({
     currentQuestion: 0,
-    answer: [],
   }),
+  methods: {
+    nextQuestion() {
+      this.currentQuestion++;
+      this.$emit("update:quizAnswers", this.quizAnswers);
+    },
+    submitQuiz(){
+      this.$emit("update:quizAnswers", this.quizAnswers);
+      this.$emit("quizDone");
+    }
+  }
 };
 </script>
