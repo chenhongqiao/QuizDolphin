@@ -32,10 +32,10 @@ router.get('/', async (req, res) => {
     const userQuestions = [];
     const existedIndexs = new Set();
     let count = 0;
-    if (req.body.count > allQuestionCount) {
+    if (req.query.count > allQuestionCount) {
         res.send('Error: Wrong Question Count!');
     } else {
-        while (count < req.body.count) {
+        while (count < req.query.count) {
             const index = getRandomInteger(0, allQuestionCount);
             if (!existedIndexs.has(index)) {
                 userQuestions.push(allQuestions[index]);
