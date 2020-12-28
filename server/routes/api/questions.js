@@ -68,7 +68,7 @@ router.post('/', async (req, res) => {
     res.send('Success!');
 });
 
-router.post('/judge', async (req, res) => {
+router.post('/grade', async (req, res) => {
     const answersCollection = await loadAnswersCollection();
     const questionsCollection = await loadQuestionsCollection();
     let score = 0;
