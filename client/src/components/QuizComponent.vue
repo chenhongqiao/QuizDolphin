@@ -1,17 +1,17 @@
 <template>
   <v-row>
     <v-col>
-      <div>
+      <v-container>
         <h2>Problem #{{ currentQuestion + 1 }}</h2>
         <div>Points: {{ quizData[currentQuestion].points }}</div>
-      </div>
-      <div>
+      </v-container>
+      <v-container>
         <h3>Context:</h3>
         <div class="text-center">
           {{ quizData[currentQuestion].context }}
         </div>
-      </div>
-      <div>
+      </v-container>
+      <v-container>
         <h3>Options:</h3>
         <v-radio-group v-model="quizAnswers[currentQuestion]" row>
           <v-radio
@@ -21,13 +21,15 @@
             :value="option"
           ></v-radio>
         </v-radio-group>
-      </div>
-      <div class="text-right" v-if="currentQuestion < quizData.length - 1">
-        <v-btn class="text-right" @click="nextQuestion">Next</v-btn>
-      </div>
-      <div class="text-right" v-if="currentQuestion === quizData.length - 1">
-        <v-btn class="text-right" @click="submitQuiz">Submit!</v-btn>
-      </div>
+      </v-container>
+      <v-container>
+        <div class="text-right" v-if="currentQuestion < quizData.length - 1">
+          <v-btn class="text-right" @click="nextQuestion">Next</v-btn>
+        </div>
+        <div class="text-right" v-if="currentQuestion === quizData.length - 1">
+          <v-btn class="text-right" @click="submitQuiz">Submit!</v-btn>
+        </div>
+      <v-container>
     </v-col>
   </v-row>
 </template>
