@@ -28,10 +28,11 @@
 </template>
 
 <script>
-import QuizComponent from "./components/QuizComponent";
-import QuestionService from "./QuestionService";
+import QuizComponent from './components/QuizComponent.vue';
+import QuestionService from './QuestionService';
+
 export default {
-  name: "App",
+  name: 'App',
 
   components: {
     QuizComponent,
@@ -49,11 +50,10 @@ export default {
       this.quizStarted = true;
     },
     async gradeQuiz() {
-      const processedAnswers = this.quizAnswers.map((value, index) => {
-        return { uuid: this.quizData[index].uuid, answer: value };
-      });
+      const processedAnswers = this.quizAnswers
+        .map((value, index) => ({ uuid: this.quizData[index].uuid, answer: value }));
       const rawResponse = await QuestionService.gradeQuestions(
-        processedAnswers
+        processedAnswers,
       );
       this.quizScore = rawResponse.data.score;
       this.quizGraded = true;

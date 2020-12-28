@@ -25,7 +25,7 @@
       <div class="text-right" v-if="currentQuestion < quizData.length - 1">
         <v-btn class="text-right" @click="nextQuestion">Next</v-btn>
       </div>
-      <div class="text-right" v-if="currentQuestion === quizData.length -1">
+      <div class="text-right" v-if="currentQuestion === quizData.length - 1">
         <v-btn class="text-right" @click="submitQuiz">Submit!</v-btn>
       </div>
     </v-col>
@@ -34,20 +34,20 @@
 
 <script>
 export default {
-  name: "QuizComponent",
-  props: ["quizData", "quizAnswers"],
+  name: 'QuizComponent',
+  props: ['quizData', 'quizAnswers'],
   data: () => ({
     currentQuestion: 0,
   }),
   methods: {
     nextQuestion() {
-      this.currentQuestion++;
-      this.$emit("update:quizAnswers", this.quizAnswers);
+      this.currentQuestion += 1;
+      this.$emit('update:quizAnswers', this.quizAnswers);
     },
-    submitQuiz(){
-      this.$emit("update:quizAnswers", this.quizAnswers);
-      this.$emit("quizDone");
-    }
-  }
+    submitQuiz() {
+      this.$emit('update:quizAnswers', this.quizAnswers);
+      this.$emit('quizDone');
+    },
+  },
 };
 </script>
