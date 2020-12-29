@@ -9,10 +9,11 @@ function QuizResultConstructor(score, questions, results) {
   this.questionsResult = results;
 }
 
-function QuestionResultConstructor(userAnswer, correctAnswer, score, uuid) {
+function QuestionResultConstructor(userAnswer, correctAnswer, score, uuid, points) {
   this.uuid = uuid;
   this.userAnswer = userAnswer;
   this.correctAnswer = correctAnswer;
+  this.points = points;
   this.score = score;
 }
 
@@ -47,12 +48,13 @@ router.post('/', async (req, res) => {
       // Gain full points only if user's input match exactly with correct answer
       if (correctAnswers[0].answer === current.answer) {
         resultsArray.push(new QuestionResultConstructor(
-          current.answer, correctAnswers[0].answer, questions[0].points, questionUuid,
+          current.answer, correctAnswers[0].answer, questions[0].points,
+          questionUuid, questions[0].points,
         ));
         return (await accumulator) + questions[0].points;
       }
       resultsArray.push(new QuestionResultConstructor(
-        current.answer, correctAnswers[0].answer, 0, questionUuid,
+        current.answer, correctAnswers[0].answer, 0, questionUuid, questions[0].points,
       ));
       return accumulator;
     }
@@ -71,14 +73,14 @@ router.post('/', async (req, res) => {
       }, 0);
       if (correctCount < 0) {
         resultsArray.push(new QuestionResultConstructor(
-          current.answer, correctAnswers[0].answer, 0, questionUuid,
+          current.answer, correctAnswers[0].answer, 0, questionUuid, questions[0].points,
         ));
         return accumulator;
       }
       resultsArray.push(new QuestionResultConstructor(
         current.answer, correctAnswers[0].answer,
         questions[0].points * (correctCount / answersSet.size),
-        questionUuid,
+        questionUuid, questions[0].points,
       ));
       return (await accumulator) + questions[0].points * (correctCount / answersSet.size);
     }
