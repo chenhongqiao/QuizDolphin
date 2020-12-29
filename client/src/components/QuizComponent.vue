@@ -12,8 +12,11 @@
         </div>
       </v-container>
       <v-container>
-        <h3>Options:</h3>
+        <h3 v-if="quizData[currentQuestion].type==='single choice'">
+          Options:
+        </h3>
         <v-radio-group
+          v-if="quizData[currentQuestion].type==='single choice'"
           v-model="quizAttempts[currentQuestion]"
           row
         >
@@ -24,6 +27,20 @@
             :value="option"
           />
         </v-radio-group>
+        <v-text-field
+          v-if="quizData[currentQuestion].type==='short response'"
+          v-model="quizAttempts[currentQuestion]"
+          name="Your response"
+        />
+        <div v-if="quizData[currentQuestion].type==='multiple choice'">
+          <v-checkbox
+            v-for="option in quizData[currentQuestion].options"
+            :key="option"
+            v-model="quizAttempts[currentQuestion]"
+            :label="option"
+            :value="option"
+          />
+        </div>
       </v-container>
       <v-container>
         <div
@@ -57,11 +74,23 @@
 <script>
 export default {
   name: 'QuizComponent',
-  props: { quizData: Set, quizAnswers: Set },
+  props: {
+    quizData: { type: Array, default: null },
+    quizAnswers: { type: Array, default: null },
+  },
   data: () => ({
     currentQuestion: 0,
     quizAttempts: [],
   }),
+  mounted() {
+    this.quizData.forEach((question) => {
+      if (question.type === 'single choice' || question.type === 'short response') {
+        this.quizAttempts.push('');
+      } else if (question.type === 'multiple choice') {
+        this.quizAttempts.push([]);
+      }
+    });
+  },
   methods: {
     nextQuestion() {
       this.currentQuestion += 1;

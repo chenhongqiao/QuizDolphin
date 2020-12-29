@@ -55,7 +55,7 @@ export default {
   }),
   methods: {
     async startQuiz() {
-      this.quizData = (await QuestionService.getQuestions(3)).data;
+      this.quizData = (await QuestionService.getQuestions(4)).data;
       this.quizTotalPoints = this.quizData
         .reduce((accumulator, current) => accumulator + current.points, 0);
       this.quizStarted = true;
