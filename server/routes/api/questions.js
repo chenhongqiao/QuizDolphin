@@ -70,11 +70,26 @@ router.post('/grade', async (req, res) => {
   const questionsCollection = await loadQuestionsCollection();
   const score = req.body.answers.reduce(async (accumulator, current) => {
     const questionUuid = current.uuid;
-    const correctAnswerArray = await answersCollection.find({ uuid: questionUuid }).toArray();
-    if (correctAnswerArray[0].answer === current.answer) {
-      const questionPointsArray = await questionsCollection.find({ uuid: questionUuid })
-        .toArray();
-      return (await accumulator) + (questionPointsArray[0]).points;
+    const correctAnswersArray = await answersCollection.find({ uuid: questionUuid }).toArray();
+    const questionsArray = await questionsCollection.find({ uuid: questionUuid }).toArray();
+    if (questionsArray[0].type === 'single choice' || questionsArray[0].type === 'short response') {
+      if (correctAnswersArray[0].answer === current.answer) {
+        return (await accumulator) + (questionsArray[0]).points;
+      }
+      return accumulator;
+    }
+    if (questionsArray[0].type === 'multiple choice') {
+      const answersSet = new Set(correctAnswersArray[0].answer);
+      const correctCount = current.answer.reduce((countAccumulator, currentOption) => {
+        if (answersSet.has(currentOption)) {
+          return countAccumulator + 1;
+        }
+        return -Infinity;
+      }, 0);
+      if (correctCount < 0) {
+        return accumulator;
+      }
+      return (await accumulator) + (questionsArray[0].points * (correctCount / answersSet.size));
     }
     return accumulator;
   }, Promise.resolve(0));
