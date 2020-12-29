@@ -8,20 +8,24 @@
         <v-row>
           <v-col>
             <v-card-actions class="justify-center">
-              <v-btn @click="startQuiz">Start Quiz!</v-btn>
+              <v-btn @click="startQuiz">
+                Start Quiz!
+              </v-btn>
             </v-card-actions>
           </v-col>
         </v-row>
       </v-container>
       <v-container v-if="quizStarted && !quizGraded">
         <QuizComponent
-          :quizData="quizData"
-          :quizAnswers.sync="quizAnswers"
-          v-on:quizDone="gradeQuiz"
+          :quiz-data="quizData"
+          :quiz-answers.sync="quizAnswers"
+          @quizDone="gradeQuiz"
         />
       </v-container>
       <v-container v-if="quizGraded">
-        <div>you got {{ quizScore }}</div>
+        <v-row>
+          <div>you got {{ quizScore }}</div>
+        </v-row>
       </v-container>
     </v-main>
   </v-app>
@@ -50,8 +54,10 @@ export default {
       this.quizStarted = true;
     },
     async gradeQuiz() {
-      const processedAnswers = this.quizAnswers
-        .map((value, index) => ({ uuid: this.quizData[index].uuid, answer: value }));
+      const processedAnswers = this.quizAnswers.map((value, index) => ({
+        uuid: this.quizData[index].uuid,
+        answer: value,
+      }));
       const rawResponse = await QuestionService.gradeQuestions(
         processedAnswers,
       );
