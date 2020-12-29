@@ -24,9 +24,10 @@
         />
       </div>
       <div v-if="quizGraded">
-        <v-container class="text-center">
-          You got {{ quizScore }} out of {{ quizTotalPoints }}
-        </v-container>
+        <ResultComponent
+          :quiz-score="quizScore"
+          :total-points="quizTotalPoints"
+        />
       </div>
     </v-main>
   </v-app>
@@ -34,6 +35,7 @@
 
 <script>
 import QuizComponent from './components/QuizComponent.vue';
+import ResultComponent from './components/ResultComponent.vue';
 import QuestionService from './QuestionService';
 
 export default {
@@ -41,6 +43,7 @@ export default {
 
   components: {
     QuizComponent,
+    ResultComponent,
   },
   data: () => ({
     quizStarted: false,
