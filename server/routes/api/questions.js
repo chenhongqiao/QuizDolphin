@@ -4,6 +4,19 @@ const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
 
+function QuestionConstructor(question, uuid) {
+  this.uuid = uuid;
+  this.context = question.context;
+  this.points = question.points;
+  this.type = question.type;
+  this.options = question.options;
+}
+
+function AnswerConstructor(question, uuid) {
+  this.uuid = uuid;
+  this.answer = question.answer;
+}
+
 async function loadQuestionsCollection() {
   const client = await mongodb.MongoClient.connect('mongodb+srv://harry:3g2ZSNMaAGe7NDu6@fbla21-dev.lrnik.mongodb.net/server?retryWrites=true&w=majority', {
     useNewUrlParser: true,
@@ -53,47 +66,11 @@ router.post('/', async (req, res) => {
   const questionsCollection = await loadQuestionsCollection();
   const answersCollection = await loadAnswersCollection();
   const questionId = uuidv4();
-  const newQuestion = req.body;
-  newQuestion.uuid = questionId;
-  const newAnswer = {
-    uuid: questionId,
-    answer: req.body.answer,
-  };
-  delete newQuestion.answer;
+  const newQuestion = new QuestionConstructor(req.body, questionId);
+  const newAnswer = new AnswerConstructor(req.body, questionId);
   await questionsCollection.insertOne(newQuestion);
   await answersCollection.insertOne(newAnswer);
   res.send('Success!');
-});
-
-router.post('/grade', async (req, res) => {
-  const answersCollection = await loadAnswersCollection();
-  const questionsCollection = await loadQuestionsCollection();
-  const score = req.body.answers.reduce(async (accumulator, current) => {
-    const questionUuid = current.uuid;
-    const correctAnswersArray = await answersCollection.find({ uuid: questionUuid }).toArray();
-    const questionsArray = await questionsCollection.find({ uuid: questionUuid }).toArray();
-    if (questionsArray[0].type === 'single choice' || questionsArray[0].type === 'short response') {
-      if (correctAnswersArray[0].answer === current.answer) {
-        return (await accumulator) + (questionsArray[0]).points;
-      }
-      return accumulator;
-    }
-    if (questionsArray[0].type === 'multiple choice') {
-      const answersSet = new Set(correctAnswersArray[0].answer);
-      const correctCount = current.answer.reduce((countAccumulator, currentOption) => {
-        if (answersSet.has(currentOption)) {
-          return countAccumulator + 1;
-        }
-        return -Infinity;
-      }, 0);
-      if (correctCount < 0) {
-        return accumulator;
-      }
-      return (await accumulator) + (questionsArray[0].points * (correctCount / answersSet.size));
-    }
-    return accumulator;
-  }, Promise.resolve(0));
-  res.send({ score: await score });
 });
 
 module.exports = router;
