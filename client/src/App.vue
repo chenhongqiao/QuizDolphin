@@ -24,7 +24,11 @@
       </v-container>
       <v-container v-if="quizGraded">
         <v-row>
-          <div>you got {{ quizScore }}</div>
+          <v-col>
+            <h3 class="text-center">
+              You got {{ quizScore }} out of {{ quizTotalPoints }}
+            </h3>
+          </v-col>
         </v-row>
       </v-container>
     </v-main>
@@ -47,10 +51,13 @@ export default {
     quizScore: 0,
     quizAnswers: [],
     quizGraded: false,
+    quizTotalPoints: 0,
   }),
   methods: {
     async startQuiz() {
       this.quizData = (await QuestionService.getQuestions(3)).data;
+      this.quizTotalPoints = this.quizData
+        .reduce((accumulator, current) => accumulator + current.points, 0);
       this.quizStarted = true;
     },
     async gradeQuiz() {
