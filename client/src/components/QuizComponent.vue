@@ -7,6 +7,7 @@
           <div>Points: {{ quizData[currentQuestion-1].points }}</div>
           <div>Type: {{ quizData[currentQuestion-1].type }}</div>
         </v-container>
+
         <v-container>
           <h3>Context:</h3>
           <div class="text-center">
@@ -65,6 +66,7 @@
         </v-container>
       </v-card>
     </v-container>
+
     <v-container>
       <v-row>
         <v-spacer />
