@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://localhost:5000/api/questions/';
+const url = 'http://192.168.0.230:5000/api/questions/';
 
 class QuestionService {
   static getQuestions(count) {
