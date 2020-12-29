@@ -4,33 +4,30 @@
       <v-toolbar-title>FBLA Quiz System</v-toolbar-title>
     </v-app-bar>
     <v-main>
-      <v-container v-if="!quizStarted">
-        <v-row>
-          <v-col>
-            <v-card-actions class="justify-center">
-              <v-btn @click="startQuiz">
-                Start Quiz!
-              </v-btn>
-            </v-card-actions>
-          </v-col>
-        </v-row>
-      </v-container>
-      <v-container v-if="quizStarted && !quizGraded">
+      <div v-if="!quizStarted">
+        <v-container class="text-center">
+          Welcome to a five-question quiz
+        </v-container>
+        <v-container
+          class="text-center"
+        >
+          <v-btn @click="startQuiz">
+            start!
+          </v-btn>
+        </v-container>
+      </div>
+      <div v-if="quizStarted && !quizGraded">
         <QuizComponent
           :quiz-data="quizData"
           :quiz-answers.sync="quizAnswers"
           @quizDone="gradeQuiz"
         />
-      </v-container>
-      <v-container v-if="quizGraded">
-        <v-row>
-          <v-col>
-            <h3 class="text-center">
-              You got {{ quizScore }} out of {{ quizTotalPoints }}
-            </h3>
-          </v-col>
-        </v-row>
-      </v-container>
+      </div>
+      <div v-if="quizGraded">
+        <v-container class="text-center">
+          You got {{ quizScore }} out of {{ quizTotalPoints }}
+        </v-container>
+      </div>
     </v-main>
   </v-app>
 </template>
