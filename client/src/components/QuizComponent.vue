@@ -1,74 +1,89 @@
 <template>
-  <v-row>
-    <v-col>
-      <v-container>
-        <h2>Problem #{{ currentQuestion + 1 }}</h2>
-        <div>Points: {{ quizData[currentQuestion].points }}</div>
-      </v-container>
-      <v-container>
-        <h3>Context:</h3>
-        <div class="text-center">
-          {{ quizData[currentQuestion].context }}
-        </div>
-      </v-container>
-      <v-container>
-        <h3 v-if="quizData[currentQuestion].type==='single choice'">
-          Options:
-        </h3>
+  <div>
+    <v-container>
+      <h2>Problem #{{ currentQuestion + 1 }}</h2>
+      <div>Points: {{ quizData[currentQuestion].points }}</div>
+      <div>Type: {{ quizData[currentQuestion].type }}</div>
+    </v-container>
+    <v-container>
+      <h3>Context:</h3>
+      <div class="text-center">
+        {{ quizData[currentQuestion].context }}
+      </div>
+    </v-container>
+    <v-container>
+      <h3
+        v-if="quizData[currentQuestion].type==='single choice'||
+          quizData[currentQuestion].type==='multiple choice'"
+      >
+        Options:
+      </h3>
+      <h3
+        v-if="quizData[currentQuestion].type==='short response'"
+      >
+        Your Response:
+      </h3>
+      <div v-if="quizData[currentQuestion].type==='single choice'">
         <v-radio-group
-          v-if="quizData[currentQuestion].type==='single choice'"
           v-model="quizAttempts[currentQuestion]"
           row
         >
-          <v-radio
+          <v-col
             v-for="option in quizData[currentQuestion].options"
             :key="option"
-            :label="option"
-            :value="option"
-          />
+            md="3"
+          >
+            <v-radio
+              :label="option"
+              :value="option"
+            />
+          </v-col>
         </v-radio-group>
-        <v-text-field
-          v-if="quizData[currentQuestion].type==='short response'"
-          v-model="quizAttempts[currentQuestion]"
-          name="Your response"
-        />
-        <div v-if="quizData[currentQuestion].type==='multiple choice'">
-          <v-checkbox
+      </div>
+      <v-text-field
+        v-if="quizData[currentQuestion].type==='short response'"
+        v-model="quizAttempts[currentQuestion]"
+        name="Your response"
+      />
+      <div v-if="quizData[currentQuestion].type==='multiple choice'">
+        <v-row wrap>
+          <v-col
             v-for="option in quizData[currentQuestion].options"
             :key="option"
-            v-model="quizAttempts[currentQuestion]"
-            :label="option"
-            :value="option"
-          />
-        </div>
-      </v-container>
-      <v-container>
-        <div
+            md="3"
+          >
+            <v-checkbox
+              v-model="quizAttempts[currentQuestion]"
+              :label="option"
+              :value="option"
+            />
+          </v-col>
+        </v-row>
+      </div>
+    </v-container>
+    <v-container>
+      <v-row>
+        <v-spacer />
+        <v-btn
+          @click="currentQuestion-=1"
+        >
+          Back
+        </v-btn>
+        <v-btn
           v-if="currentQuestion < quizData.length - 1"
-          class="text-right"
+          @click="nextQuestion"
         >
-          <v-btn
-            class="text-right"
-            @click="nextQuestion"
-          >
-            Next
-          </v-btn>
-        </div>
-        <div
+          Next
+        </v-btn>
+        <v-btn
           v-if="currentQuestion === quizData.length - 1"
-          class="text-right"
+          @click="submitQuiz"
         >
-          <v-btn
-            class="text-right"
-            @click="submitQuiz"
-          >
-            Submit!
-          </v-btn>
-        </div>
-        <v-container />
-      </v-container>
-    </v-col>
-  </v-row>
+          Submit!
+        </v-btn>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script>
