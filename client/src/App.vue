@@ -25,7 +25,7 @@
       </div>
       <div v-if="quizGraded">
         <ResultComponent
-          :quiz-score="quizScore"
+          :quiz-result="quizResult"
           :total-points="quizTotalPoints"
         />
       </div>
@@ -37,6 +37,7 @@
 import QuizComponent from './components/QuizComponent.vue';
 import ResultComponent from './components/ResultComponent.vue';
 import QuestionService from './QuestionService';
+import ResultService from './ResultService';
 
 export default {
   name: 'App',
@@ -48,7 +49,7 @@ export default {
   data: () => ({
     quizStarted: false,
     quizData: [],
-    quizScore: 0,
+    quizResult: {},
     quizAnswers: [],
     quizGraded: false,
     quizTotalPoints: 0,
@@ -65,10 +66,9 @@ export default {
         uuid: this.quizData[index].uuid,
         answer: value,
       }));
-      const rawResponse = await QuestionService.gradeQuestions(
+      this.quizResult = (await ResultService.gradeQuiz(
         processedAnswers,
-      );
-      this.quizScore = rawResponse.data.score;
+      )).data;
       this.quizGraded = true;
     },
   },

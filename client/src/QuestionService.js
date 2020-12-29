@@ -13,13 +13,6 @@ class QuestionService {
         .catch((err) => reject(err));
     });
   }
-
-  static gradeQuestions(answers) {
-    return new Promise((resolve, reject) => {
-      axios.post(`${url}grade`, { answers }).then((score) => resolve(score))
-        .catch((err) => reject(err));
-    });
-  }
 }
 
 export default QuestionService;
