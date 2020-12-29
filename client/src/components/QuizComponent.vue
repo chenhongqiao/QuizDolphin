@@ -1,35 +1,35 @@
 <template>
   <div>
     <v-container>
-      <h2>Problem #{{ currentQuestion + 1 }}</h2>
-      <div>Points: {{ quizData[currentQuestion].points }}</div>
-      <div>Type: {{ quizData[currentQuestion].type }}</div>
+      <h2>Problem #{{ currentQuestion }}</h2>
+      <div>Points: {{ quizData[currentQuestion-1].points }}</div>
+      <div>Type: {{ quizData[currentQuestion-1].type }}</div>
     </v-container>
     <v-container>
       <h3>Context:</h3>
       <div class="text-center">
-        {{ quizData[currentQuestion].context }}
+        {{ quizData[currentQuestion-1].context }}
       </div>
     </v-container>
     <v-container>
       <h3
-        v-if="quizData[currentQuestion].type==='single choice'||
-          quizData[currentQuestion].type==='multiple choice'"
+        v-if="quizData[currentQuestion-1].type==='single choice'||
+          quizData[currentQuestion-1].type==='multiple choice'"
       >
         Options:
       </h3>
       <h3
-        v-if="quizData[currentQuestion].type==='short response'"
+        v-if="quizData[currentQuestion-1].type==='short response'"
       >
         Your Response:
       </h3>
-      <div v-if="quizData[currentQuestion].type==='single choice'">
+      <div v-if="quizData[currentQuestion-1].type==='single choice'">
         <v-radio-group
-          v-model="quizAttempts[currentQuestion]"
+          v-model="quizAttempts[currentQuestion-1]"
           row
         >
           <v-col
-            v-for="option in quizData[currentQuestion].options"
+            v-for="option in quizData[currentQuestion-1].options"
             :key="option"
             md="3"
           >
@@ -41,19 +41,19 @@
         </v-radio-group>
       </div>
       <v-text-field
-        v-if="quizData[currentQuestion].type==='short response'"
-        v-model="quizAttempts[currentQuestion]"
+        v-if="quizData[currentQuestion-1].type==='short response'"
+        v-model="quizAttempts[currentQuestion-1]"
         name="Your response"
       />
-      <div v-if="quizData[currentQuestion].type==='multiple choice'">
+      <div v-if="quizData[currentQuestion-1].type==='multiple choice'">
         <v-row wrap>
           <v-col
-            v-for="option in quizData[currentQuestion].options"
+            v-for="option in quizData[currentQuestion-1].options"
             :key="option"
             md="3"
           >
             <v-checkbox
-              v-model="quizAttempts[currentQuestion]"
+              v-model="quizAttempts[currentQuestion-1]"
               :label="option"
               :value="option"
             />
@@ -63,6 +63,10 @@
     </v-container>
     <v-container>
       <v-row>
+        <v-pagination
+          v-model="currentQuestion"
+          :length="quizData.length"
+        />
         <v-spacer />
         <v-btn
           @click="currentQuestion-=1"
@@ -70,13 +74,13 @@
           Back
         </v-btn>
         <v-btn
-          v-if="currentQuestion < quizData.length - 1"
+          v-if="currentQuestion < quizData.length"
           @click="nextQuestion"
         >
           Next
         </v-btn>
         <v-btn
-          v-if="currentQuestion === quizData.length - 1"
+          v-if="currentQuestion === quizData.length"
           @click="submitQuiz"
         >
           Submit!
@@ -94,7 +98,7 @@ export default {
     quizAnswers: { type: Array, default: null },
   },
   data: () => ({
-    currentQuestion: 0,
+    currentQuestion: 1,
     quizAttempts: [],
   }),
   mounted() {
@@ -112,7 +116,7 @@ export default {
       this.$emit('update:quizAnswers', this.quizAttempts);
     },
     submitQuiz() {
-      this.$emit('update:quizAnswers', this.quizAnswers);
+      this.$emit('update:quizAnswers', this.quizAttempts);
       this.$emit('quizDone');
     },
   },
