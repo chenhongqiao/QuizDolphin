@@ -8,12 +8,14 @@
           <div>Type: {{ quizData[currentQuestion-1].type }}</div>
         </v-container>
         <v-divider />
+
         <v-container>
           <h3>Context:</h3>
           <div class="text-center">
             {{ quizData[currentQuestion-1].context }}
           </div>
         </v-container>
+
         <v-container>
           <h3
             v-if="quizData[currentQuestion-1].type==='single choice'||
@@ -26,6 +28,7 @@
           >
             Your Response:
           </h3>
+
           <div v-if="quizData[currentQuestion-1].type==='single choice'">
             <v-radio-group
               v-model="quizAttempts[currentQuestion-1]"
@@ -43,11 +46,13 @@
               </v-col>
             </v-radio-group>
           </div>
+
           <v-text-field
             v-if="quizData[currentQuestion-1].type==='short response'"
             v-model="quizAttempts[currentQuestion-1]"
             name="Your response"
           />
+
           <div v-if="quizData[currentQuestion-1].type==='multiple choice'">
             <v-row wrap>
               <v-col
@@ -59,6 +64,26 @@
                   v-model="quizAttempts[currentQuestion-1]"
                   :label="option"
                   :value="option"
+                />
+              </v-col>
+            </v-row>
+          </div>
+
+          <div v-if="quizData[currentQuestion-1].type==='matching'">
+            <v-row
+              v-for="(left,index) in quizData[currentQuestion-1].leftcol"
+              :key="'qz'+quizData[currentQuestion-1].uuid+left"
+            >
+              <v-col md="8">
+                <v-container>
+                  {{ left }}
+                </v-container>
+              </v-col>
+              <v-col md="4">
+                <v-select
+                  v-model="quizAttempts[currentQuestion-1][index]"
+                  :items="quizData[currentQuestion-1].rightcol"
+                  @input="updateRightCol(index)"
                 />
               </v-col>
             </v-row>
@@ -109,11 +134,11 @@ export default {
     currentQuestion: 1,
     quizAttempts: [],
   }),
-  mounted() {
+  beforeMount() {
     this.quizData.forEach((question) => {
       if (question.type === 'single choice' || question.type === 'short response') {
         this.quizAttempts.push('');
-      } else if (question.type === 'multiple choice') {
+      } else if (question.type === 'multiple choice' || question.type === 'matching') {
         this.quizAttempts.push([]);
       }
     });
@@ -126,6 +151,17 @@ export default {
     submitQuiz() {
       this.$emit('update:quizAnswers', this.quizAttempts);
       this.$emit('quizDone');
+    },
+    updateRightCol(index) {
+      let targetIndex = this.quizAttempts[this.currentQuestion - 1]
+        .indexOf(this.quizAttempts[this.currentQuestion - 1][index]);
+      if (targetIndex === index) {
+        targetIndex = this.quizAttempts[this.currentQuestion - 1]
+          .indexOf(this.quizAttempts[this.currentQuestion - 1][index], index + 1);
+      }
+      if (targetIndex !== -1) {
+        this.quizAttempts[this.currentQuestion - 1][targetIndex] = undefined;
+      }
     },
   },
 };
