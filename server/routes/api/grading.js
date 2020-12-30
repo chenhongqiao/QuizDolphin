@@ -113,6 +113,23 @@ router.post('/', async (req, res, next) => {
         ));
         return (await accumulator) + questions[0].points * (correctCount / answersSet.size);
       }
+
+      if (questions[0].type === 'matching') {
+        if (!Array.isArray(current.answer)) {
+          throw new UserException('Incorrect Answer Type!');
+        }
+
+        questionsArray.push(questions[0]);
+        const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, index) => {
+          if (currentRightCol === correctAnswers[0].answer[index]) {
+            return countAccumulator + 1;
+          }
+          return countAccumulator;
+        }, 0);
+        return (await accumulator)
+        + questions[0].points * (correctMatch / correctAnswers[0].answer.length);
+      }
+
       return accumulator;
     }, Promise.resolve(0));
     const quizResult = new QuizResultConstructor(await score, questionsArray, resultsArray);

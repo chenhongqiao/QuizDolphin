@@ -9,7 +9,13 @@ function QuestionConstructor(question, uuid) {
   this.context = question.context;
   this.points = question.points;
   this.type = question.type;
-  this.options = question.options;
+  if (question.type === 'single choice' || question.type === 'multiple choice') {
+    this.options = question.options;
+  }
+  if (question.type === 'matching') {
+    this.rightcol = question.rightcol;
+    this.leftcol = question.leftcol;
+  }
 }
 
 function AnswerConstructor(question, uuid) {
@@ -30,7 +36,7 @@ function verifyQuestion(question) {
   if (question.uuid !== undefined) {
     throw new UserException('Request Should Not Specify UUID!');
   }
-  if (question.type !== 'single choice' && question.type !== 'multiple choice' && question.type !== 'short response') {
+  if (question.type !== 'single choice' && question.type !== 'multiple choice' && question.type !== 'short response' && question.type !== 'matching') {
     throw new UserException('Invalid Question Type!');
   }
   if (question.type === 'single choice') {
@@ -45,6 +51,11 @@ function verifyQuestion(question) {
   }
   if (question.type === 'short response') {
     if (typeof question.context !== 'string' || typeof question.answer !== 'string') {
+      throw new UserException('Incorrect Question Property Type!');
+    }
+  }
+  if (question.type === 'matching') {
+    if (typeof question.context !== 'string' || !Array.isArray(question.answer) || !Array.isArray(question.leftcol) || !Array.isArray(question.rightcol)) {
       throw new UserException('Incorrect Question Property Type!');
     }
   }
@@ -113,7 +124,6 @@ router.post('/', async (req, res, next) => {
     const questionsCollection = await loadQuestionsCollection();
     const answersCollection = await loadAnswersCollection();
     const questionId = uuidv4();
-    console.log(typeof req.body);
     verifyQuestion(req.body);
     const newQuestion = new QuestionConstructor(req.body, questionId);
     const newAnswer = new AnswerConstructor(req.body, questionId);
