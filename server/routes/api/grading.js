@@ -126,6 +126,11 @@ router.post('/', async (req, res, next) => {
           }
           return countAccumulator;
         }, 0);
+        resultsArray.push(new QuestionResultConstructor(
+          current.answer, correctAnswers[0].answer,
+          questions[0].points * (correctMatch / correctAnswers[0].answer.length),
+          questionUuid, questions[0].points,
+        ));
         return (await accumulator)
         + questions[0].points * (correctMatch / correctAnswers[0].answer.length);
       }
