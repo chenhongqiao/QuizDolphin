@@ -5,9 +5,6 @@
       <div>
         You got {{ quizResult.score }} out of {{ totalPoints }}
       </div>
-      <v-btn @click="generateReport">
-        Download Report
-      </v-btn>
       <v-container
         v-for="currentQuestion in quizResult.questions.length"
         :key="'d-'+currentQuestion"
@@ -178,133 +175,20 @@
     <v-container>
       <v-row>
         <v-spacer />
-        <v-btn @click="resetQuiz">
-          Reset Quiz
-        </v-btn>
+        <v-col md="2">
+          <v-btn @click="resetQuiz">
+            Reset Quiz
+          </v-btn>
+        </v-col>
       </v-row>
     </v-container>
-    <vue-html2pdf
-      ref="html2Pdf"
-      :show-layout="false"
-      :float-layout="true"
-      :enable-download="true"
-      :preview-modal="true"
-      :paginate-elements-by-height="1400"
-      filename="Quiz Report"
-      :pdf-quality="2"
-      :manual-pagination="false"
-      pdf-format="letter"
-      pdf-orientation="portrait"
-      pdf-content-width="800px"
-      @progress="onProgress($event)"
-      @hasStartedGeneration="hasStartedGeneration()"
-      @hasGenerated="hasGenerated($event)"
-    >
-      <section slot="pdf-content">
-        <v-container>
-          <h2> Quiz Result </h2>
-          <div>
-            You got {{ quizResult.score }} out of {{ totalPoints }}
-          </div>
-        </v-container>
-        <v-container
-          v-for="currentQuestion in quizResult.questions.length"
-          :key="'p-'+currentQuestion"
-        >
-          <v-container>
-            <h2>Problem #{{ currentQuestion }}</h2>
-            <div>
-              Score: {{ quizResult.questionsResult[currentQuestion-1].score }}
-              out of {{ quizResult.questionsResult[currentQuestion-1].points }}
-            </div>
-            <div>Type: {{ quizResult.questions[currentQuestion-1].type }}</div>
-          </v-container>
-          <v-container>
-            <h3>Context:</h3>
-            <div class="text-center">
-              {{ quizResult.questions[currentQuestion-1].context }}
-            </div>
-          </v-container>
-          <v-container v-if="quizResult.questions[currentQuestion-1].type==='single choice'">
-            <h3>
-              Options:
-            </h3>
-            <div
-              v-for="option in quizResult.questions[currentQuestion-1].options"
-              :key="'ps-'+option"
-            >
-              {{ option }}
-            </div>
-            <h3>
-              Your Response:
-            </h3>
-            <div>
-              {{ quizResult.questionsResult[currentQuestion-1].userAnswer }}
-            </div>
-            <h3>
-              Correct Answer:
-            </h3>
-            <div>
-              {{ quizResult.questionsResult[currentQuestion-1].correctAnswer }}
-            </div>
-          </v-container>
-          <v-container v-if="quizResult.questions[currentQuestion-1].type==='short response'">
-            <h3>
-              Your Response:
-            </h3>
-            <div>
-              {{ quizResult.questionsResult[currentQuestion-1].userAnswer }}
-            </div>
-            <h3>
-              Correct Answer:
-            </h3>
-            <div>
-              {{ quizResult.questionsResult[currentQuestion-1].correctAnswer }}
-            </div>
-          </v-container>
-          <v-container v-if="quizResult.questions[currentQuestion-1].type==='multiple choice'">
-            <h3>
-              Options
-            </h3>
-            <div
-              v-for="option in quizResult.questions[currentQuestion-1].options"
-              :key="'pmo-'+option"
-            >
-              {{ option }}
-            </div>
-            <h3>
-              Your Response:
-            </h3>
-            <div
-              v-for="option in quizResult.questionsResult[currentQuestion-1].userAnswer"
-              :key="'pmu-'+option"
-            >
-              {{ option }}
-            </div>
-            <h3>
-              Correct Answer:
-            </h3>
-            <div
-              v-for="option in quizResult.questionsResult[currentQuestion-1].correctAnswer"
-              :key="'pmc-'+option"
-            >
-              {{ option }}
-            </div>
-          </v-container>
-        </v-container>
-      </section>
-    </vue-html2pdf>
   </div>
 </template>
 
 <script>
-import VueHtml2pdf from 'vue-html2pdf';
 
 export default {
   name: 'ResultComponent',
-  components: {
-    VueHtml2pdf,
-  },
   props: {
     quizResult: { type: Object, default: null },
     totalPoints: { type: Number, default: 0 },
