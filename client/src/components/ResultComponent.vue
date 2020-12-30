@@ -168,6 +168,45 @@
                 </v-col>
               </v-row>
             </div>
+            <div v-if="quizResult.questions[currentQuestion-1].type==='matching'">
+              <v-row
+                v-for="(left,index) in quizResult.questions[currentQuestion-1].leftcol"
+                :key="'dma-'+quizResult.questions[currentQuestion-1]+left"
+              >
+                <v-col md="8">
+                  <v-container>
+                    {{ left }}
+                  </v-container>
+                </v-col>
+                <v-col
+                  v-if="quizResult.questionsResult[currentQuestion-1].userAnswer[index]===
+                    quizResult.questionsResult[currentQuestion-1].correctAnswer[index]"
+                  md="4"
+                >
+                  <v-select
+                    :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
+                    :items="quizResult.questions[currentQuestion-1].rightcol"
+                    background-color="#66bb6a"
+                    readonly
+                  />
+                </v-col>
+                <v-col
+                  v-else
+                  md="4"
+                >
+                  <div>
+                    Correct Answer:
+                    {{ quizResult.questionsResult[currentQuestion-1].correctAnswer[index] }}
+                  </div>
+                  <v-select
+                    :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
+                    :items="quizResult.questions[currentQuestion-1].rightcol"
+                    background-color="#ef5350"
+                    readonly
+                  />
+                </v-col>
+              </v-row>
+            </div>
           </v-container>
         </v-card>
       </v-container>
