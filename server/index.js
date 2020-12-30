@@ -7,9 +7,9 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-const problems = require('./routes/api/questions');
+const questions = require('./routes/api/questions');
 
-app.use('/api/questions', problems);
+app.use('/api/questions', questions);
 
 const heartbeat = require('./routes/api/heartbeat');
 
