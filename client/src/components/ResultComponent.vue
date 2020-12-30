@@ -10,7 +10,7 @@
       </v-btn>
       <v-container
         v-for="currentQuestion in quizResult.questions.length"
-        :key="currentQuestion"
+        :key="'d-'+currentQuestion"
       >
         <v-card>
           <v-container>
@@ -39,11 +39,12 @@
             >
               Your Response:
             </h3>
+
             <div v-if="quizResult.questions[currentQuestion-1].type==='single choice'">
               <v-row wrap>
                 <v-col
                   v-for="option in quizResult.questions[currentQuestion-1].options"
-                  :key="option"
+                  :key="'ds-'+option"
                   md="3"
                 >
                   <div
@@ -68,6 +69,7 @@
                       color="red"
                       :label="option"
                       :input-value="true"
+                      :on-icon="'mdi-close-box'"
                       readonly
                     />
                   </div>
@@ -92,17 +94,35 @@
                 <v-row wrap />
               </v-row>
             </div>
-            <v-text-field
-              v-if="quizResult.questions[currentQuestion-1].type==='short response'"
-              :value="quizResult.questionsResult[currentQuestion-1].correctAnswer"
-              name="Your response"
-              disabled
-            />
+
+            <div v-if="quizResult.questions[currentQuestion-1].type==='short response'">
+              <div
+                v-if="quizResult.questionsResult[currentQuestion-1].userAnswer
+                  ===quizResult.questionsResult[currentQuestion-1].correctAnswer"
+              >
+                <v-text-field
+                  :value="quizResult.questionsResult[currentQuestion-1].userAnswer"
+                  background-color="#66bb6a"
+                  readonly
+                />
+              </div>
+              <div v-else>
+                <v-text-field
+                  :value="quizResult.questionsResult[currentQuestion-1].userAnswer"
+                  background-color="#ef5350"
+                  readonly
+                />
+                <div>
+                  Correct Answer: {{ quizResult.questionsResult[currentQuestion-1].correctAnswer }}
+                </div>
+              </div>
+            </div>
+
             <div v-if="quizResult.questions[currentQuestion-1].type==='multiple choice'">
               <v-row wrap>
                 <v-col
                   v-for="option in quizResult.questions[currentQuestion-1].options"
-                  :key="option"
+                  :key="'dm-'+option"
                   md="3"
                 >
                   <div
@@ -127,6 +147,7 @@
                       color="red"
                       :label="option"
                       :input-value="true"
+                      :on-icon="'mdi-close-box'"
                       readonly
                     />
                   </div>
@@ -181,7 +202,7 @@
         </v-container>
         <v-container
           v-for="currentQuestion in quizResult.questions.length"
-          :key="currentQuestion"
+          :key="'p-'+currentQuestion"
         >
           <v-container>
             <h2>Problem #{{ currentQuestion }}</h2>
@@ -203,7 +224,7 @@
             </h3>
             <div
               v-for="option in quizResult.questions[currentQuestion-1].options"
-              :key="option"
+              :key="'ps-'+option"
             >
               {{ option }}
             </div>
@@ -240,7 +261,7 @@
             </h3>
             <div
               v-for="option in quizResult.questions[currentQuestion-1].options"
-              :key="option"
+              :key="'pmo-'+option"
             >
               {{ option }}
             </div>
@@ -249,7 +270,7 @@
             </h3>
             <div
               v-for="option in quizResult.questionsResult[currentQuestion-1].userAnswer"
-              :key="option"
+              :key="'pmu-'+option"
             >
               {{ option }}
             </div>
@@ -258,7 +279,7 @@
             </h3>
             <div
               v-for="option in quizResult.questionsResult[currentQuestion-1].correctAnswer"
-              :key="option"
+              :key="'pmc-'+option"
             >
               {{ option }}
             </div>
