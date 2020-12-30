@@ -7,7 +7,7 @@
           <div>Points: {{ quizData[currentQuestion-1].points }}</div>
           <div>Type: {{ quizData[currentQuestion-1].type }}</div>
         </v-container>
-
+        <v-divider />
         <v-container>
           <h3>Context:</h3>
           <div class="text-center">

@@ -202,7 +202,7 @@
     >
       <section slot="pdf-content">
         <v-container>
-          <h2> FBLA Quiz Result </h2>
+          <h2> Quiz Result </h2>
           <div>
             You got {{ quizResult.score }} out of {{ totalPoints }}
           </div>
