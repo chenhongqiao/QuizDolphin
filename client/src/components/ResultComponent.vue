@@ -175,7 +175,14 @@
         </v-card>
       </v-container>
     </v-container>
-
+    <v-container>
+      <v-row>
+        <v-spacer />
+        <v-btn @click="resetQuiz">
+          Reset Quiz
+        </v-btn>
+      </v-row>
+    </v-container>
     <vue-html2pdf
       ref="html2Pdf"
       :show-layout="false"
@@ -323,6 +330,9 @@ export default {
     generateReport() {
       window.scrollTo(0, 0);
       this.$refs.html2Pdf.generatePdf();
+    },
+    resetQuiz() {
+      window.location.reload();
     },
   },
 };
