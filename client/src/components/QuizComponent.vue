@@ -197,5 +197,10 @@ export default {
 };
 </script>
 <style>
-.v-select__selections input { width: 5px }
+.v-select.v-input input {
+  width: 80px;
+}
+.v-select.v-input--is-dirty input {
+  width: 4px;
+}
 </style>

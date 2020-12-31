@@ -19,7 +19,7 @@
             <div>Type: {{ quizResult.questions[currentQuestion-1].type }}</div>
           </v-container>
           <v-divider />
-          <v-container>
+          <v-container v-if="quizResult.questions[currentQuestion-1].type!=='fill in the blanks'">
             <h3>Context:</h3>
             <div class="text-center">
               {{ quizResult.questions[currentQuestion-1].context }}
@@ -41,6 +41,11 @@
               v-if="quizResult.questions[currentQuestion-1].type==='matching'"
             >
               Matching:
+            </h3>
+            <h3
+              v-if="quizResult.questions[currentQuestion-1].type==='fill in the blanks'"
+            >
+              Fill in the Blanks:
             </h3>
             <div v-if="quizResult.questions[currentQuestion-1].type==='single choice'">
               <v-row wrap>
@@ -173,6 +178,7 @@
                 </v-col>
               </v-row>
             </div>
+
             <div v-if="quizResult.questions[currentQuestion-1].type==='matching'">
               <v-row
                 v-for="(left,index) in quizResult.questions[currentQuestion-1].leftcol"
@@ -212,6 +218,46 @@
                   </div>
                 </v-col>
               </v-row>
+            </div>
+
+            <div v-if="quizResult.questions[currentQuestion-1].type==='fill in the blanks'">
+              <span
+
+                v-for="(context, index) in quizResult.questions[currentQuestion-1].context"
+                :key="'qz'+quizResult.questions[currentQuestion-1].uuid+context"
+              >
+                <span
+                  v-if="quizResult.questionsResult[currentQuestion-1].userAnswer[index]===
+                    quizResult.questionsResult[currentQuestion-1].correctAnswer[index]"
+                >
+                  {{ context }}
+                  <v-select
+                    v-if="quizResult.questions[currentQuestion-1].options[index]!==undefined"
+                    :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
+                    readonly
+                    class="d-inline-flex"
+                    background-color="#66bb6a"
+                    :items="quizResult.questions[currentQuestion-1].options[index]"
+                    dense
+                  />
+                </span>
+                <span
+                  v-else
+                >
+                  {{ context }}
+                  <v-select
+                    v-if="quizResult.questions[currentQuestion-1].options[index]!==undefined"
+                    :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
+                    readonly
+                    class="d-inline-flex"
+                    background-color="#ef5350"
+                    :items="quizResult.questions[currentQuestion-1].options[index]"
+                    dense
+                  />
+                  <span style="color: green"><em>{{ quizResult.questionsResult[currentQuestion-1]
+                    .correctAnswer[index] }}</em></span>
+                </span>
+              </span>
             </div>
           </v-container>
         </v-card>
@@ -266,3 +312,11 @@ export default {
   },
 };
 </script>
+<style>
+.v-select.v-input input {
+  width: 80px;
+}
+.v-select.v-input--is-dirty input {
+  width: 4px;
+}
+</style>
