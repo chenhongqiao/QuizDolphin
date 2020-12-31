@@ -9,7 +9,9 @@
         </v-container>
         <v-divider />
 
-        <v-container>
+        <v-container
+          v-if="quizData[currentQuestion-1].type!=='fill in the blanks'"
+        >
           <h3>Context:</h3>
           <div class="text-center">
             {{ quizData[currentQuestion-1].context }}
@@ -33,6 +35,11 @@
           >
             Matching:
           </h3>
+          <h3
+            v-if="quizData[currentQuestion-1].type==='fill in the blanks'"
+          >
+            Fill in the Blanks:
+          </h3>
 
           <div v-if="quizData[currentQuestion-1].type==='single choice'">
             <v-radio-group
@@ -52,11 +59,12 @@
             </v-radio-group>
           </div>
 
-          <v-text-field
-            v-if="quizData[currentQuestion-1].type==='short response'"
-            v-model="quizAttempts[currentQuestion-1]"
-            name="Your response"
-          />
+          <div v-if="quizData[currentQuestion-1].type==='short response'">
+            <v-text-field
+              v-model="quizAttempts[currentQuestion-1]"
+              name="Your response"
+            />
+          </div>
 
           <div v-if="quizData[currentQuestion-1].type==='multiple choice'">
             <v-row wrap>
@@ -93,6 +101,23 @@
                 />
               </v-col>
             </v-row>
+          </div>
+
+          <div v-if="quizData[currentQuestion-1].type==='fill in the blanks'">
+            <span
+              v-for="(context, index) in quizData[currentQuestion-1].context"
+              :key="'qz'+quizData[currentQuestion-1].uuid+context"
+            >
+              {{ context }}
+              <v-select
+                v-if="quizData[currentQuestion-1].options[index]!==undefined"
+                v-model="quizAttempts[currentQuestion-1][index]"
+                class="d-inline-flex"
+                style="width: min-content"
+                :items="quizData[currentQuestion-1].options[index]"
+                dense
+              />
+            </span>
           </div>
         </v-container>
       </v-card>
@@ -144,7 +169,7 @@ export default {
     this.quizData.forEach((question) => {
       if (question.type === 'single choice' || question.type === 'short response') {
         this.quizAttempts.push('');
-      } else if (question.type === 'multiple choice' || question.type === 'matching') {
+      } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
         this.quizAttempts.push([]);
       }
     });
