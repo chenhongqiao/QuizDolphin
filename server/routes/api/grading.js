@@ -44,9 +44,11 @@ router.post('/', async (req, res, next) => {
     const questionsCollection = await loadQuestionsCollection();
     const questionsArray = [];
     const resultsArray = [];
+
     if (req.body.answers === undefined || !Array.isArray(req.body.answers)) {
       throw new UserException('Invalid Answers Array!');
     }
+
     const score = req.body.answers.reduce(async (accumulator, current) => {
       if (current.uuid === undefined || current.answer === undefined) {
         throw new UserException('Missing Answer Property!');
@@ -115,6 +117,27 @@ router.post('/', async (req, res, next) => {
       }
 
       if (questions[0].type === 'matching') {
+        if (!Array.isArray(current.answer)) {
+          throw new UserException('Incorrect Answer Type!');
+        }
+
+        questionsArray.push(questions[0]);
+        const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, index) => {
+          if (currentRightCol === correctAnswers[0].answer[index]) {
+            return countAccumulator + 1;
+          }
+          return countAccumulator;
+        }, 0);
+        resultsArray.push(new QuestionResultConstructor(
+          current.answer, correctAnswers[0].answer,
+          questions[0].points * (correctMatch / correctAnswers[0].answer.length),
+          questionUuid, questions[0].points,
+        ));
+        return (await accumulator)
+        + questions[0].points * (correctMatch / correctAnswers[0].answer.length);
+      }
+
+      if (questions[0].type === 'fill in the blanks') {
         if (!Array.isArray(current.answer)) {
           throw new UserException('Incorrect Answer Type!');
         }
