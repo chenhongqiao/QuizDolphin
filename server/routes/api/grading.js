@@ -45,11 +45,11 @@ router.post('/', async (req, res, next) => {
     const questionsArray = [];
     const resultsArray = [];
 
-    if (req.body.answers === undefined || !Array.isArray(req.body.answers)) {
+    if (req.body.data === undefined || !Array.isArray(req.body.data)) {
       throw new UserException('Invalid Answers Array!');
     }
 
-    const score = req.body.answers.reduce(async (accumulator, current) => {
+    const score = req.body.data.reduce(async (accumulator, current) => {
       if (current.uuid === undefined || current.answer === undefined) {
         throw new UserException('Missing Answer Property!');
       }

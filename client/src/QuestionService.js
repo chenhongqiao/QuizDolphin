@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+axios.defaults.withCredentials = true;
+
 const url = 'http://192.168.0.230:5000/api/questions/';
 
 class QuestionService {
@@ -9,6 +11,7 @@ class QuestionService {
         params: {
           count,
         },
+        withCredentials: true,
       }).then((data) => resolve(data))
         .catch((err) => reject(err));
     });

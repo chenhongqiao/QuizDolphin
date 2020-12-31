@@ -92,9 +92,9 @@ router.post('/', async (req, res, next) => {
     const questionsCollection = await loadQuestionsCollection();
     const answersCollection = await loadAnswersCollection();
     const questionId = uuidv4();
-    validation.validateQuestion(req.body);
-    const newQuestion = new QuestionConstructor(req.body, questionId);
-    const newAnswer = new AnswerConstructor(req.body, questionId);
+    validation.validateQuestion(req.body.data);
+    const newQuestion = new QuestionConstructor(req.body.data, questionId);
+    const newAnswer = new AnswerConstructor(req.body.data, questionId);
     await questionsCollection.insertOne(newQuestion);
     await answersCollection.insertOne(newAnswer);
     res.send('Success!');
