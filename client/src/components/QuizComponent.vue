@@ -138,7 +138,7 @@
         </v-btn>
         <v-btn
           v-if="currentQuestion === quizData.length"
-          @click="submitQuiz"
+          @click="pendingSubmission=true"
         >
           Submit!
         </v-btn>
@@ -150,6 +150,33 @@
         :length="quizData.length"
       />
     </v-container>
+    <v-dialog
+      v-model="pendingSubmission"
+      width="500px"
+    >
+      <v-card>
+        <v-container>
+          You have attempted <b>{{ attemptedNumber }}</b> questions.
+          Do you want to submit this quiz? You cannot change your answer once it's submitted.
+        </v-container>
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            text
+            @click="pendingSubmission=false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            text
+            @click="submitQuiz"
+          >
+            Submit
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -163,7 +190,29 @@ export default {
   data: () => ({
     currentQuestion: 1,
     quizAttempts: [],
+    pendingSubmission: false,
   }),
+  computed: {
+    attemptedNumber() {
+      const attempted = this.quizAttempts.reduce((accumulator, current) => {
+        if (Array.isArray(current)) {
+          if (current.length !== 0) {
+            return accumulator + 1;
+          }
+        }
+        if (typeof current === 'string') {
+          if (current !== '') {
+            return accumulator + 1;
+          }
+        }
+        return accumulator;
+      }, 0);
+      if (attempted === this.quizData.length) {
+        return 'ALL';
+      }
+      return attempted;
+    },
+  },
   beforeMount() {
     this.quizData.forEach((question) => {
       if (question.type === 'single choice' || question.type === 'short response') {
