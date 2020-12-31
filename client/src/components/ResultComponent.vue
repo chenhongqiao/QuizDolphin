@@ -18,6 +18,7 @@
             </div>
             <div>Type: {{ quizResult.questions[currentQuestion-1].type }}</div>
           </v-container>
+          <v-divider />
           <v-container>
             <h3>Context:</h3>
             <div class="text-center">
@@ -36,7 +37,11 @@
             >
               Your Response:
             </h3>
-
+            <h3
+              v-if="quizResult.questions[currentQuestion-1].type==='matching'"
+            >
+              Matching:
+            </h3>
             <div v-if="quizResult.questions[currentQuestion-1].type==='single choice'">
               <v-row wrap>
                 <v-col
@@ -194,16 +199,17 @@
                   v-else
                   md="4"
                 >
-                  <div>
-                    Correct Answer:
-                    {{ quizResult.questionsResult[currentQuestion-1].correctAnswer[index] }}
-                  </div>
                   <v-select
                     :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
                     :items="quizResult.questions[currentQuestion-1].rightcol"
                     background-color="#ef5350"
+                    dense
                     readonly
                   />
+                  <div>
+                    Correct Answer:
+                    {{ quizResult.questionsResult[currentQuestion-1].correctAnswer[index] }}
+                  </div>
                 </v-col>
               </v-row>
             </div>

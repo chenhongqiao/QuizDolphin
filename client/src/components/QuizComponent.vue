@@ -28,6 +28,11 @@
           >
             Your Response:
           </h3>
+          <h3
+            v-if="quizData[currentQuestion-1].type==='matching'"
+          >
+            Matching:
+          </h3>
 
           <div v-if="quizData[currentQuestion-1].type==='single choice'">
             <v-radio-group
@@ -83,6 +88,7 @@
                 <v-select
                   v-model="quizAttempts[currentQuestion-1][index]"
                   :items="quizData[currentQuestion-1].rightcol"
+                  dense
                   @input="updateRightCol(index)"
                 />
               </v-col>
