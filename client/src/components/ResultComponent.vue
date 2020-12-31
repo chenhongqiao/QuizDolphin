@@ -3,7 +3,7 @@
     <v-container>
       <h2> Quiz result </h2>
       <div>
-        You got {{ quizResult.score }} out of {{ totalPoints }}
+        You got {{ quizResult.score.toFixed(2) }} out of {{ totalPoints }}
       </div>
       <v-container
         v-for="currentQuestion in quizResult.questions.length"
@@ -13,7 +13,7 @@
           <v-container>
             <h2>Problem #{{ currentQuestion }}</h2>
             <div>
-              Score: {{ quizResult.questionsResult[currentQuestion-1].score }}
+              Score: {{ quizResult.questionsResult[currentQuestion-1].score.toFixed(2) }}
               out of {{ quizResult.questionsResult[currentQuestion-1].points }}
             </div>
             <div>Type: {{ quizResult.questions[currentQuestion-1].type }}</div>
