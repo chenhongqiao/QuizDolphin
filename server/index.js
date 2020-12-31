@@ -1,11 +1,28 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({
+  origin: [
+    'http://localhost:8080',
+    'https://localhost:8080',
+    'http://192.168.0.230:8080',
+    'https://192.168.0.230:8080',
+  ],
+  credentials: true,
+}));
+app.use(session({
+  secret: 'ef41b182f3883634f166e1aa3595339923635e76',
+  cookie: {
+    secure: false,
+  },
+}));
 
 const questions = require('./routes/api/questions');
 
