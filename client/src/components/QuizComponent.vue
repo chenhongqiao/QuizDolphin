@@ -113,7 +113,6 @@
                 v-if="quizData[currentQuestion-1].options[index]!==undefined"
                 v-model="quizAttempts[currentQuestion-1][index]"
                 class="d-inline-flex"
-                style="width: min-content"
                 :items="quizData[currentQuestion-1].options[index]"
                 dense
               />
@@ -197,3 +196,6 @@ export default {
   },
 };
 </script>
+<style>
+.v-select__selections input { width: 5px }
+</style>
