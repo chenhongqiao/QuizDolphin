@@ -1,7 +1,7 @@
 const express = require('express');
-const mongodb = require('mongodb');
 const { v4: uuidv4 } = require('uuid');
-const validation = require('../../dataValidation');
+const validation = require('../../modules/dataValidation');
+const dbService = require('../../modules/dbService');
 
 const router = express.Router();
 
@@ -29,29 +29,13 @@ function UserException(message) {
   this.type = 'UserException';
 }
 
-async function loadQuestionsCollection() {
-  const client = await mongodb.MongoClient.connect('mongodb+srv://harry:3g2ZSNMaAGe7NDu6@fbla21-dev.lrnik.mongodb.net/server?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  return client.db('server').collection('questions');
-}
-
-async function loadAnswersCollection() {
-  const client = await mongodb.MongoClient.connect('mongodb+srv://harry:3g2ZSNMaAGe7NDu6@fbla21-dev.lrnik.mongodb.net/server?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  return client.db('server').collection('answers');
-}
-
 function getRandomInteger(min, max) {
   return min + Math.floor(Math.random() * (max - min));
 }
 
 router.get('/', async (req, res, next) => {
   try {
-    const questionsCollection = await loadQuestionsCollection().catch();
+    const questionsCollection = await dbService.loadCollection('questions');
     const allQuestions = await questionsCollection.find({}).toArray();
     const allQuestionCount = allQuestions.length;
     const userQuestions = [];
@@ -89,8 +73,8 @@ TODO:
 */
 router.post('/', async (req, res, next) => {
   try {
-    const questionsCollection = await loadQuestionsCollection();
-    const answersCollection = await loadAnswersCollection();
+    const questionsCollection = await dbService.loadCollection('questions');
+    const answersCollection = await dbService.loadCollection('answers');
     const questionId = uuidv4();
     validation.validateQuestion(req.body.data);
     const newQuestion = new QuestionConstructor(req.body.data, questionId);

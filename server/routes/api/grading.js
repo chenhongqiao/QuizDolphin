@@ -1,6 +1,6 @@
 const express = require('express');
-const mongodb = require('mongodb');
 const { DateTime } = require('luxon');
+const dbService = require('../../modules/dbService');
 
 const router = express.Router();
 
@@ -25,26 +25,10 @@ function UserException(message) {
   this.type = 'UserException';
 }
 
-async function loadQuestionsCollection() {
-  const client = await mongodb.MongoClient.connect('mongodb+srv://harry:3g2ZSNMaAGe7NDu6@fbla21-dev.lrnik.mongodb.net/server?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  return client.db('server').collection('questions');
-}
-
-async function loadAnswersCollection() {
-  const client = await mongodb.MongoClient.connect('mongodb+srv://harry:3g2ZSNMaAGe7NDu6@fbla21-dev.lrnik.mongodb.net/server?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  return client.db('server').collection('answers');
-}
-
 router.post('/', async (req, res, next) => {
   try {
-    const answersCollection = await loadAnswersCollection();
-    const questionsCollection = await loadQuestionsCollection();
+    const answersCollection = await dbService.loadCollection('answers');
+    const questionsCollection = await dbService.loadCollection('questions');
     const questionsArray = [];
     const resultsArray = [];
 
