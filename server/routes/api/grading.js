@@ -1,10 +1,13 @@
 const express = require('express');
 const mongodb = require('mongodb');
+const { DateTime } = require('luxon');
 
 const router = express.Router();
 
-function QuizResultConstructor(score, questions, results) {
+function QuizResultConstructor(score, questions, results, totalPoints) {
   this.score = score;
+  this.totalPoints = totalPoints;
+  this.timeStamp = DateTime.local().toUTC().toISO();
   this.questions = questions;
   this.questionsResult = results;
 }
@@ -48,7 +51,7 @@ router.post('/', async (req, res, next) => {
     if (req.body.data === undefined || !Array.isArray(req.body.data)) {
       throw new UserException('Invalid Answers Array!');
     }
-
+    let totalPoints = 0;
     const score = req.body.data.reduce(async (accumulator, current) => {
       if (current.uuid === undefined || current.answer === undefined) {
         throw new UserException('Missing Answer Property!');
@@ -71,7 +74,7 @@ router.post('/', async (req, res, next) => {
         if (typeof current.answer !== 'string') {
           throw new UserException('Incorrect Answer Type!');
         }
-
+        totalPoints += questions[0].points;
         // Gain full points only if user's input match exactly with correct answer
         if (correctAnswers[0].answer === current.answer) {
           resultsArray.push(new QuestionResultConstructor(
@@ -93,7 +96,7 @@ router.post('/', async (req, res, next) => {
         if (!Array.isArray(current.answer)) {
           throw new UserException('Incorrect Answer Type!');
         }
-
+        totalPoints += questions[0].points;
         // Points are proportional to how many correction opions are chosen.
         // Additionally, user get 0 for the entire question if incorrect options are chosen.
         const correctCount = current.answer.reduce((countAccumulator, currentOption) => {
@@ -120,7 +123,7 @@ router.post('/', async (req, res, next) => {
         if (!Array.isArray(current.answer)) {
           throw new UserException('Incorrect Answer Type!');
         }
-
+        totalPoints += questions[0].points;
         questionsArray.push(questions[0]);
         const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, index) => {
           if (currentRightCol === correctAnswers[0].answer[index]) {
@@ -141,7 +144,7 @@ router.post('/', async (req, res, next) => {
         if (!Array.isArray(current.answer)) {
           throw new UserException('Incorrect Answer Type!');
         }
-
+        totalPoints += questions[0].points;
         questionsArray.push(questions[0]);
         const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, index) => {
           if (currentRightCol === correctAnswers[0].answer[index]) {
@@ -160,7 +163,12 @@ router.post('/', async (req, res, next) => {
 
       return accumulator;
     }, Promise.resolve(0));
-    const quizResult = new QuizResultConstructor(await score, questionsArray, resultsArray);
+    const quizResult = new QuizResultConstructor(await score, questionsArray,
+      resultsArray, totalPoints);
+    if (req.session.history === undefined) {
+      req.session.history = [];
+    }
+    req.session.history.push(quizResult);
     res.send(quizResult);
   } catch (err) {
     if (err.type === 'UserException') {
