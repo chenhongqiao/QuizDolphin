@@ -21,7 +21,7 @@ function UserConstructor(email, password) {
   this.password = getSaltedPassword(password, this.salt);
 }
 
-router.post('/', async (req, res, next) => {
+router.post('/new', async (req, res, next) => {
   try {
     const usersCollection = await dbService.loadCollection('users');
 
@@ -85,6 +85,20 @@ router.post('/login', async (req, res, next) => {
       res.status(500).send('Internal Error!');
       next(err);
     }
+  }
+});
+
+router.post('/logout', (req, res, next) => {
+  try {
+    if (req.session.loggedin === true) {
+      req.session.loggedin = false;
+      res.send('Success!');
+    } else {
+      res.send('Not Logged In!');
+    }
+  } catch (err) {
+    res.status(500).send('Internal Error!');
+    next(err);
   }
 });
 
