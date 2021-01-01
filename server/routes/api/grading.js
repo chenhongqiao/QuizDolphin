@@ -20,6 +20,16 @@ function QuestionResultConstructor(userAnswer, correctAnswer, score, uuid, point
   this.score = score;
 }
 
+function HistoryRecordConstructor(email, oldhistory, newrecord) {
+  this.email = email;
+  if (oldhistory !== null) {
+    this.history = oldhistory.history;
+  } else {
+    this.history = [];
+  }
+  this.history.push(newrecord);
+}
+
 function UserException(message) {
   this.message = message;
   this.type = 'UserException';
@@ -150,14 +160,17 @@ router.post('/', async (req, res, next) => {
       return accumulator;
     }, Promise.resolve(0));
 
-    const historyCollection = await dbService.loadCollection('history');
-    const userHistory = await historyCollection.findOne({ email: req.session.email });
     const quizResult = new QuizResultConstructor(await score, questionsArray,
       resultsArray, totalPoints);
-    if (req.session.history === undefined) {
-      req.session.history = [];
+    const historyCollection = await dbService.loadCollection('history');
+
+    if (req.session.email === undefined) {
+      throw new Error('No User Email!');
     }
-    req.session.history.push(quizResult);
+
+    const oldHistory = await historyCollection.findOne({ email: req.session.email });
+    const newHistory = new HistoryRecordConstructor(req.session.email, oldHistory, quizResult);
+    await historyCollection.replaceOne({ email: req.session.email }, newHistory, { upsert: true });
     res.send(quizResult);
   } catch (err) {
     if (err.type === 'UserException') {
