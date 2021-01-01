@@ -4,6 +4,10 @@ const router = express.Router();
 
 router.get('/history', async (req, res, next) => {
   try {
+    if (!req.session.loggedin) {
+      res.send('Not Logged In!');
+      return;
+    }
     if (req.session.history === undefined) {
       res.send('No History!');
     } else {

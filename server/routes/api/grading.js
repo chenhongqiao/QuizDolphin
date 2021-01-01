@@ -27,6 +27,10 @@ function UserException(message) {
 
 router.post('/', async (req, res, next) => {
   try {
+    if (!req.session.loggedin) {
+      res.send('Not Logged In!');
+      return;
+    }
     const answersCollection = await dbService.loadCollection('answers');
     const questionsCollection = await dbService.loadCollection('questions');
     const questionsArray = [];

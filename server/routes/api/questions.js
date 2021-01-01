@@ -35,6 +35,10 @@ function getRandomInteger(min, max) {
 
 router.get('/', async (req, res, next) => {
   try {
+    if (!req.session.loggedin) {
+      res.send('Not Logged In!');
+      return;
+    }
     const questionsCollection = await dbService.loadCollection('questions');
     const allQuestions = await questionsCollection.find({}).toArray();
     const allQuestionCount = allQuestions.length;

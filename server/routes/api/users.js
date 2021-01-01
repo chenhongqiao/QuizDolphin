@@ -71,6 +71,7 @@ router.post('/login', async (req, res, next) => {
     // if the email or the password is incorrect from response time.
     if (success === true) {
       req.session.loggedin = true;
+      req.session.email = req.body.data.email;
       res.send('Success!');
     } else if (success === false) {
       res.send('Incorrect Login Information!');

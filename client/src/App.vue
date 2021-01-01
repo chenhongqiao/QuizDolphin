@@ -110,7 +110,9 @@ export default {
     }
     if (this.loggedIn) {
       const rawResponse = (await QuizService.getQuizHistory()).data;
-      if (rawResponse !== 'No History!') {
+      if (rawResponse === 'Not Logged In!') {
+        this.loggedIn = false;
+      } else if (rawResponse !== 'No History!') {
         this.quizHistory = rawResponse.reverse();
       }
     }
@@ -118,7 +120,11 @@ export default {
   methods: {
     async startQuiz() {
       this.quizData = (await QuestionService.getQuestions(5)).data;
-      this.quizStarted = true;
+      if (this.quizData === 'Not Logged In!') {
+        this.loggedIn = false;
+      } else {
+        this.quizStarted = true;
+      }
     },
     async gradeQuiz() {
       const processedAnswers = this.quizAnswers.map((value, index) => ({
@@ -128,7 +134,11 @@ export default {
       this.quizResult = (await ResultService.gradeQuiz(
         processedAnswers,
       )).data;
-      this.quizGraded = true;
+      if (this.quizResult === 'Not Logged In!') {
+        this.loggedIn = false;
+      } else {
+        this.quizGraded = true;
+      }
     },
     toLocalTime(record) {
       return DateTime.fromISO(record.timeStamp).setZone('America/Los_Angeles').toLocaleString(DateTime.DATETIME_MED);
