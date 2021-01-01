@@ -2,7 +2,7 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
-const url = 'http://192.168.0.230:5000/api/grading/';
+const url = 'http://localhost:5000/api/grading/';
 
 class ResultService {
   static gradeQuiz(answers) {
