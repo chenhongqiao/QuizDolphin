@@ -71,7 +71,7 @@ router.post('/login', async (req, res, next) => {
     // if the email or the password is incorrect from response time.
     if (success === true) {
       req.session.loggedin = true;
-      res.send('Sucess!');
+      res.send('Success!');
     } else if (success === false) {
       res.send('Incorrect Login Information!');
     } else {
@@ -87,4 +87,18 @@ router.post('/login', async (req, res, next) => {
     }
   }
 });
+
+router.get('/status', (req, res, next) => {
+  try {
+    if (req.session.loggedin === true) {
+      res.send('Logged In!');
+    } else {
+      res.send('Not Logged In!');
+    }
+  } catch (err) {
+    res.status(500).send('Internal Error!');
+    next(err);
+  }
+});
+
 module.exports = router;
