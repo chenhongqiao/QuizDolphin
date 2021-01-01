@@ -67,6 +67,7 @@ export default {
       const response = (await UserService.login(this.loginInfo)).data;
       if (response === 'Success!') {
         this.$emit('update:loggedIn', true);
+        this.$emit('authDone');
       } else {
         this.loginResponse = response;
         this.loginInfo.password = '';

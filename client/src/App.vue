@@ -7,6 +7,7 @@
       <div v-if="!loggedIn">
         <LoginComponent
           :logged-in.sync="loggedIn"
+          @authDone="getHistory()"
         />
       </div>
       <div v-if="!quizStarted">
@@ -107,14 +108,7 @@ export default {
     const userStatus = (await UserService.getUserStatus()).data;
     if (userStatus === 'Logged In!') {
       this.loggedIn = true;
-    }
-    if (this.loggedIn) {
-      const rawResponse = (await QuizService.getQuizHistory()).data;
-      if (rawResponse === 'Not Logged In!') {
-        this.loggedIn = false;
-      } else if (rawResponse !== 'No History!') {
-        this.quizHistory = rawResponse.reverse();
-      }
+      this.getHistory();
     }
   },
   methods: {
@@ -138,6 +132,14 @@ export default {
         this.loggedIn = false;
       } else {
         this.quizGraded = true;
+      }
+    },
+    async getHistory() {
+      const rawResponse = (await QuizService.getQuizHistory()).data;
+      if (rawResponse === 'Not Logged In!') {
+        this.loggedIn = false;
+      } else if (rawResponse !== 'No History!') {
+        this.quizHistory = rawResponse.reverse();
       }
     },
     toLocalTime(record) {
