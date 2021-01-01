@@ -4,6 +4,11 @@
       <v-toolbar-title>Quiz System</v-toolbar-title>
     </v-app-bar>
     <v-main>
+      <div v-if="!loggedIn">
+        <LoginComponent
+          :logged-in.sync="loggedIn"
+        />
+      </div>
       <div v-if="!quizStarted">
         <div v-if="quizHistory!==null">
           <v-container>
@@ -74,10 +79,12 @@
 <script>
 import { DateTime } from 'luxon';
 import QuizComponent from './components/QuizComponent.vue';
+import LoginComponent from './components/LoginComponent.vue';
 import ResultComponent from './components/ResultComponent.vue';
 import QuestionService from './QuestionService';
 import ResultService from './ResultService';
 import QuizService from './QuizService';
+import UserService from './UserService';
 
 export default {
   name: 'App',
@@ -85,6 +92,7 @@ export default {
   components: {
     QuizComponent,
     ResultComponent,
+    LoginComponent,
   },
   data: () => ({
     quizStarted: false,
@@ -93,13 +101,18 @@ export default {
     quizAnswers: [],
     quizGraded: false,
     quizHistory: null,
+    loggedIn: false,
   }),
   async beforeMount() {
-    const rawResponse = (await QuizService.getQuizHistory()).data;
-    if (rawResponse !== 'No History!') {
-      this.quizHistory = rawResponse.reverse();
-      console.log(this.quizHistory);
-      console.log(this.quizHistory[0].timeStamp.toString());
+    const userStatus = (await UserService.getUserStatus()).data;
+    if (userStatus === 'Logged In!') {
+      this.loggedIn = true;
+    }
+    if (this.loggedIn) {
+      const rawResponse = (await QuizService.getQuizHistory()).data;
+      if (rawResponse !== 'No History!') {
+        this.quizHistory = rawResponse.reverse();
+      }
     }
   },
   methods: {
