@@ -28,9 +28,8 @@ router.post('/', async (req, res, next) => {
     if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
       throw new UserException('Invalid User Information Type!');
     }
-    const usersWithSameEmail = await usersCollection.find({ email: req.body.data.email })
-      .toArray();
-    if ((await usersWithSameEmail).length !== 0) {
+    const userWithSameEmail = await usersCollection.findOne({ email: req.body.data.email });
+    if (await userWithSameEmail !== undefined) {
       res.send('Email Already Exists!');
     } else {
       await usersCollection.insertOne(
@@ -56,12 +55,12 @@ router.post('/login', async (req, res, next) => {
     }
     let success = null;
     const usersCollection = await dbService.loadCollection('users');
-    const userInformation = await usersCollection.find({ email: req.body.data.email }).toArray();
-    if (userInformation.length === 0) {
+    const userInformation = await usersCollection.findOne({ email: req.body.data.email });
+    if (userInformation === undefined) {
       success = false;
     } else {
-      const saltedPassword = getSaltedPassword(req.body.data.password, userInformation[0].salt);
-      if (saltedPassword === userInformation[0].password) {
+      const saltedPassword = getSaltedPassword(req.body.data.password, userInformation.salt);
+      if (saltedPassword === userInformation.password) {
         success = true;
       } else {
         success = false;

@@ -31,6 +31,7 @@ router.post('/', async (req, res, next) => {
       res.send('Not Logged In!');
       return;
     }
+
     const answersCollection = await dbService.loadCollection('answers');
     const questionsCollection = await dbService.loadCollection('questions');
     const questionsArray = [];
@@ -46,45 +47,42 @@ router.post('/', async (req, res, next) => {
       }
 
       const questionUuid = current.uuid;
-      const correctAnswers = await answersCollection.find({ uuid: questionUuid }).toArray();
-      const questions = await questionsCollection.find({ uuid: questionUuid }).toArray();
+      const correctAnswer = await answersCollection.findOne({ uuid: questionUuid });
+      const question = await questionsCollection.findOne({ uuid: questionUuid });
 
-      if (correctAnswers.length < 1 || questions.length < 1) {
+      if (correctAnswer === undefined || question === undefined) {
         throw new UserException('Invalid UUID!');
-      }
-      if (correctAnswers.length > 1 || questions.length > 1) {
-        throw new Error('Duplicated UUID!');
       }
 
       // Grade single choice and short response questions
-      if (questions[0].type === 'single choice' || questions[0].type === 'short response') {
-        questionsArray.push(questions[0]);
+      if (question.type === 'single choice' || question.type === 'short response') {
+        questionsArray.push(question);
         if (typeof current.answer !== 'string') {
           throw new UserException('Incorrect Answer Type!');
         }
-        totalPoints += questions[0].points;
+        totalPoints += question.points;
         // Gain full points only if user's input match exactly with correct answer
-        if (correctAnswers[0].answer === current.answer) {
+        if (correctAnswer.answer === current.answer) {
           resultsArray.push(new QuestionResultConstructor(
-            current.answer, correctAnswers[0].answer, questions[0].points,
-            questionUuid, questions[0].points,
+            current.answer, correctAnswer.answer, question.points,
+            questionUuid, question.points,
           ));
-          return (await accumulator) + questions[0].points;
+          return (await accumulator) + question.points;
         }
         resultsArray.push(new QuestionResultConstructor(
-          current.answer, correctAnswers[0].answer, 0, questionUuid, questions[0].points,
+          current.answer, correctAnswer.answer, 0, questionUuid, question.points,
         ));
         return accumulator;
       }
 
       // Grade multiple choice questions
-      if (questions[0].type === 'multiple choice') {
-        questionsArray.push(questions[0]);
-        const answersSet = new Set(correctAnswers[0].answer);
+      if (question.type === 'multiple choice') {
+        questionsArray.push(question);
+        const answersSet = new Set(correctAnswer.answer);
         if (!Array.isArray(current.answer)) {
           throw new UserException('Incorrect Answer Type!');
         }
-        totalPoints += questions[0].points;
+        totalPoints += question.points;
         // Points are proportional to how many correction opions are chosen.
         // Additionally, user get 0 for the entire question if incorrect options are chosen.
         const correctCount = current.answer.reduce((countAccumulator, currentOption) => {
@@ -95,62 +93,65 @@ router.post('/', async (req, res, next) => {
         }, 0);
         if (correctCount < 0) {
           resultsArray.push(new QuestionResultConstructor(
-            current.answer, correctAnswers[0].answer, 0, questionUuid, questions[0].points,
+            current.answer, correctAnswer.answer, 0, questionUuid, question.points,
           ));
           return accumulator;
         }
         resultsArray.push(new QuestionResultConstructor(
-          current.answer, correctAnswers[0].answer,
-          questions[0].points * (correctCount / answersSet.size),
-          questionUuid, questions[0].points,
+          current.answer, correctAnswer.answer,
+          question.points * (correctCount / answersSet.size),
+          questionUuid, question.points,
         ));
-        return (await accumulator) + questions[0].points * (correctCount / answersSet.size);
+        return (await accumulator) + question.points * (correctCount / answersSet.size);
       }
 
-      if (questions[0].type === 'matching') {
+      if (question.type === 'matching') {
         if (!Array.isArray(current.answer)) {
           throw new UserException('Incorrect Answer Type!');
         }
-        totalPoints += questions[0].points;
-        questionsArray.push(questions[0]);
+        totalPoints += question.points;
+        questionsArray.push(question);
         const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, index) => {
-          if (currentRightCol === correctAnswers[0].answer[index]) {
+          if (currentRightCol === correctAnswer.answer[index]) {
             return countAccumulator + 1;
           }
           return countAccumulator;
         }, 0);
         resultsArray.push(new QuestionResultConstructor(
-          current.answer, correctAnswers[0].answer,
-          questions[0].points * (correctMatch / correctAnswers[0].answer.length),
-          questionUuid, questions[0].points,
+          current.answer, correctAnswer.answer,
+          question.points * (correctMatch / correctAnswer.answer.length),
+          questionUuid, question.points,
         ));
         return (await accumulator)
-        + questions[0].points * (correctMatch / correctAnswers[0].answer.length);
+        + question.points * (correctMatch / correctAnswer.answer.length);
       }
 
-      if (questions[0].type === 'fill in the blanks') {
+      if (question.type === 'fill in the blanks') {
         if (!Array.isArray(current.answer)) {
           throw new UserException('Incorrect Answer Type!');
         }
-        totalPoints += questions[0].points;
-        questionsArray.push(questions[0]);
+        totalPoints += question.points;
+        questionsArray.push(question);
         const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, index) => {
-          if (currentRightCol === correctAnswers[0].answer[index]) {
+          if (currentRightCol === correctAnswer.answer[index]) {
             return countAccumulator + 1;
           }
           return countAccumulator;
         }, 0);
         resultsArray.push(new QuestionResultConstructor(
-          current.answer, correctAnswers[0].answer,
-          questions[0].points * (correctMatch / correctAnswers[0].answer.length),
-          questionUuid, questions[0].points,
+          current.answer, correctAnswer.answer,
+          question.points * (correctMatch / correctAnswer.answer.length),
+          questionUuid, question.points,
         ));
         return (await accumulator)
-        + questions[0].points * (correctMatch / correctAnswers[0].answer.length);
+        + question.points * (correctMatch / correctAnswer.answer.length);
       }
 
       return accumulator;
     }, Promise.resolve(0));
+
+    const historyCollection = await dbService.loadCollection('history');
+    const userHistory = await historyCollection.findOne({ email: req.session.email });
     const quizResult = new QuizResultConstructor(await score, questionsArray,
       resultsArray, totalPoints);
     if (req.session.history === undefined) {
