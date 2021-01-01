@@ -17,8 +17,11 @@ app.use(cors({
 }));
 app.use(session({
   secret: 'ef41b182f3883634f166e1aa3595339923635e76',
+  resave: false,
+  saveUninitialized: false,
   cookie: {
     secure: false,
+    maxAge: -1,
   },
 }));
 
@@ -37,6 +40,10 @@ app.use('/api/grading', grading);
 const quiz = require('./routes/api/quiz');
 
 app.use('/api/quiz', quiz);
+
+const users = require('./routes/api/users');
+
+app.use('/api/users', users);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server started on port ${port}`));
