@@ -5,8 +5,38 @@
     </v-app-bar>
     <v-main>
       <div v-if="!quizStarted">
-        <v-container class="text-center">
-          Welcome to a five-question quiz
+        <div v-if="quizHistory!==null">
+          <v-container>
+            <h3 class="text-center">
+              Previous Attempts
+            </h3>
+          </v-container>
+          <v-container>
+            <v-expansion-panels>
+              <v-expansion-panel
+                v-for="(record, index) in quizHistory"
+                :key="'r'+index+record"
+              >
+                <v-expansion-panel-header>
+                  <div>
+                    <b>{{ toLocalTime(record) }} </b>
+                    {{ record.score.toFixed(2) }} out of {{ record.totalPoints }}
+                  </div>
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <ResultComponent
+                    :quiz-result="record"
+                    :view-only="true"
+                  />
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-container>
+        </div>
+        <v-container>
+          <h3 class="text-center">
+            New Attempt
+          </h3>
         </v-container>
         <v-container
           class="text-center"
@@ -26,7 +56,7 @@
       <div v-if="quizGraded">
         <ResultComponent
           :quiz-result="quizResult"
-          :total-points="quizTotalPoints"
+          :view-only="false"
         />
       </div>
     </v-main>
@@ -42,10 +72,12 @@
 </template>
 
 <script>
+import { DateTime } from 'luxon';
 import QuizComponent from './components/QuizComponent.vue';
 import ResultComponent from './components/ResultComponent.vue';
 import QuestionService from './QuestionService';
 import ResultService from './ResultService';
+import QuizService from './QuizService';
 
 export default {
   name: 'App',
@@ -60,13 +92,19 @@ export default {
     quizResult: {},
     quizAnswers: [],
     quizGraded: false,
-    quizTotalPoints: 0,
+    quizHistory: null,
   }),
+  async beforeMount() {
+    const rawResponse = (await QuizService.getQuizHistory()).data;
+    if (rawResponse !== 'No History!') {
+      this.quizHistory = rawResponse.reverse();
+      console.log(this.quizHistory);
+      console.log(this.quizHistory[0].timeStamp.toString());
+    }
+  },
   methods: {
     async startQuiz() {
       this.quizData = (await QuestionService.getQuestions(5)).data;
-      this.quizTotalPoints = this.quizData
-        .reduce((accumulator, current) => accumulator + current.points, 0);
       this.quizStarted = true;
     },
     async gradeQuiz() {
@@ -78,6 +116,9 @@ export default {
         processedAnswers,
       )).data;
       this.quizGraded = true;
+    },
+    toLocalTime(record) {
+      return DateTime.fromISO(record.timeStamp).setZone('America/Los_Angeles').toLocaleString(DateTime.DATETIME_MED);
     },
   },
 };

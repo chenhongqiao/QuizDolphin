@@ -3,7 +3,7 @@
     <v-container>
       <h2> Quiz result </h2>
       <div>
-        You got {{ quizResult.score.toFixed(2) }} out of {{ totalPoints }}
+        You got {{ quizResult.score.toFixed(2) }} out of {{ quizResult.totalPoints }}
       </div>
       <v-container
         v-for="currentQuestion in quizResult.questions.length"
@@ -263,7 +263,7 @@
         </v-card>
       </v-container>
     </v-container>
-    <v-container>
+    <v-container v-if="!viewOnly">
       <v-row>
         <v-spacer />
         <v-col md="2">
@@ -271,6 +271,7 @@
             Reset Quiz
           </v-btn>
         </v-col>
+        <v-spacer />
       </v-row>
     </v-container>
   </div>
@@ -283,6 +284,7 @@ export default {
   props: {
     quizResult: { type: Object, default: null },
     totalPoints: { type: Number, default: 0 },
+    viewOnly: { type: Boolean, default: true },
   },
   data: () => ({
 
