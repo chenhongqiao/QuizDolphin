@@ -47,7 +47,7 @@ router.get('/', async (req, res, next) => {
     const userQuestions = [];
     const existedIndexs = new Set();
 
-    if (req.query.count === undefined || req.query.count > allQuestionCount) {
+    if (!req.query.count || req.query.count > allQuestionCount) {
       throw new UserException('Invalid Question Count!');
     }
 

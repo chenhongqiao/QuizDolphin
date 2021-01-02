@@ -110,7 +110,7 @@
             >
               {{ context }}
               <v-select
-                v-if="quizData[currentQuestion-1].options[index]!==undefined"
+                v-if="quizData[currentQuestion-1].options[index]"
                 v-model="quizAttempts[currentQuestion-1][index]"
                 class="d-inline-flex"
                 :items="quizData[currentQuestion-1].options[index]"

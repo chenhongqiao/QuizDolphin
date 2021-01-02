@@ -22,7 +22,7 @@ function QuestionResultConstructor(userAnswer, correctAnswer, score, uuid, point
 
 function HistoryRecordConstructor(email, oldhistory, newrecord) {
   this.email = email;
-  if (oldhistory !== null) {
+  if (oldhistory) {
     this.history = oldhistory.history;
   } else {
     this.history = [];
@@ -47,12 +47,12 @@ router.post('/', async (req, res, next) => {
     const questionsArray = [];
     const resultsArray = [];
 
-    if (req.body.data === undefined || !Array.isArray(req.body.data)) {
+    if (!req.body.data || !Array.isArray(req.body.data)) {
       throw new UserException('Invalid Answers Array!');
     }
     let totalPoints = 0;
     const score = req.body.data.reduce(async (accumulator, current) => {
-      if (current.uuid === undefined || current.answer === undefined) {
+      if (!current.uuid || !current.answer) {
         throw new UserException('Missing Answer Property!');
       }
 
@@ -60,7 +60,7 @@ router.post('/', async (req, res, next) => {
       const correctAnswer = await answersCollection.findOne({ uuid: questionUuid });
       const question = await questionsCollection.findOne({ uuid: questionUuid });
 
-      if (correctAnswer === undefined || question === undefined) {
+      if (!correctAnswer || !question) {
         throw new UserException('Invalid UUID!');
       }
 
@@ -164,7 +164,7 @@ router.post('/', async (req, res, next) => {
       resultsArray, totalPoints);
     const historyCollection = await dbService.loadCollection('history');
 
-    if (req.session.email === undefined) {
+    if (!req.session.email) {
       throw new Error('No User Email!');
     }
 

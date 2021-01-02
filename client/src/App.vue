@@ -47,7 +47,7 @@
         />
       </div>
       <div v-if="!quizStarted">
-        <div v-if="quizHistory!==null">
+        <div v-if="quizHistory">
           <v-container>
             <h3 class="text-center">
               Previous Attempts

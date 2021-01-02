@@ -232,7 +232,7 @@
                 >
                   {{ context }}
                   <v-select
-                    v-if="quizResult.questions[currentQuestion-1].options[index]!==undefined"
+                    v-if="quizResult.questions[currentQuestion-1].options[index]"
                     :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
                     readonly
                     class="d-inline-flex"
@@ -246,7 +246,7 @@
                 >
                   {{ context }}
                   <v-select
-                    v-if="quizResult.questions[currentQuestion-1].options[index]!==undefined"
+                    v-if="quizResult.questions[currentQuestion-1].options[index]"
                     :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
                     readonly
                     class="d-inline-flex"
