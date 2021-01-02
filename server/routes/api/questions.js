@@ -1,9 +1,7 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const { promisify } = require('util');
 const validation = require('../../modules/dataValidation');
 const dbService = require('../../modules/dbService');
-const redisService = require('../../modules/redisService');
 
 const router = express.Router();
 
@@ -24,6 +22,11 @@ function QuestionConstructor(question, uuid) {
 function AnswerConstructor(question, uuid) {
   this.uuid = uuid;
   this.answer = question.answer;
+}
+
+function OnGoingConstructor(email, questions) {
+  this.email = email;
+  this.question = questions;
 }
 
 function UserException(message) {
@@ -59,13 +62,12 @@ router.get('/', async (req, res, next) => {
       }
     }
 
-    const redis = redisService.loadDatabase(0);
-    const redisSet = promisify(redis.set).bind(redis);
-    const redisGet = promisify(redis.get).bind(redis);
-    if ((await redisGet(req.session.email))) {
+    const onGoingCollection = await dbService.loadCollection('ongoing');
+    if (await onGoingCollection.findOne({ email: req.session.email })) {
       throw new UserException('Unfinished Quiz Detected!');
     }
-    await redisSet(req.session.email, JSON.stringify(userQuestions));
+    await onGoingCollection.insertOne(new OnGoingConstructor(req.session.email, userQuestions));
+
     res.send(userQuestions);
   } catch (err) {
     if (typeof err === 'object') {
