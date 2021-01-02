@@ -23,6 +23,15 @@ class UserService {
         .catch((err) => reject(err));
     });
   }
+
+  static logout() {
+    return new Promise((resolve, reject) => {
+      axios.post(`${url}logout`, {
+        withCredentials: true,
+      }).then((data) => resolve(data))
+        .catch((err) => reject(err));
+    });
+  }
 }
 
 export default UserService;

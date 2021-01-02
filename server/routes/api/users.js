@@ -92,6 +92,7 @@ router.post('/logout', (req, res, next) => {
   try {
     if (req.session.loggedin === true) {
       req.session.loggedin = false;
+      req.session.email = '';
       res.send('Success!');
     } else {
       res.send('Not Logged In!');
