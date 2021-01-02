@@ -1,7 +1,9 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
+const { promisify } = require('util');
 const validation = require('../../modules/dataValidation');
 const dbService = require('../../modules/dbService');
+const redisService = require('../../modules/redisService');
 
 const router = express.Router();
 
@@ -56,6 +58,14 @@ router.get('/', async (req, res, next) => {
         existedIndexs.add(index);
       }
     }
+
+    const redis = redisService.loadDatabase(0);
+    const redisSet = promisify(redis.set).bind(redis);
+    const redisGet = promisify(redis.get).bind(redis);
+    if ((await redisGet(req.session.email))) {
+      throw new UserException('Unfinished Quiz Detected!');
+    }
+    await redisSet(req.session.email, JSON.stringify(userQuestions));
     res.send(userQuestions);
   } catch (err) {
     if (typeof err === 'object') {
