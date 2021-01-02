@@ -247,7 +247,7 @@ export default {
           .indexOf(this.quizAttempts[this.currentQuestion - 1][index], index + 1);
       }
       if (targetIndex !== -1) {
-        this.quizAttempts[this.currentQuestion - 1][targetIndex] = undefined;
+        this.quizAttempts[this.currentQuestion - 1][targetIndex] = null;
       }
     },
   },
