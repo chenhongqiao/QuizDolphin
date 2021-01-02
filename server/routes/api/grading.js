@@ -44,19 +44,19 @@ router.post('/', async (req, res, next) => {
 
     const answersCollection = await dbService.loadCollection('answers');
     const questionsCollection = await dbService.loadCollection('questions');
-    const questionsArray = [];
+    const onGoingCollection = await dbService.loadCollection('ongoing');
+    const questionsArray = (await onGoingCollection.findOne({ email: req.session.email })).question;
     const resultsArray = [];
-
     if (!req.body.data || !Array.isArray(req.body.data)) {
       throw new UserException('Invalid Answers Array!');
     }
     let totalPoints = 0;
-    const score = req.body.data.reduce(async (accumulator, current) => {
-      if (!current.uuid || !current.answer) {
+    const score = req.body.data.reduce(async (accumulator, current, index) => {
+      if (!current.answer) {
         throw new UserException('Missing Answer Property!');
       }
 
-      const questionUuid = current.uuid;
+      const questionUuid = questionsArray[index].uuid;
       const correctAnswer = await answersCollection.findOne({ uuid: questionUuid });
       const question = await questionsCollection.findOne({ uuid: questionUuid });
 
@@ -66,7 +66,6 @@ router.post('/', async (req, res, next) => {
 
       // Grade single choice and short response questions
       if (question.type === 'single choice' || question.type === 'short response') {
-        questionsArray.push(question);
         if (typeof current.answer !== 'string') {
           throw new UserException('Incorrect Answer Type!');
         }
@@ -87,7 +86,6 @@ router.post('/', async (req, res, next) => {
 
       // Grade multiple choice questions
       if (question.type === 'multiple choice') {
-        questionsArray.push(question);
         const answersSet = new Set(correctAnswer.answer);
         if (!Array.isArray(current.answer)) {
           throw new UserException('Incorrect Answer Type!');
@@ -120,7 +118,6 @@ router.post('/', async (req, res, next) => {
           throw new UserException('Incorrect Answer Type!');
         }
         totalPoints += question.points;
-        questionsArray.push(question);
         const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, index) => {
           if (currentRightCol === correctAnswer.answer[index]) {
             return countAccumulator + 1;
@@ -141,7 +138,6 @@ router.post('/', async (req, res, next) => {
           throw new UserException('Incorrect Answer Type!');
         }
         totalPoints += question.points;
-        questionsArray.push(question);
         const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, index) => {
           if (currentRightCol === correctAnswer.answer[index]) {
             return countAccumulator + 1;
@@ -171,6 +167,7 @@ router.post('/', async (req, res, next) => {
     const oldHistory = await historyCollection.findOne({ email: req.session.email });
     const newHistory = new HistoryRecordConstructor(req.session.email, oldHistory, quizResult);
     await historyCollection.replaceOne({ email: req.session.email }, newHistory, { upsert: true });
+    await onGoingCollection.deleteOne({ email: req.session.email });
     res.send(quizResult);
   } catch (err) {
     if (err.type === 'UserException') {
