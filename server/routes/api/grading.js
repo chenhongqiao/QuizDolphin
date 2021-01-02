@@ -116,8 +116,8 @@ router.post('/', async (req, res, next) => {
           throw new UserException('Incorrect Answer Type!');
         }
         totalPoints += question.points;
-        const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, index) => {
-          if (currentRightCol === correctAnswer.answer[index]) {
+        const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, cindex) => {
+          if (currentRightCol === correctAnswer.answer[cindex]) {
             return countAccumulator + 1;
           }
           return countAccumulator;
@@ -136,8 +136,8 @@ router.post('/', async (req, res, next) => {
           throw new UserException('Incorrect Answer Type!');
         }
         totalPoints += question.points;
-        const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, index) => {
-          if (currentRightCol === correctAnswer.answer[index]) {
+        const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, cindex) => {
+          if (currentRightCol === correctAnswer.answer[cindex]) {
             return countAccumulator + 1;
           }
           return countAccumulator;
