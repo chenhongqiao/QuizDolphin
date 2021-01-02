@@ -1,6 +1,8 @@
 const express = require('express');
 const { DateTime } = require('luxon');
+const { promisify } = require('util');
 const dbService = require('../../modules/dbService');
+const redisService = require('../../modules/redisService');
 
 const router = express.Router();
 
@@ -52,10 +54,6 @@ router.post('/', async (req, res, next) => {
     }
     let totalPoints = 0;
     const score = req.body.data.reduce(async (accumulator, current, index) => {
-      if (!current.answer) {
-        throw new UserException('Missing Answer Property!');
-      }
-
       const questionUuid = questionsArray[index].uuid;
       const correctAnswer = await answersCollection.findOne({ uuid: questionUuid });
       const question = await questionsCollection.findOne({ uuid: questionUuid });
@@ -168,6 +166,9 @@ router.post('/', async (req, res, next) => {
     const newHistory = new HistoryRecordConstructor(req.session.email, oldHistory, quizResult);
     await historyCollection.replaceOne({ email: req.session.email }, newHistory, { upsert: true });
     await onGoingCollection.deleteOne({ email: req.session.email });
+    const redis = redisService.loadDatabase(0);
+    const redisDelete = promisify(redis.del).bind(redis);
+    await redisDelete(req.session.email);
     res.send(quizResult);
   } catch (err) {
     if (err.type === 'UserException') {
