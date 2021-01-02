@@ -92,6 +92,7 @@
         <QuizComponent
           :quiz-data="quizData"
           :quiz-answers.sync="quizAnswers"
+          :current-index.sync="currentIndex"
           @quizDone="gradeQuiz"
         />
       </div>
@@ -139,7 +140,23 @@ export default {
     quizGraded: false,
     quizHistory: null,
     loggedIn: false,
+    currentIndex: 1,
+    progressVersion: 1,
   }),
+  watch: {
+    quizAnswers: {
+      handler() {
+        this.progressVersion += 1;
+        this.postProgress();
+      },
+    },
+    currentIndex: {
+      handler() {
+        this.progressVersion += 1;
+        this.postProgress();
+      },
+    },
+  },
   async beforeMount() {
     const userStatus = (await UserService.getUserStatus()).data;
     if (userStatus === 'Logged In!') {
@@ -149,10 +166,27 @@ export default {
   },
   methods: {
     async startQuiz() {
-      this.quizData = (await QuestionService.getQuestions(5)).data;
       if (this.quizData === 'Not Logged In!') {
         this.loggedIn = false;
       } else {
+        const previous = (await QuizService.getOngoing()).data;
+        if (!previous.question) {
+          this.quizData = (await QuestionService.getQuestions(5)).data;
+          this.quizData.forEach((question) => {
+            if (question.type === 'single choice' || question.type === 'short response') {
+              this.quizAnswers.push('');
+            } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
+              this.quizAnswers.push([]);
+            }
+          });
+          this.postProgress();
+        } else {
+          this.quizData = previous.question;
+          const rawResponse = (await QuizService.getProgress()).data;
+          this.quizAnswers = rawResponse.attempt;
+          this.currentIndex = rawResponse.index;
+          this.progressVersion = rawResponse.version;
+        }
         this.quizStarted = true;
       }
     },
@@ -161,6 +195,7 @@ export default {
         uuid: this.quizData[index].uuid,
         answer: value,
       }));
+      console.log(processedAnswers);
       this.quizResult = (await ResultService.gradeQuiz(
         processedAnswers,
       )).data;
@@ -183,6 +218,14 @@ export default {
       if (rawResponse === 'Success!' || rawResponse === 'Not Logged In!') {
         this.quizHistory = null;
         this.loggedIn = false;
+      }
+    },
+    async postProgress() {
+      const rawResponse = (await QuizService.postProgress(
+        { version: this.progressVersion, index: this.currentIndex, attempt: this.quizAnswers },
+      )).data;
+      if (rawResponse !== 'Success!') {
+        console.log('Version Too Old!');
       }
     },
     toLocalTime(record) {

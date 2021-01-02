@@ -186,6 +186,7 @@ export default {
   props: {
     quizData: { type: Array, default: null },
     quizAnswers: { type: Array, default: null },
+    currentIndex: { type: Number, default: 1 },
   },
   data: () => ({
     currentQuestion: 1,
@@ -213,19 +214,26 @@ export default {
       return attempted;
     },
   },
+  watch: {
+    quizAttempts: {
+      deep: true,
+      handler() {
+        this.$emit('update:quizAnswers', this.quizAttempts);
+      },
+    },
+    currentQuestion: {
+      handler() {
+        this.$emit('update:currentIndex', this.currentQuestion);
+      },
+    },
+  },
   beforeMount() {
-    this.quizData.forEach((question) => {
-      if (question.type === 'single choice' || question.type === 'short response') {
-        this.quizAttempts.push('');
-      } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
-        this.quizAttempts.push([]);
-      }
-    });
+    this.currentQuestion = this.currentIndex;
+    this.quizAttempts = [...this.quizAnswers];
   },
   methods: {
     nextQuestion() {
       this.currentQuestion += 1;
-      this.$emit('update:quizAnswers', this.quizAttempts);
     },
     submitQuiz() {
       this.$emit('update:quizAnswers', this.quizAttempts);
