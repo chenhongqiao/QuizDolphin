@@ -40,6 +40,16 @@
       </v-menu>
     </v-app-bar>
     <v-main>
+      <v-alert
+        v-model="hasError"
+        dismissible
+        type="error"
+      >
+        <div>{{ errorMessage }}</div>
+        <div v-if="errorMessage.response">
+          {{ errorMessage.response.data }}
+        </div>
+      </v-alert>
       <div v-if="!loggedIn">
         <LoginComponent
           :logged-in.sync="loggedIn"
@@ -142,6 +152,8 @@ export default {
     loggedIn: false,
     currentIndex: 1,
     progressVersion: 1,
+    hasError: false,
+    errorMessage: '',
   }),
   watch: {
     quizAnswers: {
@@ -164,6 +176,10 @@ export default {
       this.getHistory();
     }
   },
+  errorCaptured(err) {
+    this.errorMessage = err;
+    this.hasError = true;
+  },
   methods: {
     async startQuiz() {
       if (this.quizData === 'Not Logged In!') {
@@ -172,11 +188,11 @@ export default {
         const previous = (await QuizService.getOngoing()).data;
         if (!previous.question) {
           this.quizData = (await QuestionService.getQuestions(5)).data;
-          this.quizData.forEach((question) => {
+          this.quizData.forEach((question, index) => {
             if (question.type === 'single choice' || question.type === 'short response') {
-              this.quizAnswers.push('');
+              this.quizAnswers[index] = '';
             } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
-              this.quizAnswers.push([]);
+              this.quizAnswers[index] = [];
             }
           });
           this.postProgress();
@@ -184,6 +200,16 @@ export default {
           this.quizData = previous.question;
           const rawResponse = (await QuizService.getProgress()).data;
           this.quizAnswers = rawResponse.attempt;
+          if (!this.quizAnswers) {
+            this.quizData.forEach((question, index) => {
+              if (question.type === 'single choice' || question.type === 'short response') {
+                this.quizAnswers[index] = '';
+              } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
+                this.quizAnswers[index] = [];
+              }
+            });
+            this.postProgress();
+          }
           this.currentIndex = rawResponse.index;
           this.progressVersion = rawResponse.version;
         }
@@ -195,7 +221,6 @@ export default {
         uuid: this.quizData[index].uuid,
         answer: value,
       }));
-      console.log(processedAnswers);
       this.quizResult = (await ResultService.gradeQuiz(
         processedAnswers,
       )).data;
