@@ -1,7 +1,43 @@
 <template>
   <v-app>
-    <v-app-bar app>
+    <v-app-bar
+      app
+      dense
+    >
       <v-toolbar-title>Quiz System</v-toolbar-title>
+      <v-spacer />
+      <v-menu
+        v-if="loggedIn"
+        offset-y
+      >
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            v-on="on"
+          >
+            <v-avatar
+              color="primary"
+              size="36"
+            >
+              <v-icon dark>
+                mdi-account-circle
+              </v-icon>
+            </v-avatar>
+          </v-btn>
+        </template>
+        <v-card>
+          <v-list-item-content class="justify-center">
+            <v-btn
+              rounded
+              text
+              depressed
+              @click="logout()"
+            >
+              Logout
+            </v-btn>
+          </v-list-item-content>
+        </v-card>
+      </v-menu>
     </v-app-bar>
     <v-main>
       <div v-if="!loggedIn">
@@ -140,6 +176,13 @@ export default {
         this.loggedIn = false;
       } else if (rawResponse !== 'No History!') {
         this.quizHistory = rawResponse.reverse();
+      }
+    },
+    async logout() {
+      const rawResponse = (await UserService.logout()).data;
+      if (rawResponse === 'Success!' || rawResponse === 'Not Logged In!') {
+        this.quizHistory = null;
+        this.loggedIn = false;
       }
     },
     toLocalTime(record) {
