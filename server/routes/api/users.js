@@ -29,7 +29,7 @@ router.post('/new', async (req, res, next) => {
       throw new UserException('Invalid User Information Type!');
     }
     const userWithSameEmail = await usersCollection.findOne({ email: req.body.data.email });
-    if (await userWithSameEmail !== undefined) {
+    if (await userWithSameEmail) {
       res.send('Email Already Exists!');
     } else {
       await usersCollection.insertOne(
@@ -56,7 +56,7 @@ router.post('/login', async (req, res, next) => {
     let success = null;
     const usersCollection = await dbService.loadCollection('users');
     const userInformation = await usersCollection.findOne({ email: req.body.data.email });
-    if (userInformation === undefined) {
+    if (!userInformation) {
       success = false;
     } else {
       const saltedPassword = getSaltedPassword(req.body.data.password, userInformation.salt);

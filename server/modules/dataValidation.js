@@ -4,11 +4,11 @@ function UserException(message) {
 }
 
 function validateQuestion(question) {
-  if (question.context === undefined || question.type === undefined
-    || question.points === undefined || question.answer === undefined) {
+  if (!question.context || !question.type
+    || !question.points || !question.answer) {
     throw new UserException('Missing Question Property!');
   }
-  if (question.uuid !== undefined) {
+  if (question.uuid) {
     throw new UserException('Request Should Not Specify UUID!');
   }
   if (question.type !== 'single choice' && question.type !== 'multiple choice' && question.type !== 'short response'
