@@ -5,9 +5,17 @@
       dense
     >
       <v-toolbar-title>Quiz System</v-toolbar-title>
+      <v-container>
+        <v-btn
+          text
+          @click="toQuizPage()"
+        >
+          Quiz
+        </v-btn>
+      </v-container>
       <v-spacer />
       <v-menu
-        v-if="loggedIn"
+        v-if="getLoginStatus()"
         offset-y
       >
         <template #activator="{ on }">
@@ -50,15 +58,7 @@
           {{ errorMessage.response.data }}
         </div>
       </v-alert>
-      <div v-if="!loggedIn">
-        <LoginComponent
-          :logged-in.sync="loggedIn"
-          @authDone="refresh()"
-        />
-      </div>
-      <div>
-        <QuizDashComponent @notLoggedIn="loggedIn=false" />
-      </div>
+      <router-view />
     </v-main>
     <v-footer>
       <v-col
@@ -72,26 +72,21 @@
 </template>
 
 <script>
-import LoginComponent from './components/LoginComponent.vue';
-import QuizDashComponent from './components/QuizDashComponent.vue';
 import UserService from './UserService';
 
 export default {
   name: 'App',
 
-  components: {
-    LoginComponent,
-    QuizDashComponent,
-  },
   data: () => ({
-    loggedIn: false,
     hasError: false,
     errorMessage: '',
   }),
   async beforeMount() {
     const userStatus = (await UserService.getUserStatus()).data;
     if (userStatus === 'Logged In!') {
-      this.loggedIn = true;
+      sessionStorage.loggedIn = true;
+    } else {
+      this.$router.push('/login');
     }
   },
   errorCaptured(err) {
@@ -103,11 +98,18 @@ export default {
       const rawResponse = (await UserService.logout()).data;
       if (rawResponse === 'Success!' || rawResponse === 'Not Logged In!') {
         this.quizHistory = null;
-        this.loggedIn = false;
+        sessionStorage.loggedIn = false;
+        this.$router.push('/login');
       }
     },
     refresh() {
       window.location.reload();
+    },
+    getLoginStatus() {
+      return sessionStorage.loggedIn;
+    },
+    toQuizPage() {
+      this.$router.push('/quiz');
     },
   },
 };
