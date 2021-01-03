@@ -109,12 +109,23 @@ router.post('/ongoing', async (req, res, next) => {
   }
 });
 
-router.post('/new', async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   try {
     const quizCollection = await dbService.loadCollection('quiz');
     const quizId = await quizCollection.countDocuments() + 1;
     quizCollection.insertOne(new QuizConstructor(req.body.data.quizName, quizId));
     res.send('Sucess!');
+  } catch (err) {
+    res.status(500).send('Internal Error!');
+    next(err);
+  }
+});
+
+router.get('/', async (req, res, next) => {
+  try {
+    const quizCollection = await dbService.loadCollection('quiz');
+    const allQuiz = await quizCollection.find({}).toArray();
+    res.send(allQuiz);
   } catch (err) {
     res.status(500).send('Internal Error!');
     next(err);

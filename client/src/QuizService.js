@@ -44,6 +44,14 @@ class QuizService {
         .catch((err) => reject(err));
     });
   }
+
+  static getQuizList() {
+    return new Promise((resolve, reject) => {
+      axios.get(`${url}`)
+        .then((data) => resolve(data))
+        .catch((err) => reject(err));
+    });
+  }
 }
 
 export default QuizService;
