@@ -104,19 +104,21 @@
           </div>
 
           <div v-if="quizData[currentQuestion-1].type==='fill in the blanks'">
-            <span
-              v-for="(context, index) in quizData[currentQuestion-1].context"
-              :key="'qz'+quizData[currentQuestion-1].uuid+context"
-            >
-              {{ context }}
-              <v-select
-                v-if="quizData[currentQuestion-1].options[index]"
-                v-model="quizAttempts[currentQuestion-1][index]"
-                class="d-inline-flex"
-                :items="quizData[currentQuestion-1].options[index]"
-                dense
-              />
-            </span>
+            <v-container>
+              <span
+                v-for="(context, index) in quizData[currentQuestion-1].context"
+                :key="'qz'+quizData[currentQuestion-1].uuid+context"
+              >
+                {{ context }}
+                <v-select
+                  v-if="quizData[currentQuestion-1].options[index]"
+                  v-model="quizAttempts[currentQuestion-1][index]"
+                  class="d-inline-flex"
+                  :items="quizData[currentQuestion-1].options[index]"
+                  dense
+                />
+              </span>
+            </v-container>
           </div>
         </v-container>
       </v-card>
@@ -297,7 +299,7 @@ export default {
 </script>
 <style>
 .v-select.v-input input {
-  width: 80px;
+  width: 60px;
 }
 .v-select.v-input--is-dirty input {
   width: 4px;

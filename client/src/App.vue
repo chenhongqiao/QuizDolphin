@@ -4,7 +4,12 @@
       app
       dense
     >
-      <v-toolbar-title>Quiz System</v-toolbar-title>
+      <v-toolbar-title
+        style="cursor: pointer"
+        @click="goDashboard()"
+      >
+        Quiz System
+      </v-toolbar-title>
       <v-spacer />
       <v-menu
         v-if="getLoginStatus()"
@@ -103,6 +108,11 @@ export default {
     },
     refresh() {
       window.location.reload();
+    },
+    goDashboard() {
+      if (this.$route.path !== '/') {
+        this.$router.push('/');
+      }
     },
     getLoginStatus() {
       return this.$store.state.loggedIn;

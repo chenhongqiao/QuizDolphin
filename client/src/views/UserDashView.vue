@@ -3,9 +3,6 @@
     <v-container>
       <h2>Welcome back, {{ getUserName }}</h2>
     </v-container>
-    <v-container>
-      <h3>Quiz List</h3>
-    </v-container>
     <v-col>
       <v-container
         v-for="quiz in quizList"
