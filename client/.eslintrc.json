@@ -6,14 +6,15 @@
         "plugin:vue/recommended",
         "airbnb-base"
     ],
+    "parser": "vue-eslint-parser",
     "parserOptions": {
+        "parser": "babel-eslint",
         "ecmaVersion": 8,
         "sourceType": "module"
     },
     "plugins": [
-        "vue"
+        "import"
     ],
-    "rules": {
-    },
+    "rules": {},
     "root": true
 }
