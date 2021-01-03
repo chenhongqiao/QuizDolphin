@@ -85,7 +85,7 @@ export default {
     const userStatus = (await UserService.getUserStatus()).data;
     if (userStatus === 'Logged In!') {
       sessionStorage.loggedIn = true;
-    } else {
+    } else if (this.$route.path !== '/login') {
       this.$router.push('/login');
     }
   },
@@ -99,7 +99,9 @@ export default {
       if (rawResponse === 'Success!' || rawResponse === 'Not Logged In!') {
         this.quizHistory = null;
         sessionStorage.loggedIn = false;
-        this.$router.push('/login');
+        if (this.$route.path !== '/login') {
+          this.$router.push('/login');
+        }
       }
     },
     refresh() {
@@ -109,7 +111,9 @@ export default {
       return sessionStorage.loggedIn;
     },
     toQuizPage() {
-      this.$router.push('/quiz');
+      if (this.$route.path !== '/quiz') {
+        this.$router.push('/quiz');
+      }
     },
   },
 };
