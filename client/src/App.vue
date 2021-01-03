@@ -6,15 +6,10 @@
     >
       <v-toolbar-title>Quiz System</v-toolbar-title>
       <v-spacer />
-      <v-btn
-        text
-        @click="toQuizPage()"
-      >
-        Quiz
-      </v-btn>
       <v-menu
         v-if="getLoginStatus()"
         offset-y
+        min-width="200px"
       >
         <template #activator="{ on }">
           <v-btn
@@ -25,22 +20,27 @@
               color="primary"
               size="36"
             >
-              <v-icon dark>
-                mdi-account-circle
-              </v-icon>
+              <span class="white--text title">{{ getInitial() }}</span>
             </v-avatar>
           </v-btn>
         </template>
         <v-card>
           <v-list-item-content class="justify-center">
-            <v-btn
-              rounded
-              text
-              depressed
-              @click="logout()"
-            >
-              Logout
-            </v-btn>
+            <div class="mx-auto text-center">
+              <h3>{{ getName() }}</h3>
+              <div class="caption mt-1">
+                {{ getEmail() }}
+              </div>
+              <v-divider class="my-3" />
+              <v-btn
+                rounded
+                text
+                depressed
+                @click="logout()"
+              >
+                Logout
+              </v-btn>
+            </div>
           </v-list-item-content>
         </v-card>
       </v-menu>
@@ -80,9 +80,12 @@ export default {
     errorMessage: '',
   }),
   async beforeMount() {
-    const userStatus = (await UserService.getUserStatus()).data;
-    if (userStatus === 'Logged In!') {
+    const userInformation = (await UserService.getUserInformation()).data;
+    if (userInformation !== 'Not Logged In!') {
       sessionStorage.loggedIn = true;
+      sessionStorage.email = userInformation.email;
+      sessionStorage.name = userInformation.name;
+      sessionStorage.type = userInformation.type;
     } else if (this.$route.path !== '/login') {
       this.$router.push('/login');
     }
@@ -95,7 +98,6 @@ export default {
     async logout() {
       const rawResponse = (await UserService.logout()).data;
       if (rawResponse === 'Success!' || rawResponse === 'Not Logged In!') {
-        this.quizHistory = null;
         sessionStorage.loggedIn = false;
         if (this.$route.path !== '/login') {
           this.$router.push('/login');
@@ -112,6 +114,16 @@ export default {
       if (this.$route.path !== '/quiz') {
         this.$router.push('/quiz');
       }
+    },
+    getInitial() {
+      const initial = sessionStorage.name.split(' ').map((name) => name[0]).join('');
+      return initial;
+    },
+    getName() {
+      return sessionStorage.name;
+    },
+    getEmail() {
+      return sessionStorage.email;
     },
   },
 };
