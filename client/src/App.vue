@@ -5,15 +5,13 @@
       dense
     >
       <v-toolbar-title>Quiz System</v-toolbar-title>
-      <v-container>
-        <v-btn
-          text
-          @click="toQuizPage()"
-        >
-          Quiz
-        </v-btn>
-      </v-container>
       <v-spacer />
+      <v-btn
+        text
+        @click="toQuizPage()"
+      >
+        Quiz
+      </v-btn>
       <v-menu
         v-if="getLoginStatus()"
         offset-y

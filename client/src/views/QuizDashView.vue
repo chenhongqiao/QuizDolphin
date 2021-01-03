@@ -68,7 +68,7 @@ import ResultService from '../ResultService';
 import QuizService from '../QuizService';
 
 export default {
-  name: 'QuizDashComponent',
+  name: 'QuizDashView',
   components: {
     QuizComponent,
     ResultComponent,
@@ -82,6 +82,7 @@ export default {
     quizHistory: null,
     currentIndex: 1,
     progressVersion: 1,
+    quizId: 1,
   }),
   watch: {
     quizAnswers: {
@@ -98,6 +99,8 @@ export default {
     },
   },
   async beforeMount() {
+    console.log(this.$route.params.id);
+    this.quizId = this.$route.params.id;
     this.getHistory();
   },
   methods: {
@@ -106,9 +109,9 @@ export default {
         sessionStorage.loggedIn = false;
         this.$router.push('/login');
       } else {
-        const previous = (await QuizService.getOngoing()).data;
+        const previous = (await QuizService.getOngoing(this.quizId)).data;
         if (!previous.question) {
-          this.quizData = (await QuestionService.getQuestions(5)).data;
+          this.quizData = (await QuestionService.getQuestions(5, this.quizId)).data;
           this.quizData.forEach((question, index) => {
             if (question.type === 'single choice' || question.type === 'short response') {
               this.quizAnswers[index] = '';
@@ -116,10 +119,10 @@ export default {
               this.quizAnswers[index] = [];
             }
           });
-          this.postProgress();
+          this.postProgress(this.quizId);
         } else {
           this.quizData = previous.question;
-          const rawResponse = (await QuizService.getProgress()).data;
+          const rawResponse = (await QuizService.getProgress(this.quizId)).data;
           this.quizAnswers = rawResponse.attempt;
           if (!this.quizAnswers) {
             this.quizData.forEach((question, index) => {
@@ -129,7 +132,7 @@ export default {
                 this.quizAnswers[index] = [];
               }
             });
-            this.postProgress();
+            this.postProgress(this.quizId);
           }
           this.currentIndex = rawResponse.index;
           this.progressVersion = rawResponse.version;
@@ -144,6 +147,7 @@ export default {
       }));
       this.quizResult = (await ResultService.gradeQuiz(
         processedAnswers,
+        this.quizId,
       )).data;
       if (this.quizResult === 'Not Logged In!') {
         sessionStorage.loggedIn = false;
@@ -153,7 +157,7 @@ export default {
       }
     },
     async getHistory() {
-      const rawResponse = (await QuizService.getQuizHistory()).data;
+      const rawResponse = (await QuizService.getQuizHistory(this.quizId)).data;
       if (rawResponse === 'Not Logged In!') {
         sessionStorage.loggedIn = false;
         this.$router.push('/login');
@@ -164,6 +168,7 @@ export default {
     async postProgress() {
       const rawResponse = (await QuizService.postProgress(
         { version: this.progressVersion, index: this.currentIndex, attempt: this.quizAnswers },
+        this.quizId,
       )).data;
       if (rawResponse !== 'Success!') {
         console.log('Version Too Old!');

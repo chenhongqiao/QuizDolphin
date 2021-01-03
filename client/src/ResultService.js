@@ -5,9 +5,12 @@ axios.defaults.withCredentials = true;
 const url = 'http://localhost:5000/api/grading/';
 
 class ResultService {
-  static gradeQuiz(answers) {
+  static gradeQuiz(answers, quizId) {
     return new Promise((resolve, reject) => {
-      axios.post(`${url}`, { data: answers, withCredentials: true }).then((result) => resolve(result))
+      axios.post(`${url}`, {
+        data: { answers, quizId },
+        withCredentials: true,
+      }).then((result) => resolve(result))
         .catch((err) => reject(err));
     });
   }

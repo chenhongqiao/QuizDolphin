@@ -5,14 +5,14 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/quiz',
+    path: '/quiz/:id',
     name: 'Quiz',
-    component: () => import('../views/QuizDashComponent.vue'),
+    component: () => import('../views/QuizDashView.vue'),
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/LoginComponent.vue'),
+    component: () => import('../views/LoginView.vue'),
   },
 ];
 

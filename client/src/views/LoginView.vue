@@ -52,7 +52,7 @@
 import UserService from '../UserService';
 
 export default {
-  name: 'LoginComponent',
+  name: 'LoginView',
   data: () => ({
     loginInfo: {},
     loginInfoValid: false,

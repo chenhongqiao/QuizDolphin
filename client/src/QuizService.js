@@ -5,38 +5,41 @@ axios.defaults.withCredentials = true;
 const url = 'http://localhost:5000/api/quiz/';
 
 class QuizService {
-  static getQuizHistory() {
+  static getQuizHistory(quizId) {
     return new Promise((resolve, reject) => {
       axios.get(`${url}history`, {
         withCredentials: true,
+        params: { quizId },
       }).then((data) => resolve(data))
         .catch((err) => reject(err));
     });
   }
 
-  static getOngoing() {
+  static getOngoing(quizId) {
     return new Promise((resolve, reject) => {
       axios.get(`${url}ongoingquestion`, {
         withCredentials: true,
+        params: { quizId },
       }).then((data) => resolve(data))
         .catch((err) => reject(err));
     });
   }
 
-  static postProgress(quizProgress) {
+  static postProgress(quizProgress, quizId) {
     return new Promise((resolve, reject) => {
       axios.post(`${url}ongoing`, {
         withCredentials: true,
-        data: quizProgress,
+        data: { quizProgress, quizId },
       }).then((data) => resolve(data))
         .catch((err) => reject(err));
     });
   }
 
-  static getProgress() {
+  static getProgress(quizId) {
     return new Promise((resolve, reject) => {
       axios.get(`${url}ongoing`, {
         withCredentials: true,
+        params: { quizId },
       }).then((data) => resolve(data))
         .catch((err) => reject(err));
     });
