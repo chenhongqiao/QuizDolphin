@@ -110,6 +110,9 @@ router.post('/ongoing', async (req, res, next) => {
 });
 
 router.post('/', async (req, res, next) => {
+  if (!req.session.loggedin || req.session.type !== 'admin') {
+    throw new UserException('Unauthorized!');
+  }
   try {
     const quizCollection = await dbService.loadCollection('quiz');
     const quizId = await quizCollection.countDocuments() + 1;

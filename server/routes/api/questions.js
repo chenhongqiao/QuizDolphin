@@ -93,6 +93,9 @@ TODO:
 */
 router.post('/', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || req.session.type !== 'admin') {
+      throw new UserException('Unauthorized!');
+    }
     const { quizId } = req.query;
     if (!quizId) {
       throw new UserException('Invalid QuizID!');

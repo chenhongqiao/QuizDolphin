@@ -30,6 +30,9 @@ function UserInformationConstructor(user) {
 }
 
 router.post('/new', async (req, res, next) => {
+  if (!req.session.loggedin || req.session.type !== 'admin') {
+    throw new UserException('Unauthorized!');
+  }
   try {
     const usersCollection = await dbService.loadCollection('users');
 
@@ -81,6 +84,7 @@ router.post('/login', async (req, res, next) => {
     if (success === true) {
       req.session.loggedin = true;
       req.session.email = req.body.data.email;
+      req.session.type = userInformation.type;
       res.send('Success!');
     } else if (success === false) {
       res.send('Incorrect Login Information!');
