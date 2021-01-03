@@ -3,7 +3,12 @@
 
 ---
 - email: ""
-  password: ""
-  name: ""
-  type: "" # user/admin
+  history: [
+      score: 0,
+      toalPoints: 0,
+      timeStamp: "",
+      questions: [
+        question: Object
+      ]
+  ]
 ---

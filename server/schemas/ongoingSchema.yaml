@@ -3,7 +3,7 @@
 
 ---
 - email: ""
-  password: ""
-  name: ""
-  type: "" # user/admin
+  questions: [
+    question: Object
+  ]
 ---
