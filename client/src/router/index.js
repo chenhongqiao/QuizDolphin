@@ -8,6 +8,16 @@ const routes = [
     path: '/quiz/:id',
     name: 'Quiz',
     component: () => import('../views/QuizDashView.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('../components/QuizInfoComponent.vue'),
+      },
+      {
+        path: 'question',
+        component: () => import('../components/QuizComponent.vue'),
+      },
+    ],
   },
   {
     path: '/login',

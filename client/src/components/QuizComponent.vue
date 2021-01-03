@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="quizStarted">
     <v-container>
       <v-card>
         <v-container>
@@ -164,12 +164,15 @@
           <v-spacer />
           <v-btn
             text
+            :disabled="disableSubmission"
             @click="pendingSubmission=false"
           >
             Cancel
           </v-btn>
           <v-btn
+            ref="submitButton"
             text
+            :disabled="disableSubmission"
             @click="submitQuiz"
           >
             Submit
@@ -181,17 +184,20 @@
 </template>
 
 <script>
+import QuizService from '../QuizService';
+import ResultService from '../ResultService';
+
 export default {
   name: 'QuizComponent',
-  props: {
-    quizData: { type: Array, default: null },
-    quizAnswers: { type: Array, default: null },
-    currentIndex: { type: Number, default: 1 },
-  },
   data: () => ({
     currentQuestion: 1,
     quizAttempts: [],
     pendingSubmission: false,
+    quizData: [],
+    quizId: 1,
+    progressVersion: 1,
+    quizStarted: false,
+    disableSubmission: false,
   }),
   computed: {
     attemptedNumber() {
@@ -218,26 +224,49 @@ export default {
     quizAttempts: {
       deep: true,
       handler() {
-        this.$emit('update:quizAnswers', this.quizAttempts);
+        this.postProgress();
       },
     },
     currentQuestion: {
       handler() {
-        this.$emit('update:currentIndex', this.currentQuestion);
+        this.postProgress();
       },
     },
   },
-  beforeMount() {
-    this.currentQuestion = this.currentIndex;
-    this.quizAttempts = [...this.quizAnswers];
+  async beforeMount() {
+    this.quizId = this.$route.params.id;
+    const previous = (await QuizService.getOngoing(this.quizId)).data;
+    if (!previous.question) {
+      this.$router.push(`/quiz/${this.quizId}`);
+    } else {
+      this.quizData = previous.question;
+      const rawResponse = (await QuizService.getProgress(this.quizId)).data;
+      this.quizAttempts = rawResponse.attempt;
+      this.currentQuestion = rawResponse.index;
+      this.progressVersion = rawResponse.version;
+      this.quizStarted = true;
+    }
   },
   methods: {
     nextQuestion() {
       this.currentQuestion += 1;
     },
-    submitQuiz() {
-      this.$emit('update:quizAnswers', this.quizAttempts);
-      this.$emit('quizDone');
+    async submitQuiz() {
+      this.disableSubmission = true;
+      const processedAnswers = this.quizAttempts.map((value, index) => ({
+        uuid: this.quizData[index].uuid,
+        answer: value,
+      }));
+      this.quizResult = (await ResultService.gradeQuiz(
+        processedAnswers,
+        this.quizId,
+      )).data;
+      if (this.quizResult === 'Not Logged In!') {
+        sessionStorage.loggedIn = false;
+        this.$router.push('/login');
+      } else {
+        this.$router.push(`/quiz/${this.quizId}`);
+      }
     },
     updateRightCol(index) {
       let targetIndex = this.quizAttempts[this.currentQuestion - 1]
@@ -248,6 +277,19 @@ export default {
       }
       if (targetIndex !== -1) {
         this.quizAttempts[this.currentQuestion - 1][targetIndex] = null;
+      }
+    },
+    async postProgress() {
+      const rawResponse = (await QuizService.postProgress(
+        {
+          version: this.progressVersion + 1,
+          index: this.currentQuestion,
+          attempt: this.quizAttempts,
+        },
+        this.quizId,
+      )).data;
+      if (rawResponse !== 'Success!') {
+        console.log('Version Too Old!');
       }
     },
   },
