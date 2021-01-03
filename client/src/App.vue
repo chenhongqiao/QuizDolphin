@@ -82,10 +82,7 @@ export default {
   async beforeMount() {
     const userInformation = (await UserService.getUserInformation()).data;
     if (userInformation !== 'Not Logged In!') {
-      sessionStorage.loggedIn = true;
-      sessionStorage.email = userInformation.email;
-      sessionStorage.name = userInformation.name;
-      sessionStorage.type = userInformation.type;
+      this.$store.commit('login', userInformation);
     } else if (this.$route.path !== '/login') {
       this.$router.push('/login');
     }
@@ -98,7 +95,7 @@ export default {
     async logout() {
       const rawResponse = (await UserService.logout()).data;
       if (rawResponse === 'Success!' || rawResponse === 'Not Logged In!') {
-        sessionStorage.loggedIn = false;
+        this.$store.commit('logout');
         if (this.$route.path !== '/login') {
           this.$router.push('/login');
         }
@@ -108,7 +105,7 @@ export default {
       window.location.reload();
     },
     getLoginStatus() {
-      return sessionStorage.loggedIn;
+      return this.$store.state.loggedIn;
     },
     toQuizPage() {
       if (this.$route.path !== '/quiz') {
@@ -116,14 +113,14 @@ export default {
       }
     },
     getInitial() {
-      const initial = sessionStorage.name.split(' ').map((name) => name[0]).join('');
+      const initial = this.$store.state.name.split(' ').map((name) => name[0]).join('');
       return initial;
     },
     getName() {
-      return sessionStorage.name;
+      return this.$store.state.name;
     },
     getEmail() {
-      return sessionStorage.email;
+      return this.$store.state.email;
     },
   },
 };

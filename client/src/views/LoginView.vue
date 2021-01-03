@@ -66,15 +66,17 @@ export default {
     loginResponse: '',
     hasLoginError: false,
   }),
+  beforeMount() {
+    if (this.$store.state.loggedIn) {
+      this.$router.push('/');
+    }
+  },
   methods: {
     async login() {
       const response = (await UserService.login(this.loginInfo)).data;
       if (response === 'Success!') {
         const userInformation = (await UserService.getUserInformation()).data;
-        sessionStorage.loggedIn = true;
-        sessionStorage.email = userInformation.email;
-        sessionStorage.name = userInformation.name;
-        sessionStorage.type = userInformation.type;
+        this.$store.commit('login', userInformation);
         this.$router.go(-1);
       } else {
         this.hasLoginError = true;

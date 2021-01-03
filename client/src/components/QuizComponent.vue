@@ -262,7 +262,7 @@ export default {
         this.quizId,
       )).data;
       if (this.quizResult === 'Not Logged In!') {
-        sessionStorage.loggedIn = false;
+        this.$store.commit('logout');
         this.$router.push('/login');
       } else {
         this.$router.push(`/quiz/${this.quizId}`);

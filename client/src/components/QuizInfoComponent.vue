@@ -88,7 +88,7 @@ export default {
     async getHistory() {
       const rawResponse = (await QuizService.getQuizHistory(this.quizId)).data;
       if (rawResponse === 'Not Logged In!') {
-        sessionStorage.loggedIn = false;
+        this.$store.commit('logout');
         this.$router.push('/login');
       } else if (rawResponse !== 'No History!') {
         this.quizHistory = rawResponse.reverse();
