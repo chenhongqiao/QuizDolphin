@@ -1,5 +1,11 @@
 <template>
   <div>
+    <v-container>
+      <h2>Welcome back, {{ getUserName }}</h2>
+    </v-container>
+    <v-container>
+      <h3>Quiz List</h3>
+    </v-container>
     <v-col>
       <v-container
         v-for="quiz in quizList"
@@ -12,7 +18,7 @@
           <v-card-actions>
             <v-spacer />
             <v-btn @click="toQuiz(quiz.quizId)">
-              View Quiz
+              Access Quiz
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -29,6 +35,11 @@ export default {
   data: () => ({
     quizList: [],
   }),
+  computed: {
+    getUserName() {
+      return this.$store.state.name;
+    },
+  },
   async beforeMount() {
     this.quizList = (await QuizService.getQuizList()).data;
   },

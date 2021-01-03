@@ -36,7 +36,10 @@
     <v-container
       class="text-center"
     >
-      <v-btn @click="startQuiz">
+      <v-btn
+        :disabled="actionDisabled"
+        @click="startQuiz"
+      >
         start!
       </v-btn>
     </v-container>
@@ -57,6 +60,7 @@ export default {
   data: () => ({
     quizHistory: [],
     notStarted: false,
+    actionDisabled: false,
   }),
   async beforeMount() {
     this.quizId = this.$route.params.id;
@@ -70,6 +74,7 @@ export default {
   },
   methods: {
     async startQuiz() {
+      this.actionDisabled = true;
       const previous = (await QuizService.getOngoing(this.quizId)).data;
       if (!previous.question) {
         const quizData = (await QuestionService.getQuestions(5, this.quizId)).data;
@@ -84,6 +89,7 @@ export default {
         await this.postProgress(1, 1, quizAttempts);
       }
       this.$router.push(`/quiz/${this.quizId}/question`);
+      this.actionDisabled = false;
     },
     async getHistory() {
       const rawResponse = (await QuizService.getQuizHistory(this.quizId)).data;

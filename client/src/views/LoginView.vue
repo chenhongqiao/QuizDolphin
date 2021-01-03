@@ -4,7 +4,21 @@
     max-width="800px"
     persistent
   >
-    <v-card>
+    <v-card v-if="getStateStatus">
+      <v-card-title>
+        You Already Logged In
+      </v-card-title>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          :disabled="actionDisabled"
+          @click="goDashboard()"
+        >
+          Go to Dashboard
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+    <v-card v-if="!getStateStatus">
       <v-card-title>
         Please Login First
       </v-card-title>
@@ -38,7 +52,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-          :disabled="!loginInfoValid"
+          :disabled="!loginInfoValid||actionDisabled"
           @click="login()"
         >
           Login
@@ -65,14 +79,16 @@ export default {
     ],
     loginResponse: '',
     hasLoginError: false,
+    actionDisabled: false,
   }),
-  beforeMount() {
-    if (this.$store.state.loggedIn) {
-      this.$router.push('/');
-    }
+  computed: {
+    getStateStatus() {
+      return this.$store.state.loggedIn;
+    },
   },
   methods: {
     async login() {
+      this.actionDisabled = true;
       const response = (await UserService.login(this.loginInfo)).data;
       if (response === 'Success!') {
         const userInformation = (await UserService.getUserInformation()).data;
@@ -83,6 +99,10 @@ export default {
         this.loginResponse = response;
         this.loginInfo.password = '';
       }
+      this.actionDisabled = false;
+    },
+    goDashboard() {
+      this.$router.push('/');
     },
     dismissError() {
       this.hasLoginError = false;
