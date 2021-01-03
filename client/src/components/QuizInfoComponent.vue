@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="notStarted">
     <div v-if="quizHistory">
       <v-container>
         <h3 class="text-center">
@@ -56,10 +56,17 @@ export default {
   },
   data: () => ({
     quizHistory: [],
+    notStarted: false,
   }),
-  beforeMount() {
+  async beforeMount() {
     this.quizId = this.$route.params.id;
-    this.getHistory();
+    const previous = (await QuizService.getOngoing(this.quizId)).data;
+    if (previous.question) {
+      this.$router.push(`/quiz/${this.quizId}/question`);
+    } else {
+      this.notStarted = true;
+      this.getHistory();
+    }
   },
   methods: {
     async startQuiz() {
