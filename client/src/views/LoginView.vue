@@ -70,7 +70,11 @@ export default {
     async login() {
       const response = (await UserService.login(this.loginInfo)).data;
       if (response === 'Success!') {
+        const userInformation = (await UserService.getUserInformation()).data;
         sessionStorage.loggedIn = true;
+        sessionStorage.email = userInformation.email;
+        sessionStorage.name = userInformation.name;
+        sessionStorage.type = userInformation.type;
         this.$router.go(-1);
       } else {
         this.hasLoginError = true;

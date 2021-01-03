@@ -15,17 +15,26 @@ function UserException(message) {
   this.type = 'UserException';
 }
 
-function UserConstructor(email, password) {
+function UserConstructor(email, password, name, type) {
   this.email = email;
+  this.name = name;
+  this.type = type;
   this.salt = crypto.randomBytes(32).toString('hex');
   this.password = getSaltedPassword(password, this.salt);
+}
+
+function UserInformationConstructor(user) {
+  this.email = user.email;
+  this.name = user.name;
+  this.type = user.type;
 }
 
 router.post('/new', async (req, res, next) => {
   try {
     const usersCollection = await dbService.loadCollection('users');
 
-    if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
+    if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string'
+    || typeof req.body.data.type !== 'string' || typeof req.body.data.name !== 'string') {
       throw new UserException('Invalid User Information Type!');
     }
     const userWithSameEmail = await usersCollection.findOne({ email: req.body.data.email });
@@ -33,7 +42,8 @@ router.post('/new', async (req, res, next) => {
       res.send('Email Already Exists!');
     } else {
       await usersCollection.insertOne(
-        new UserConstructor(req.body.data.email, req.body.data.password),
+        new UserConstructor(req.body.data.email, req.body.data.password,
+          req.body.data.name, req.body.data.type),
       );
       res.send('Success!');
     }
@@ -103,10 +113,13 @@ router.post('/logout', (req, res, next) => {
   }
 });
 
-router.get('/status', (req, res, next) => {
+router.get('/information', async (req, res, next) => {
   try {
     if (req.session.loggedin === true) {
-      res.send('Logged In!');
+      const usersCollection = await dbService.loadCollection('users');
+      const userInformation = await usersCollection.findOne({ email: req.session.email });
+      const processedInformation = new UserInformationConstructor(userInformation);
+      res.send(processedInformation);
     } else {
       res.send('Not Logged In!');
     }

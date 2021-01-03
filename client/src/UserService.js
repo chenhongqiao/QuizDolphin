@@ -5,9 +5,9 @@ axios.defaults.withCredentials = true;
 const url = 'http://localhost:5000/api/users/';
 
 class UserService {
-  static getUserStatus() {
+  static getUserInformation() {
     return new Promise((resolve, reject) => {
-      axios.get(`${url}status`, {
+      axios.get(`${url}information`, {
         withCredentials: true,
       }).then((data) => resolve(data))
         .catch((err) => reject(err));
