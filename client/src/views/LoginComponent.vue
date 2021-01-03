@@ -53,9 +53,6 @@ import UserService from '../UserService';
 
 export default {
   name: 'LoginComponent',
-  props: {
-    loggedIn: { type: Boolean, default: null },
-  },
   data: () => ({
     loginInfo: {},
     loginInfoValid: false,
@@ -73,8 +70,8 @@ export default {
     async login() {
       const response = (await UserService.login(this.loginInfo)).data;
       if (response === 'Success!') {
-        this.$emit('update:loggedIn', true);
-        this.$emit('authDone');
+        sessionStorage.loggedIn = true;
+        this.$router.go(-1);
       } else {
         this.hasLoginError = true;
         this.loginResponse = response;

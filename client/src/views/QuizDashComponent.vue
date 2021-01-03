@@ -61,8 +61,8 @@
 
 <script>
 import { DateTime } from 'luxon';
-import QuizComponent from './QuizComponent.vue';
-import ResultComponent from './ResultComponent.vue';
+import QuizComponent from '../components/QuizComponent.vue';
+import ResultComponent from '../components/ResultComponent.vue';
 import QuestionService from '../QuestionService';
 import ResultService from '../ResultService';
 import QuizService from '../QuizService';
@@ -103,7 +103,8 @@ export default {
   methods: {
     async startQuiz() {
       if (this.quizData === 'Not Logged In!') {
-        this.$emit('notLoggedIn');
+        sessionStorage.loggedIn = false;
+        this.$router.push('/login');
       } else {
         const previous = (await QuizService.getOngoing()).data;
         if (!previous.question) {
@@ -145,7 +146,8 @@ export default {
         processedAnswers,
       )).data;
       if (this.quizResult === 'Not Logged In!') {
-        this.$emit('notLoggedIn');
+        sessionStorage.loggedIn = false;
+        this.$router.push('/login');
       } else {
         this.quizGraded = true;
       }
@@ -153,7 +155,8 @@ export default {
     async getHistory() {
       const rawResponse = (await QuizService.getQuizHistory()).data;
       if (rawResponse === 'Not Logged In!') {
-        this.$emit('notLoggedIn');
+        sessionStorage.loggedIn = false;
+        this.$router.push('/login');
       } else if (rawResponse !== 'No History!') {
         this.quizHistory = rawResponse.reverse();
       }
