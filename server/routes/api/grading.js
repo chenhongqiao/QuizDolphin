@@ -43,10 +43,10 @@ router.post('/', async (req, res, next) => {
       res.send('Not Logged In!');
       return;
     }
-
-    const answersCollection = await dbService.loadCollection('answers');
-    const questionsCollection = await dbService.loadCollection('questions');
-    const onGoingCollection = await dbService.loadCollection('ongoing');
+    const { quizId } = req.query;
+    const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
+    const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
+    const onGoingCollection = await dbService.loadCollection(`${quizId}-ongoing`);
     const questionsArray = (await onGoingCollection.findOne({ email: req.session.email })).question;
     const resultsArray = [];
     if (!req.body.data || !Array.isArray(req.body.data)) {
@@ -156,7 +156,7 @@ router.post('/', async (req, res, next) => {
 
     const quizResult = new QuizResultConstructor(await score, questionsArray,
       resultsArray, totalPoints);
-    const historyCollection = await dbService.loadCollection('history');
+    const historyCollection = await dbService.loadCollection(`${quizId}-history`);
 
     if (!req.session.email) {
       throw new Error('No User Email!');

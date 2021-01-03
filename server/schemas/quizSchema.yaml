@@ -2,6 +2,6 @@
 # Formats are enforced by validation functions instead, which are designed base on this document.
 
 ---
-- quizName: "" 
-  quizId: 0
+- quizName: ""
+  quizId: 0 
 ---

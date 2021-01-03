@@ -44,7 +44,8 @@ router.get('/', async (req, res, next) => {
       res.send('Not Logged In!');
       return;
     }
-    const questionsCollection = await dbService.loadCollection('questions');
+    const { quizId } = req.query;
+    const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
     const allQuestions = await questionsCollection.find({}).toArray();
     const allQuestionCount = allQuestions.length;
     const userQuestions = [];
@@ -62,7 +63,7 @@ router.get('/', async (req, res, next) => {
       }
     }
 
-    const onGoingCollection = await dbService.loadCollection('ongoing');
+    const onGoingCollection = await dbService.loadCollection(`${quizId}-ongoing`);
     if (await onGoingCollection.findOne({ email: req.session.email })) {
       throw new UserException('Unfinished Quiz Detected!');
     }
@@ -89,8 +90,9 @@ TODO:
 */
 router.post('/', async (req, res, next) => {
   try {
-    const questionsCollection = await dbService.loadCollection('questions');
-    const answersCollection = await dbService.loadCollection('answers');
+    const { quizId } = req.query;
+    const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
+    const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
     const questionId = uuidv4();
     validation.validateQuestion(req.body.data);
     const newQuestion = new QuestionConstructor(req.body.data, questionId);
