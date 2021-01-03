@@ -6,9 +6,14 @@ const router = express.Router();
 const dbService = require('../../modules/dbService');
 const redisService = require('../../modules/redisService');
 
-function QuizConstructor(quizName, quizId){
+function QuizConstructor(quizName, quizId) {
   this.quizName = quizName;
   this.quizId = quizId;
+}
+
+function UserException(message) {
+  this.message = message;
+  this.type = 'UserException';
 }
 
 router.get('/history', async (req, res, next) => {
@@ -18,7 +23,10 @@ router.get('/history', async (req, res, next) => {
       return;
     }
     const { quizId } = req.query;
-    const historyCollection = await dbService.loadCollection(`${quizId}-history`);
+    if (!quizId) {
+      throw new UserException('Invalid QuizID!');
+    }
+    const historyCollection = await dbService.loadCollection(`quiz${quizId}-history`);
     const userHistory = await historyCollection.findOne({ email: req.session.email });
     if (userHistory === null) {
       res.send('No History!');
@@ -38,7 +46,10 @@ router.get('/ongoingquestion', async (req, res, next) => {
       return;
     }
     const { quizId } = req.query;
-    const onGoingCollection = await dbService.loadCollection(`${quizId}-ongoing`);
+    if (!quizId) {
+      throw new UserException('Invalid QuizID!');
+    }
+    const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
     const onGoingQuestion = await onGoingCollection.findOne({ email: req.session.email });
     if (onGoingQuestion) {
       res.send(onGoingQuestion);
@@ -58,9 +69,13 @@ router.get('/ongoing', async (req, res, next) => {
       return;
     }
     const { quizId } = req.query;
+    if (!quizId) {
+      throw new UserException('Invalid QuizID!');
+    }
     const redis = redisService.loadDatabase(0);
     const redisGet = promisify(redis.get).bind(redis);
-    res.send(JSON.parse((await redisGet(`${quizId}-${req.session.email}`))));
+    const redisKey = `quiz${quizId}-${req.session.email}`;
+    res.send(JSON.parse((await redisGet(redisKey))));
   } catch (err) {
     res.status(500).send('Internal Error!');
     next(err);
@@ -73,13 +88,17 @@ router.post('/ongoing', async (req, res, next) => {
       res.send('Not Logged In!');
       return;
     }
-    const { quizId } = req.query;
+    const { quizId } = req.body.data;
+    if (!quizId) {
+      throw new UserException('Invalid QuizID!');
+    }
     const redis = redisService.loadDatabase(0);
     const redisGet = promisify(redis.get).bind(redis);
     const redisSet = promisify(redis.set).bind(redis);
     const current = JSON.parse((await redisGet(req.session.email)));
-    if (!current || current.version < req.body.data.version) {
-      await redisSet(`${quizId}-${req.session.email}`, JSON.stringify(req.body.data));
+    const redisKey = `quiz${quizId}-${req.session.email}`;
+    if (!current || current.version < req.body.data.quizProgress.version) {
+      await redisSet(redisKey, JSON.stringify(req.body.data.quizProgress));
       res.send('Success!');
     } else {
       res.send('Refuse to overwrite newer version with older one!');
@@ -94,7 +113,7 @@ router.post('/new', async (req, res, next) => {
   try {
     const quizCollection = await dbService.loadCollection('quiz');
     const quizId = await quizCollection.countDocuments() + 1;
-    quizCollection.insertOne(new QuizConstructor(req.body.data.quizName,quizId));
+    quizCollection.insertOne(new QuizConstructor(req.body.data.quizName, quizId));
     res.send('Sucess!');
   } catch (err) {
     res.status(500).send('Internal Error!');

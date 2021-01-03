@@ -43,17 +43,20 @@ router.post('/', async (req, res, next) => {
       res.send('Not Logged In!');
       return;
     }
-    const { quizId } = req.query;
-    const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
-    const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
-    const onGoingCollection = await dbService.loadCollection(`${quizId}-ongoing`);
+    const { quizId } = req.body.data;
+    if (!quizId) {
+      throw new UserException('Invalid QuizID!');
+    }
+    const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
+    const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
+    const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
     const questionsArray = (await onGoingCollection.findOne({ email: req.session.email })).question;
     const resultsArray = [];
-    if (!req.body.data || !Array.isArray(req.body.data)) {
+    if (!req.body.data.answers || !Array.isArray(req.body.data.answers)) {
       throw new UserException('Invalid Answers Array!');
     }
     let totalPoints = 0;
-    const score = req.body.data.reduce(async (accumulator, current, index) => {
+    const score = req.body.data.answers.reduce(async (accumulator, current, index) => {
       const questionUuid = questionsArray[index].uuid;
       const correctAnswer = await answersCollection.findOne({ uuid: questionUuid });
       const question = await questionsCollection.findOne({ uuid: questionUuid });
@@ -156,7 +159,7 @@ router.post('/', async (req, res, next) => {
 
     const quizResult = new QuizResultConstructor(await score, questionsArray,
       resultsArray, totalPoints);
-    const historyCollection = await dbService.loadCollection(`${quizId}-history`);
+    const historyCollection = await dbService.loadCollection(`quiz${quizId}-history`);
 
     if (!req.session.email) {
       throw new Error('No User Email!');
