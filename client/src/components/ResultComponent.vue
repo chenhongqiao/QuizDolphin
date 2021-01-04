@@ -266,12 +266,12 @@
     <v-container v-if="!viewOnly">
       <v-row>
         <v-spacer />
-        <v-col md="2">
-          <v-btn @click="resetQuiz">
-            Reset Quiz
-          </v-btn>
-        </v-col>
-        <v-spacer />
+        <v-btn
+          class="mb-4"
+          @click="resetQuiz"
+        >
+          Back to info page
+        </v-btn>
       </v-row>
     </v-container>
   </div>

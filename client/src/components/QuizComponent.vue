@@ -134,7 +134,7 @@
         </v-btn>
         <v-btn
           v-if="currentQuestion < quizData.length"
-          @click="nextQuestion"
+          @click="currentQuestion+=1;"
         >
           Next
         </v-btn>
@@ -154,7 +154,7 @@
     </v-container>
     <v-dialog
       v-model="pendingSubmission"
-      width="500px"
+      max-width="500px"
     >
       <v-card>
         <v-container>
@@ -166,12 +166,14 @@
           <v-spacer />
           <v-btn
             text
+            :disabled="actionDisabled"
             @click="pendingSubmission=false"
           >
             Cancel
           </v-btn>
           <v-btn
             text
+            :disabled="actionDisabled"
             @click="submitQuiz"
           >
             Submit
@@ -194,6 +196,7 @@ export default {
     currentQuestion: 1,
     quizAttempts: [],
     pendingSubmission: false,
+    actionDisabled: false,
   }),
   computed: {
     attemptedNumber() {
@@ -234,10 +237,8 @@ export default {
     this.quizAttempts = [...this.quizAnswers];
   },
   methods: {
-    nextQuestion() {
-      this.currentQuestion += 1;
-    },
     submitQuiz() {
+      this.actionDisabled = true;
       this.$emit('update:quizAnswers', this.quizAttempts);
       this.$emit('quizDone');
     },
