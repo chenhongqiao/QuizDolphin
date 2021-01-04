@@ -3,6 +3,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const RedisStore = require('connect-redis')(session);
+
+const redisService = require('./modules/redisService');
+
+const sessionClient = redisService.loadDatabase(0);
 
 const app = express();
 
@@ -22,6 +27,7 @@ app.use(session({
   cookie: {
     secure: false,
   },
+  store: new RedisStore({ client: sessionClient }),
 }));
 
 const questions = require('./routes/api/questions');

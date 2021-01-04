@@ -72,7 +72,7 @@ router.get('/ongoing', async (req, res, next) => {
     if (!quizId) {
       throw new UserException('Invalid QuizID!');
     }
-    const redis = redisService.loadDatabase(0);
+    const redis = redisService.loadDatabase(1);
     const redisGet = promisify(redis.get).bind(redis);
     const redisKey = `quiz${quizId}-${req.session.email}`;
     res.send(JSON.parse((await redisGet(redisKey))));
@@ -92,7 +92,7 @@ router.post('/ongoing', async (req, res, next) => {
     if (!quizId) {
       throw new UserException('Invalid QuizID!');
     }
-    const redis = redisService.loadDatabase(0);
+    const redis = redisService.loadDatabase(1);
     const redisGet = promisify(redis.get).bind(redis);
     const redisSet = promisify(redis.set).bind(redis);
     const current = JSON.parse((await redisGet(req.session.email)));

@@ -169,7 +169,7 @@ router.post('/', async (req, res, next) => {
     const newHistory = new HistoryRecordConstructor(req.session.email, oldHistory, quizResult);
     await historyCollection.replaceOne({ email: req.session.email }, newHistory, { upsert: true });
     await onGoingCollection.deleteOne({ email: req.session.email });
-    const redis = redisService.loadDatabase(0);
+    const redis = redisService.loadDatabase(1);
     const redisDelete = promisify(redis.del).bind(redis);
     await redisDelete(req.session.email);
     res.send(quizResult);
