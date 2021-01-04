@@ -34,8 +34,15 @@ router.get('/history', async (req, res, next) => {
       res.send(userHistory.history);
     }
   } catch (err) {
-    res.status(500).send('Internal Error!');
-    next(err);
+    if (typeof err === 'object') {
+      if (err.type === 'UserException') {
+        res.status(400).send(err.message);
+      }
+      next(`${err.type}: ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
   }
 });
 
@@ -57,8 +64,15 @@ router.get('/ongoingquestion', async (req, res, next) => {
       res.send('No Ongoing Quiz!');
     }
   } catch (err) {
-    res.status(500).send('Internal Error!');
-    next(err);
+    if (typeof err === 'object') {
+      if (err.type === 'UserException') {
+        res.status(400).send(err.message);
+      }
+      next(`${err.type}: ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
   }
 });
 
@@ -77,8 +91,15 @@ router.get('/ongoing', async (req, res, next) => {
     const redisKey = `quiz${quizId}-${req.session.email}`;
     res.send(JSON.parse((await redisGet(redisKey))));
   } catch (err) {
-    res.status(500).send('Internal Error!');
-    next(err);
+    if (typeof err === 'object') {
+      if (err.type === 'UserException') {
+        res.status(400).send(err.message);
+      }
+      next(`${err.type}: ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
   }
 });
 
@@ -104,8 +125,15 @@ router.post('/ongoing', async (req, res, next) => {
       res.send('Refuse to overwrite newer version with older one!');
     }
   } catch (err) {
-    res.status(500).send('Internal Error!');
-    next(err);
+    if (typeof err === 'object') {
+      if (err.type === 'UserException') {
+        res.status(400).send(err.message);
+      }
+      next(`${err.type}: ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
   }
 });
 

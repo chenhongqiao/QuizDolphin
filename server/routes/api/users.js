@@ -128,8 +128,15 @@ router.get('/information', async (req, res, next) => {
       res.send('Not Logged In!');
     }
   } catch (err) {
-    res.status(500).send('Internal Error!');
-    next(err);
+    if (typeof err === 'object') {
+      if (err.type === 'UserException') {
+        res.status(400).send(err.message);
+      }
+      next(`${err.type}: ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
   }
 });
 
