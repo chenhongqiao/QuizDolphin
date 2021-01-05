@@ -122,6 +122,7 @@ export default {
       ],
     },
     pendingSave: false,
+    quizOngoing: false,
   }),
   watch: {
     quizAnswers: {
@@ -130,8 +131,10 @@ export default {
         if (!this.pendingSave) {
           this.pendingSave = true;
           setTimeout(() => {
-            this.pendingSave = false;
-            this.postProgress();
+            if (this.quizOngoing) {
+              this.pendingSave = false;
+              this.postProgress();
+            }
           }, 500);
         }
       },
@@ -142,8 +145,10 @@ export default {
         if (!this.pendingSave) {
           this.pendingSave = true;
           setTimeout(() => {
-            this.pendingSave = false;
-            this.postProgress();
+            if (this.quizOngoing) {
+              this.pendingSave = false;
+              this.postProgress();
+            }
           }, 500);
         }
       },
@@ -184,10 +189,12 @@ export default {
           this.quizAnswers[index] = [];
         }
       });
+      this.quizOngoing = true;
       this.quizStarted = true;
       this.quizLoaded = true;
     },
     async gradeQuiz() {
+      this.quizOngoing = false;
       const processedAnswers = this.quizAnswers.map((value, index) => ({
         uuid: this.quizData[index].uuid,
         answer: value,

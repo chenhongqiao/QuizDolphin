@@ -171,7 +171,7 @@ router.post('/', async (req, res, next) => {
     await onGoingCollection.deleteOne({ email: req.session.email });
     const redis = redisService.loadDatabase(1);
     const redisDelete = promisify(redis.del).bind(redis);
-    await redisDelete(req.session.email);
+    await redisDelete(`quiz${quizId}-${req.session.email}`);
     res.send(quizResult);
   } catch (err) {
     if (err.type === 'UserException') {
