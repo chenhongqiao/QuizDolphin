@@ -63,7 +63,7 @@ router.post('/new', async (req, res, next) => {
 
 router.post('/login', async (req, res, next) => {
   try {
-    if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
+    if (!req.body.data || typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
       throw new UserException('Invalid Login Information Type!');
     }
     let success = null;

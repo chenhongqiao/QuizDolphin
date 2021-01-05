@@ -4,6 +4,7 @@ const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const RedisStore = require('connect-redis')(session);
+const rateLimit = require('express-rate-limit');
 
 const redisService = require('./modules/redisService');
 
@@ -28,6 +29,17 @@ app.use(session({
     secure: false,
   },
   store: new RedisStore({ client: sessionClient }),
+}));
+app.use('/', rateLimit({
+  windowMs: 1000,
+  max: 4,
+  keyGenerator: (req) => {
+    if (req.session.email) {
+      return req.session.email;
+    }
+    return req.ip;
+  },
+  message: 'Request too frequent, please try again later.',
 }));
 
 const questions = require('./routes/api/questions');

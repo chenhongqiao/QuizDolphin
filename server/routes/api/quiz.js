@@ -116,13 +116,13 @@ router.post('/ongoing', async (req, res, next) => {
     const redis = redisService.loadDatabase(1);
     const redisGet = promisify(redis.get).bind(redis);
     const redisSet = promisify(redis.set).bind(redis);
-    const current = JSON.parse((await redisGet(req.session.email)));
     const redisKey = `quiz${quizId}-${req.session.email}`;
+    const current = JSON.parse((await redisGet(redisKey)));
     if (!current || current.version < req.body.data.quizProgress.version) {
       await redisSet(redisKey, JSON.stringify(req.body.data.quizProgress));
       res.send('Success!');
     } else {
-      res.send('Refuse to overwrite newer version with older one!');
+      res.send('Refuse to overwrite!');
     }
   } catch (err) {
     if (typeof err === 'object') {
