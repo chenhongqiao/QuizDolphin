@@ -37,6 +37,9 @@ app.use('/', rateLimit({
     if (req.session.email) {
       return req.session.email;
     }
+    if (req.sessionID) {
+      return req.sessionID;
+    }
     return req.ip;
   },
   message: 'Request too frequent, please try again later.',
