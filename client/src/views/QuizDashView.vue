@@ -121,18 +121,31 @@ export default {
         },
       ],
     },
+    pendingSave: false,
   }),
   watch: {
     quizAnswers: {
       handler() {
         this.progressVersion += 1;
-        this.postProgress();
+        if (!this.pendingSave) {
+          this.pendingSave = true;
+          setTimeout(() => {
+            this.pendingSave = false;
+            this.postProgress();
+          }, 500);
+        }
       },
     },
     currentIndex: {
       handler() {
         this.progressVersion += 1;
-        this.postProgress();
+        if (!this.pendingSave) {
+          this.pendingSave = true;
+          setTimeout(() => {
+            this.pendingSave = false;
+            this.postProgress();
+          }, 500);
+        }
       },
     },
   },
@@ -220,8 +233,8 @@ export default {
         { version: this.progressVersion, index: this.currentIndex, attempt: this.quizAnswers },
         this.quizId,
       )).data;
-      if (rawResponse !== 'Success!') {
-        console.log('Version Too Old!');
+      if (rawResponse === 'Refuse to overwrite!') {
+        window.location.reload();
       }
     },
     toLocalTime(record) {

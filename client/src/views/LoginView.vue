@@ -36,7 +36,7 @@
           <v-text-field
             v-model="loginInfo.email"
             :rules="emailRules"
-            label="E-mail"
+            label="Email"
             required
             @change="dismissError()"
           />
@@ -74,8 +74,8 @@ export default {
     loginInfo: {},
     loginInfoValid: false,
     emailRules: [
-      (v) => !!v || 'Please enter your E-mail',
-      (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+      (v) => !!v || 'Please enter your Email',
+      (v) => /.+@.+\..+/.test(v) || 'Email must be valid',
     ],
     passwordRules: [
       (v) => !!v || 'Please enter your password',
