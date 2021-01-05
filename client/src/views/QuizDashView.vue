@@ -126,6 +126,7 @@ export default {
   }),
   watch: {
     quizAnswers: {
+      deep: true,
       handler() {
         this.progressVersion += 1;
         if (!this.pendingSave) {
@@ -162,6 +163,7 @@ export default {
       const rawResponse = (await QuizService.getProgress(this.quizId)).data;
       this.quizAnswers = rawResponse.attempt;
       if (!this.quizAnswers) {
+        this.quizAnswers = [];
         this.quizData.forEach((question, index) => {
           if (question.type === 'single choice' || question.type === 'short response') {
             this.quizAnswers[index] = '';
@@ -172,6 +174,7 @@ export default {
       }
       this.currentIndex = rawResponse.index;
       this.progressVersion = rawResponse.version;
+      this.quizOngoing = true;
       this.quizLoaded = true;
     } else {
       this.quizStarted = false;
