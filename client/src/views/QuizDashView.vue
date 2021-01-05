@@ -20,7 +20,6 @@
         <v-tabs>
           <v-tab> Records </v-tab>
           <v-tab> Graphs </v-tab>
-
           <v-tab-item>
             <div v-if="quizHistory">
               <v-container>

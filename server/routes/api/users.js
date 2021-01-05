@@ -30,10 +30,10 @@ function UserInformationConstructor(user) {
 }
 
 router.post('/new', async (req, res, next) => {
-  if (!req.session.loggedin || req.session.type !== 'admin') {
-    throw new UserException('Unauthorized!');
-  }
   try {
+    if (!req.session.loggedin || req.session.type !== 'admin') {
+      throw new UserException('Unauthorized!');
+    }
     const usersCollection = await dbService.loadCollection('users');
 
     if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string'

@@ -44,8 +44,11 @@
             v-model="loginInfo.password"
             :rules="passwordRules"
             label="Password"
+            :type="showPassword ? 'text' : 'password'"
+            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             required
             @change="dismissError()"
+            @click:append="showPassword = !showPassword"
           />
         </v-form>
       </v-container>
@@ -80,6 +83,7 @@ export default {
     loginResponse: '',
     hasLoginError: false,
     actionDisabled: false,
+    showPassword: false,
   }),
   computed: {
     getStateStatus() {
