@@ -2,7 +2,7 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
-const url = 'http://localhost:5000/api/questions/';
+const url = `${window.location.origin}/api/questions/`;
 
 class QuestionService {
   static getQuestions(count, quizId) {

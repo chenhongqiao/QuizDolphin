@@ -2,7 +2,7 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
-const url = 'http://localhost:5000/api/users/';
+const url = `${window.location.origin}/api/users/`;
 
 class UserService {
   static getUserInformation() {
