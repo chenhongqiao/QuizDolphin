@@ -29,9 +29,14 @@ function OnGoingConstructor(email, questions) {
   this.question = questions;
 }
 
-function UserException(message) {
+function AllQuestionsListConstructor(questions, answers) {
+  this.questions = questions;
+  this.answers = answers;
+}
+
+function ClientException(message) {
   this.message = message;
-  this.type = 'UserException';
+  this.type = 'ClientException';
 }
 
 function getRandomInteger(min, max) {
@@ -46,7 +51,7 @@ router.get('/', async (req, res, next) => {
     }
     const { quizId } = req.query;
     if (!quizId) {
-      throw new UserException('Invalid QuizID!');
+      throw new ClientException('Invalid QuizID!');
     }
     const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
     const allQuestions = await questionsCollection.find({}).toArray();
@@ -55,7 +60,7 @@ router.get('/', async (req, res, next) => {
     const existedIndexs = new Set();
 
     if (!req.query.count || req.query.count > allQuestionCount) {
-      throw new UserException('Invalid Question Count!');
+      throw new ClientException('Invalid Question Count!');
     }
 
     while (userQuestions.length < req.query.count) {
@@ -68,14 +73,14 @@ router.get('/', async (req, res, next) => {
 
     const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
     if (await onGoingCollection.findOne({ email: req.session.email })) {
-      throw new UserException('Unfinished Quiz Detected!');
+      throw new ClientException('Unfinished Quiz Detected!');
     }
     await onGoingCollection.insertOne(new OnGoingConstructor(req.session.email, userQuestions));
 
     res.send(userQuestions);
   } catch (err) {
     if (typeof err === 'object') {
-      if (err.type === 'UserException') {
+      if (err.type === 'ClientException') {
         res.status(400).send(err.message);
       }
       next(`${err.type}: ${err.message}`);
@@ -88,17 +93,17 @@ router.get('/', async (req, res, next) => {
 
 /*
 TODO:
-- Authenication
 - Duplicated uuid handle
 */
+
 router.post('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
-      throw new UserException('Unauthorized!');
+      throw new ClientException('Unauthorized!');
     }
-    const { quizId } = req.query;
+    const { quizId } = req.body.data;
     if (!quizId) {
-      throw new UserException('Invalid QuizID!');
+      throw new ClientException('Invalid QuizID!');
     }
     const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
     const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
@@ -111,7 +116,100 @@ router.post('/', async (req, res, next) => {
     res.send('Success!');
   } catch (err) {
     if (typeof err === 'object') {
-      if (err.type === 'UserException') {
+      if (err.type === 'ClientException') {
+        res.status(400).send(err.message);
+      }
+      next(`${err.type}: ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
+  }
+});
+
+router.get('/all', async (req, res, next) => {
+  try {
+    if (!req.session.loggedin || req.session.type !== 'admin') {
+      throw new ClientException('Unauthorized!');
+    }
+    const { quizId } = req.query;
+    if (!quizId) {
+      throw new ClientException('Invalid QuizID!');
+    }
+    const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
+    const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
+    const allQuestions = await questionsCollection.find({}).toArray();
+    const allAnswers = await answersCollection.find({}).toArray();
+    res.send(new AllQuestionsListConstructor(allQuestions, allAnswers));
+  } catch (err) {
+    if (typeof err === 'object') {
+      if (err.type === 'ClientException') {
+        res.status(400).send(err.message);
+      }
+      next(`${err.type}: ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
+  }
+});
+
+router.delete('/', async (req, res, next) => {
+  try {
+    if (!req.session.loggedin || req.session.type !== 'admin') {
+      throw new ClientException('Unauthorized!');
+    }
+    const { quizId } = req.query;
+    const { uuid } = req.query;
+    if (!quizId) {
+      throw new ClientException('Invalid QuizID!');
+    }
+    if (!uuid) {
+      throw new ClientException('Invalid UUID!');
+    }
+    const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
+    const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
+    await questionsCollection.deleteOne({ uuid });
+    await answersCollection.deleteOne({ uuid });
+    res.send('Success!');
+  } catch (err) {
+    if (typeof err === 'object') {
+      if (err.type === 'ClientException') {
+        res.status(400).send(err.message);
+      }
+      next(`${err.type}: ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
+  }
+});
+
+router.put('/', async (req, res, next) => {
+  try {
+    if (!req.session.loggedin || req.session.type !== 'admin') {
+      throw new ClientException('Unauthorized!');
+    }
+    const { quizId } = req.body.data;
+    const { uuid } = req.query;
+    if (!quizId) {
+      throw new ClientException('Invalid QuizID!');
+    }
+    if (!uuid) {
+      throw new ClientException('Invalid UUID!');
+    }
+    const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
+    const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
+    await questionsCollection.deleteOne({ uuid });
+    await answersCollection.deleteOne({ uuid });
+    const newQuestion = new QuestionConstructor(req.body.data, uuid);
+    const newAnswer = new AnswerConstructor(req.body.data, uuid);
+    await questionsCollection.insertOne(newQuestion);
+    await answersCollection.insertOne(newAnswer);
+    res.send('Success!');
+  } catch (err) {
+    if (typeof err === 'object') {
+      if (err.type === 'ClientException') {
         res.status(400).send(err.message);
       }
       next(`${err.type}: ${err.message}`);
