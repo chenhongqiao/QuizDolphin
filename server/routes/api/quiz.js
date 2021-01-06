@@ -11,9 +11,9 @@ function QuizConstructor(quizName, quizId) {
   this.quizId = quizId;
 }
 
-function UserException(message) {
+function ClientException(message) {
   this.message = message;
-  this.type = 'UserException';
+  this.type = 'ClientException';
 }
 
 router.get('/history', async (req, res, next) => {
@@ -24,7 +24,7 @@ router.get('/history', async (req, res, next) => {
     }
     const { quizId } = req.query;
     if (!quizId) {
-      throw new UserException('Invalid QuizID!');
+      throw new ClientException('Invalid QuizID!');
     }
     const historyCollection = await dbService.loadCollection(`quiz${quizId}-history`);
     const userHistory = await historyCollection.findOne({ email: req.session.email });
@@ -35,7 +35,7 @@ router.get('/history', async (req, res, next) => {
     }
   } catch (err) {
     if (typeof err === 'object') {
-      if (err.type === 'UserException') {
+      if (err.type === 'ClientException') {
         res.status(400).send(err.message);
       }
       next(`${err.type}: ${err.message}`);
@@ -54,7 +54,7 @@ router.get('/ongoingquestion', async (req, res, next) => {
     }
     const { quizId } = req.query;
     if (!quizId) {
-      throw new UserException('Invalid QuizID!');
+      throw new ClientException('Invalid QuizID!');
     }
     const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
     const onGoingQuestion = await onGoingCollection.findOne({ email: req.session.email });
@@ -65,7 +65,7 @@ router.get('/ongoingquestion', async (req, res, next) => {
     }
   } catch (err) {
     if (typeof err === 'object') {
-      if (err.type === 'UserException') {
+      if (err.type === 'ClientException') {
         res.status(400).send(err.message);
       }
       next(`${err.type}: ${err.message}`);
@@ -84,7 +84,7 @@ router.get('/ongoing', async (req, res, next) => {
     }
     const { quizId } = req.query;
     if (!quizId) {
-      throw new UserException('Invalid QuizID!');
+      throw new ClientException('Invalid QuizID!');
     }
     const redis = redisService.loadDatabase(1);
     const redisGet = promisify(redis.get).bind(redis);
@@ -92,7 +92,7 @@ router.get('/ongoing', async (req, res, next) => {
     res.send(JSON.parse((await redisGet(redisKey))));
   } catch (err) {
     if (typeof err === 'object') {
-      if (err.type === 'UserException') {
+      if (err.type === 'ClientException') {
         res.status(400).send(err.message);
       }
       next(`${err.type}: ${err.message}`);
@@ -111,7 +111,7 @@ router.post('/ongoing', async (req, res, next) => {
     }
     const { quizId } = req.body.data;
     if (!quizId) {
-      throw new UserException('Invalid QuizID!');
+      throw new ClientException('Invalid QuizID!');
     }
     const redis = redisService.loadDatabase(1);
     const redisGet = promisify(redis.get).bind(redis);
@@ -126,7 +126,7 @@ router.post('/ongoing', async (req, res, next) => {
     }
   } catch (err) {
     if (typeof err === 'object') {
-      if (err.type === 'UserException') {
+      if (err.type === 'ClientException') {
         res.status(400).send(err.message);
       }
       next(`${err.type}: ${err.message}`);
@@ -139,7 +139,7 @@ router.post('/ongoing', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   if (!req.session.loggedin || req.session.type !== 'admin') {
-    throw new UserException('Unauthorized!');
+    throw new ClientException('Unauthorized!');
   }
   try {
     const quizCollection = await dbService.loadCollection('quiz');

@@ -32,9 +32,9 @@ function HistoryRecordConstructor(email, oldhistory, newrecord) {
   this.history.push(newrecord);
 }
 
-function UserException(message) {
+function ClientException(message) {
   this.message = message;
-  this.type = 'UserException';
+  this.type = 'ClientException';
 }
 
 router.post('/', async (req, res, next) => {
@@ -45,7 +45,7 @@ router.post('/', async (req, res, next) => {
     }
     const { quizId } = req.body.data;
     if (!quizId) {
-      throw new UserException('Invalid QuizID!');
+      throw new ClientException('Invalid QuizID!');
     }
     const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
     const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
@@ -53,7 +53,7 @@ router.post('/', async (req, res, next) => {
     const questionsArray = (await onGoingCollection.findOne({ email: req.session.email })).question;
     const resultsArray = [];
     if (!req.body.data.answers || !Array.isArray(req.body.data.answers)) {
-      throw new UserException('Invalid Answers Array!');
+      throw new ClientException('Invalid Answers Array!');
     }
     let totalPoints = 0;
     const score = req.body.data.answers.reduce(async (accumulator, current, index) => {
@@ -62,13 +62,13 @@ router.post('/', async (req, res, next) => {
       const question = await questionsCollection.findOne({ uuid: questionUuid });
 
       if (!correctAnswer || !question) {
-        throw new UserException('Invalid UUID!');
+        throw new ClientException('Invalid UUID!');
       }
 
       // Grade single choice and short response questions
       if (question.type === 'single choice' || question.type === 'short response') {
         if (typeof current.answer !== 'string') {
-          throw new UserException('Incorrect Answer Type!');
+          throw new ClientException('Incorrect Answer Type!');
         }
         totalPoints += question.points;
         // Gain full points only if user's input match exactly with correct answer
@@ -89,7 +89,7 @@ router.post('/', async (req, res, next) => {
       if (question.type === 'multiple choice') {
         const answersSet = new Set(correctAnswer.answer);
         if (!Array.isArray(current.answer)) {
-          throw new UserException('Incorrect Answer Type!');
+          throw new ClientException('Incorrect Answer Type!');
         }
         totalPoints += question.points;
         // Points are proportional to how many correction opions are chosen.
@@ -116,7 +116,7 @@ router.post('/', async (req, res, next) => {
 
       if (question.type === 'matching') {
         if (!Array.isArray(current.answer)) {
-          throw new UserException('Incorrect Answer Type!');
+          throw new ClientException('Incorrect Answer Type!');
         }
         totalPoints += question.points;
         const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, cindex) => {
@@ -136,7 +136,7 @@ router.post('/', async (req, res, next) => {
 
       if (question.type === 'fill in the blanks') {
         if (!Array.isArray(current.answer)) {
-          throw new UserException('Incorrect Answer Type!');
+          throw new ClientException('Incorrect Answer Type!');
         }
         totalPoints += question.points;
         const correctMatch = current.answer.reduce((countAccumulator, currentRightCol, cindex) => {
@@ -174,7 +174,7 @@ router.post('/', async (req, res, next) => {
     await redisDelete(`quiz${quizId}-${req.session.email}`);
     res.send(quizResult);
   } catch (err) {
-    if (err.type === 'UserException') {
+    if (err.type === 'ClientException') {
       res.status(400).send(err.message);
       next(`${err.type}: ${err.message}`);
     } else {

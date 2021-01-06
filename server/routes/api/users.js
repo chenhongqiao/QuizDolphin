@@ -10,9 +10,9 @@ function getSaltedPassword(password, salt) {
   return hash.digest('hex');
 }
 
-function UserException(message) {
+function ClientException(message) {
   this.message = message;
-  this.type = 'UserException';
+  this.type = 'ClientException';
 }
 
 function UserConstructor(email, password, name, type) {
@@ -32,13 +32,13 @@ function UserInformationConstructor(user) {
 router.post('/new', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
-      throw new UserException('Unauthorized!');
+      throw new ClientException('Unauthorized!');
     }
     const usersCollection = await dbService.loadCollection('users');
 
     if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string'
     || typeof req.body.data.type !== 'string' || typeof req.body.data.name !== 'string') {
-      throw new UserException('Invalid User Information Type!');
+      throw new ClientException('Invalid User Information Type!');
     }
     const userWithSameEmail = await usersCollection.findOne({ email: req.body.data.email });
     if (await userWithSameEmail) {
@@ -51,7 +51,7 @@ router.post('/new', async (req, res, next) => {
       res.send('Success!');
     }
   } catch (err) {
-    if (err.type === 'UserException') {
+    if (err.type === 'ClientException') {
       res.status(400).send(err.message);
       next(`${err.type}: ${err.message}`);
     } else {
@@ -64,7 +64,7 @@ router.post('/new', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
   try {
     if (!req.body.data || typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
-      throw new UserException('Invalid Login Information Type!');
+      throw new ClientException('Invalid Login Information Type!');
     }
     let success = null;
     const usersCollection = await dbService.loadCollection('users');
@@ -92,7 +92,7 @@ router.post('/login', async (req, res, next) => {
       throw new Error('LogicError: variable success is never mutated');
     }
   } catch (err) {
-    if (err.type === 'UserException') {
+    if (err.type === 'ClientException') {
       res.status(400).send(err.message);
       next(`${err.type}: ${err.message}`);
     } else {
@@ -129,7 +129,7 @@ router.get('/information', async (req, res, next) => {
     }
   } catch (err) {
     if (typeof err === 'object') {
-      if (err.type === 'UserException') {
+      if (err.type === 'ClientException') {
         res.status(400).send(err.message);
       }
       next(`${err.type}: ${err.message}`);
