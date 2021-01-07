@@ -46,7 +46,7 @@ router.get('/history', async (req, res, next) => {
   }
 });
 
-router.get('/ongoingquestion', async (req, res, next) => {
+router.get('/question', async (req, res, next) => {
   try {
     if (!req.session.loggedin) {
       res.send('Not Logged In!');
@@ -76,7 +76,7 @@ router.get('/ongoingquestion', async (req, res, next) => {
   }
 });
 
-router.get('/ongoing', async (req, res, next) => {
+router.get('/progress', async (req, res, next) => {
   try {
     if (!req.session.loggedin) {
       res.send('Not Logged In!');
@@ -103,7 +103,7 @@ router.get('/ongoing', async (req, res, next) => {
   }
 });
 
-router.post('/ongoing', async (req, res, next) => {
+router.post('/progress', async (req, res, next) => {
   try {
     if (!req.session.loggedin) {
       res.send('Not Logged In!');

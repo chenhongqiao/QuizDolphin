@@ -17,7 +17,7 @@ class QuizService {
 
   static getOngoing(quizId) {
     return new Promise((resolve, reject) => {
-      axios.get(`${url}ongoingquestion`, {
+      axios.get(`${url}question`, {
         withCredentials: true,
         params: { quizId },
       }).then((data) => resolve(data))
@@ -27,7 +27,7 @@ class QuizService {
 
   static postProgress(quizProgress, quizId) {
     return new Promise((resolve, reject) => {
-      axios.post(`${url}ongoing`, {
+      axios.post(`${url}progress`, {
         withCredentials: true,
         data: { quizProgress, quizId },
       }).then((data) => resolve(data))
@@ -37,7 +37,7 @@ class QuizService {
 
   static getProgress(quizId) {
     return new Promise((resolve, reject) => {
-      axios.get(`${url}ongoing`, {
+      axios.get(`${url}progress`, {
         withCredentials: true,
         params: { quizId },
       }).then((data) => resolve(data))
