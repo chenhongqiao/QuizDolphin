@@ -24,8 +24,9 @@ function AnswerConstructor(question, uuid) {
   this.answer = question.answer;
 }
 
-function OnGoingConstructor(email, questions) {
+function QuizDataConstructor(email, questions, duration) {
   this.email = email;
+  this.endTime = Math.floor(Date.now() / 1000) + duration;
   this.question = questions;
 }
 
@@ -49,21 +50,26 @@ router.get('/', async (req, res, next) => {
       res.send('Not Logged In!');
       return;
     }
-    const { quizId } = req.query;
+    const quizId = parseInt(req.query.quizId, 10);
+    console.log(quizId);
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
+
     const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
+    const quizCollection = await dbService.loadCollection('quiz');
     const allQuestions = await questionsCollection.find({}).toArray();
     const allQuestionCount = allQuestions.length;
     const userQuestions = [];
     const existedIndexs = new Set();
+    const quizInfo = await quizCollection.findOne({ quizId });
+    const { questionCount } = quizInfo;
 
-    if (!req.query.count || req.query.count > allQuestionCount) {
+    if (!questionCount || questionCount > allQuestionCount) {
       throw new ClientException('Invalid Question Count!');
     }
 
-    while (userQuestions.length < req.query.count) {
+    while (userQuestions.length < questionCount) {
       const index = getRandomInteger(0, allQuestionCount);
       if (!existedIndexs.has(index)) {
         userQuestions.push(allQuestions[index]);
@@ -75,9 +81,10 @@ router.get('/', async (req, res, next) => {
     if (await onGoingCollection.findOne({ email: req.session.email })) {
       throw new ClientException('Unfinished Quiz Detected!');
     }
-    await onGoingCollection.insertOne(new OnGoingConstructor(req.session.email, userQuestions));
+    const quizData = new QuizDataConstructor(req.session.email, userQuestions, quizInfo.duration);
+    await onGoingCollection.insertOne(quizData);
 
-    res.send(userQuestions);
+    res.send(quizData);
   } catch (err) {
     if (typeof err === 'object') {
       if (err.type === 'ClientException') {

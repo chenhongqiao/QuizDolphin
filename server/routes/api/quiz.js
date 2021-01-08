@@ -6,9 +6,11 @@ const router = express.Router();
 const dbService = require('../../modules/dbService');
 const redisService = require('../../modules/redisService');
 
-function QuizConstructor(quizName, quizId) {
+function QuizConstructor(quizName, quizId, questionCount, duration) {
   this.quizName = quizName;
   this.quizId = quizId;
+  this.questionCount = questionCount;
+  this.duration = duration;
 }
 
 function ClientException(message) {
@@ -46,7 +48,7 @@ router.get('/history', async (req, res, next) => {
   }
 });
 
-router.get('/question', async (req, res, next) => {
+router.get('/ongoing', async (req, res, next) => {
   try {
     if (!req.session.loggedin) {
       res.send('Not Logged In!');
@@ -57,9 +59,9 @@ router.get('/question', async (req, res, next) => {
       throw new ClientException('Invalid QuizID!');
     }
     const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
-    const onGoingQuestion = await onGoingCollection.findOne({ email: req.session.email });
-    if (onGoingQuestion) {
-      res.send(onGoingQuestion);
+    const onGoingData = await onGoingCollection.findOne({ email: req.session.email });
+    if (onGoingData) {
+      res.send(onGoingData);
     } else {
       res.send('No Ongoing Quiz!');
     }
@@ -144,7 +146,8 @@ router.post('/', async (req, res, next) => {
   try {
     const quizCollection = await dbService.loadCollection('quiz');
     const quizId = await quizCollection.countDocuments() + 1;
-    quizCollection.insertOne(new QuizConstructor(req.body.data.quizName, quizId));
+    quizCollection.insertOne(new QuizConstructor(req.body.data.quizName, quizId,
+      req.body.data.questionCount, req.body.data.duration));
     res.send('Sucess!');
   } catch (err) {
     res.status(500).send('Internal Error!');

@@ -50,7 +50,13 @@ router.post('/', async (req, res, next) => {
     const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
     const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
     const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
-    const questionsArray = (await onGoingCollection.findOne({ email: req.session.email })).question;
+    const onGoingData = (await onGoingCollection.findOne({ email: req.session.email }));
+    const { endTime } = onGoingData;
+    if (Math.floor(Date.now() / 1000) > endTime) {
+      req.send('Late submission, Refuse to grade');
+      return;
+    }
+    const questionsArray = onGoingData.question;
     const resultsArray = [];
     if (!req.body.data.answers || !Array.isArray(req.body.data.answers)) {
       throw new ClientException('Invalid Answers Array!');
