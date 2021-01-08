@@ -68,11 +68,20 @@
     </div>
     <div v-if="quizStarted && quizLoaded && !quizGraded">
       <QuizComponent
-        :quiz-data="quizData"
+        :quiz-data="quizQuestions"
         :quiz-answers.sync="quizAnswers"
         :current-index.sync="currentIndex"
         @quizDone="gradeQuiz"
       />
+      <v-container>
+        <v-row>
+          <v-spacer />
+          <span>
+            Time Left:
+            {{ hoursLeft }} hours {{ minutesLeft }} minutes {{ secondsLeft }} seconds
+          </span>
+        </v-row>
+      </v-container>
     </div>
     <div v-if="quizGraded">
       <ResultComponent
@@ -101,7 +110,7 @@ export default {
   },
   data: () => ({
     quizStarted: true,
-    quizData: [],
+    quizQuestions: [],
     quizResult: {},
     quizAnswers: [],
     quizGraded: false,
@@ -123,7 +132,20 @@ export default {
     },
     pendingSave: false,
     quizOngoing: false,
+    endTime: 0,
+    timeLeft: 0,
   }),
+  computed: {
+    hoursLeft() {
+      return Math.floor(this.timeLeft / 3600);
+    },
+    minutesLeft() {
+      return Math.floor((this.timeLeft % 3600) / 60);
+    },
+    secondsLeft() {
+      return this.timeLeft % 60;
+    },
+  },
   watch: {
     quizAnswers: {
       deep: true,
@@ -154,17 +176,25 @@ export default {
         }
       },
     },
+    timeLeft: {
+      handler() {
+        if (this.timeLeft <= 1) {
+          this.gradeQuiz();
+        }
+      },
+    },
   },
   async beforeMount() {
-    this.quizId = this.$route.params.id;
+    this.quizId = parseInt(this.$route.params.id, 10);
     const previous = (await QuizService.getOngoing(this.quizId)).data;
     if (previous.question) {
-      this.quizData = previous.question;
+      this.quizQuestions = previous.question;
+      this.endTime = previous.endTime;
       const rawResponse = (await QuizService.getProgress(this.quizId)).data;
       this.quizAnswers = rawResponse.attempt;
       if (!this.quizAnswers) {
         this.quizAnswers = [];
-        this.quizData.forEach((question, index) => {
+        this.quizQuestions.forEach((question, index) => {
           if (question.type === 'single choice' || question.type === 'short response') {
             this.quizAnswers[index] = '';
           } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
@@ -176,6 +206,7 @@ export default {
       this.progressVersion = rawResponse.version;
       this.quizOngoing = true;
       this.quizLoaded = true;
+      this.countDown();
     } else {
       this.quizStarted = false;
       this.getHistory();
@@ -184,8 +215,10 @@ export default {
   methods: {
     async startNewQuiz() {
       this.actionDisabled = true;
-      this.quizData = (await QuestionService.getQuestions(5, this.quizId)).data;
-      this.quizData.forEach((question, index) => {
+      const quizData = (await QuestionService.getQuestions(this.quizId)).data;
+      this.quizQuestions = quizData.question;
+      this.endTime = quizData.endTime;
+      this.quizQuestions.forEach((question, index) => {
         if (question.type === 'single choice' || question.type === 'short response') {
           this.quizAnswers[index] = '';
         } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
@@ -195,11 +228,12 @@ export default {
       this.quizOngoing = true;
       this.quizStarted = true;
       this.quizLoaded = true;
+      this.countDown();
     },
     async gradeQuiz() {
       this.quizOngoing = false;
       const processedAnswers = this.quizAnswers.map((value, index) => ({
-        uuid: this.quizData[index].uuid,
+        uuid: this.quizQuestions[index].uuid,
         answer: value,
       }));
       this.quizResult = (await ResultService.gradeQuiz(
@@ -249,6 +283,10 @@ export default {
     },
     toLocalTime(record) {
       return DateTime.fromISO(record.timeStamp).setZone('America/Los_Angeles').toLocaleString(DateTime.DATETIME_MED);
+    },
+    countDown() {
+      this.timeLeft = this.endTime - Math.floor(Date.now() / 1000) - 2;
+      setTimeout(() => this.countDown(), 1000);
     },
   },
 };

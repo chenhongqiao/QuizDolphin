@@ -5,11 +5,10 @@ axios.defaults.withCredentials = true;
 const url = `${window.location.origin}/api/questions/`;
 
 class QuestionService {
-  static getQuestions(count, quizId) {
+  static getQuestions(quizId) {
     return new Promise((resolve, reject) => {
       axios.get(url, {
         params: {
-          count,
           quizId,
         },
         withCredentials: true,

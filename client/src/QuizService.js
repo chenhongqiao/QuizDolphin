@@ -17,7 +17,7 @@ class QuizService {
 
   static getOngoing(quizId) {
     return new Promise((resolve, reject) => {
-      axios.get(`${url}question`, {
+      axios.get(`${url}ongoing`, {
         withCredentials: true,
         params: { quizId },
       }).then((data) => resolve(data))
