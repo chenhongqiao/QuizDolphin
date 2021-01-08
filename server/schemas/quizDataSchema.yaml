@@ -6,4 +6,5 @@
   questions: [
     question: Object
   ]
+  endTime: 0 # Unix time in second
 ---

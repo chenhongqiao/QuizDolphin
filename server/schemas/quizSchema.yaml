@@ -4,6 +4,6 @@
 ---
 - quizName: ""
   quizId: 0
-  problemCount: 0
+  questionCount: 0
   duration: 0 # In minute
 ---
