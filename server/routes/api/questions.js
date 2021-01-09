@@ -51,7 +51,6 @@ router.get('/', async (req, res, next) => {
       return;
     }
     const quizId = parseInt(req.query.quizId, 10);
-    console.log(quizId);
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
