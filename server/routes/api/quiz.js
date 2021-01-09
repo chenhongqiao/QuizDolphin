@@ -4,7 +4,7 @@ const { promisify } = require('util');
 const router = express.Router();
 
 const dbService = require('../../modules/dbService');
-const redisService = require('../../modules/redisService');
+const redis = require('../../modules/redisService');
 const gradingService = require('../../modules/gradingService');
 
 function QuizConstructor(quizName, quizId, questionCount, duration) {
@@ -162,9 +162,8 @@ router.get('/progress', async (req, res, next) => {
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const redis = redisService.loadDatabase(1);
     const redisGet = promisify(redis.get).bind(redis);
-    const redisKey = `quiz${quizId}-${req.session.email}`;
+    const redisKey = `progress:quiz${quizId}-${req.session.email}`;
     res.send(JSON.parse((await redisGet(redisKey))));
   } catch (err) {
     if (typeof err === 'object') {
@@ -189,10 +188,9 @@ router.post('/progress', async (req, res, next) => {
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const redis = redisService.loadDatabase(1);
     const redisGet = promisify(redis.get).bind(redis);
     const redisSet = promisify(redis.set).bind(redis);
-    const redisKey = `quiz${quizId}-${req.session.email}`;
+    const redisKey = `progress:quiz${quizId}-${req.session.email}`;
     const current = JSON.parse((await redisGet(redisKey)));
     if (!current || current.version < req.body.data.quizProgress.version) {
       await redisSet(redisKey, JSON.stringify(req.body.data.quizProgress));
@@ -242,9 +240,8 @@ router.post('/submission', async (req, res, next) => {
     const newHistory = new HistoryRecordConstructor(req.session.email, oldHistory, quizResult);
     await historyCollection.replaceOne({ email: req.session.email }, newHistory, { upsert: true });
     await onGoingCollection.deleteOne({ email: req.session.email });
-    const redis = redisService.loadDatabase(1);
     const redisDelete = promisify(redis.del).bind(redis);
-    await redisDelete(`quiz${quizId}-${req.session.email}`);
+    await redisDelete(`progress:quiz${quizId}-${req.session.email}`);
     res.send(quizResult);
   } catch (err) {
     if (err.type === 'ClientException') {

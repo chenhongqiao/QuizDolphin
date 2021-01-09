@@ -8,9 +8,9 @@ const RedisStore = require('connect-redis')(session);
 const rateLimit = require('express-rate-limit');
 const history = require('connect-history-api-fallback');
 const path = require('path');
-const redisService = require('./modules/redisService');
+const redis = require('./modules/redisService');
 
-const sessionClient = redisService.loadDatabase(0);
+const sessionClient = redis;
 
 const app = express();
 
