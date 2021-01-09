@@ -85,7 +85,7 @@ export default {
     errorMessage: '',
   }),
   async beforeMount() {
-    const userInformation = (await UserService.getUserInformation()).data;
+    const userInformation = (await UserService.getCurrentUser()).data;
     if (userInformation !== 'Not Logged In!') {
       this.$store.commit('login', userInformation);
     } else if (this.$route.path !== '/login') {

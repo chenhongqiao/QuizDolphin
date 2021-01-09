@@ -95,7 +95,7 @@ export default {
       this.actionDisabled = true;
       const response = (await UserService.login(this.loginInfo)).data;
       if (response === 'Success!') {
-        const userInformation = (await UserService.getUserInformation()).data;
+        const userInformation = (await UserService.getCurrentUser()).data;
         this.$store.commit('login', userInformation);
         this.$router.go(-1);
       } else {

@@ -5,9 +5,9 @@ axios.defaults.withCredentials = true;
 const url = `${window.location.origin}/api/users/`;
 
 class UserService {
-  static getUserInformation() {
+  static getCurrentUser() {
     return new Promise((resolve, reject) => {
-      axios.get(`${url}information`, {
+      axios.get(`${url}current`, {
         withCredentials: true,
       }).then((data) => resolve(data))
         .catch((err) => reject(err));
