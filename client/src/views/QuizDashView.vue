@@ -178,7 +178,7 @@ export default {
     },
     timeLeft: {
       handler() {
-        if (this.timeLeft <= 1) {
+        if (this.quizOngoing && this.timeLeft <= 1) {
           this.gradeQuiz();
         }
       },
@@ -286,7 +286,9 @@ export default {
     },
     countDown() {
       this.timeLeft = this.endTime - Math.floor(Date.now() / 1000) - 2;
-      setTimeout(() => this.countDown(), 1000);
+      if (this.quizOngoing) {
+        setTimeout(() => this.countDown(), 1000);
+      }
     },
   },
 };
