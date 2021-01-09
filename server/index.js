@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -19,7 +20,7 @@ app.use(cors({
   credentials: true,
 }));
 app.use(session({
-  secret: 'ef41b182f3883634f166e1aa3595339923635e76',
+  secret: process.env.COOKIESECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
