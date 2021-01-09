@@ -47,10 +47,6 @@ const heartbeat = require('./routes/api/heartbeat');
 
 app.use('/api/heartbeat', heartbeat);
 
-const grading = require('./routes/api/grading');
-
-app.use('/api/grading', grading);
-
 const quiz = require('./routes/api/quiz');
 
 app.use('/api/quiz', quiz);

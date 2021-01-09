@@ -24,12 +24,6 @@ function AnswerConstructor(question, uuid) {
   this.answer = question.answer;
 }
 
-function QuizDataConstructor(email, questions, duration) {
-  this.email = email;
-  this.endTime = Math.floor(Date.now() / 1000) + duration;
-  this.question = questions;
-}
-
 function AllQuestionsListConstructor(questions, answers) {
   this.questions = questions;
   this.answers = answers;
@@ -39,63 +33,6 @@ function ClientException(message) {
   this.message = message;
   this.type = 'ClientException';
 }
-
-function getRandomInteger(min, max) {
-  return min + Math.floor(Math.random() * (max - min));
-}
-
-router.get('/', async (req, res, next) => {
-  try {
-    if (!req.session.loggedin) {
-      res.send('Not Logged In!');
-      return;
-    }
-    const quizId = parseInt(req.query.quizId, 10);
-    if (!quizId) {
-      throw new ClientException('Invalid QuizID!');
-    }
-
-    const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
-    const quizCollection = await dbService.loadCollection('quiz');
-    const allQuestions = await questionsCollection.find({}).toArray();
-    const allQuestionCount = allQuestions.length;
-    const userQuestions = [];
-    const existedIndexs = new Set();
-    const quizInfo = await quizCollection.findOne({ quizId });
-    const { questionCount } = quizInfo;
-
-    if (!questionCount || questionCount > allQuestionCount) {
-      throw new ClientException('Invalid Question Count!');
-    }
-
-    while (userQuestions.length < questionCount) {
-      const index = getRandomInteger(0, allQuestionCount);
-      if (!existedIndexs.has(index)) {
-        userQuestions.push(allQuestions[index]);
-        existedIndexs.add(index);
-      }
-    }
-
-    const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
-    if (await onGoingCollection.findOne({ email: req.session.email })) {
-      throw new ClientException('Unfinished Quiz Detected!');
-    }
-    const quizData = new QuizDataConstructor(req.session.email, userQuestions, quizInfo.duration);
-    await onGoingCollection.insertOne(quizData);
-
-    res.send(quizData);
-  } catch (err) {
-    if (typeof err === 'object') {
-      if (err.type === 'ClientException') {
-        res.status(400).send(err.message);
-      }
-      next(`${err.type}: ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
-  }
-});
 
 /*
 TODO:
@@ -133,7 +70,7 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.get('/all', async (req, res, next) => {
+router.get('/list', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
       throw new ClientException('Unauthorized!');

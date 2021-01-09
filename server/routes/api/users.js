@@ -29,7 +29,7 @@ function UserInformationConstructor(user) {
   this.type = user.type;
 }
 
-router.post('/new', async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
       throw new ClientException('Unauthorized!');
@@ -117,7 +117,7 @@ router.post('/logout', (req, res, next) => {
   }
 });
 
-router.get('/information', async (req, res, next) => {
+router.get('/current', async (req, res, next) => {
   try {
     if (req.session.loggedin === true) {
       const usersCollection = await dbService.loadCollection('users');
