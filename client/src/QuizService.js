@@ -47,8 +47,30 @@ class QuizService {
 
   static getQuizList() {
     return new Promise((resolve, reject) => {
-      axios.get(`${url}`)
+      axios.get(`${url}list`)
         .then((data) => resolve(data))
+        .catch((err) => reject(err));
+    });
+  }
+
+  static getQuizQuestions(quizId) {
+    return new Promise((resolve, reject) => {
+      axios.get(`${url}questions`, {
+        params: {
+          quizId,
+        },
+        withCredentials: true,
+      }).then((data) => resolve(data))
+        .catch((err) => reject(err));
+    });
+  }
+
+  static submitQuiz(answers, quizId) {
+    return new Promise((resolve, reject) => {
+      axios.post(`${url}submission`, {
+        data: { answers, quizId },
+        withCredentials: true,
+      }).then((result) => resolve(result))
         .catch((err) => reject(err));
     });
   }

@@ -96,8 +96,6 @@
 import { DateTime } from 'luxon';
 import QuizComponent from '../components/QuizComponent.vue';
 import ResultComponent from '../components/ResultComponent.vue';
-import QuestionService from '../QuestionService';
-import ResultService from '../ResultService';
 import QuizService from '../QuizService';
 import LineChartComponent from '../components/LineChartComponent.vue';
 
@@ -215,7 +213,7 @@ export default {
   methods: {
     async startNewQuiz() {
       this.actionDisabled = true;
-      const quizData = (await QuestionService.getQuestions(this.quizId)).data;
+      const quizData = (await QuizService.getQuizQuestions(this.quizId)).data;
       this.quizQuestions = quizData.question;
       this.endTime = quizData.endTime;
       this.quizQuestions.forEach((question, index) => {
@@ -236,7 +234,7 @@ export default {
         uuid: this.quizQuestions[index].uuid,
         answer: value,
       }));
-      this.quizResult = (await ResultService.gradeQuiz(
+      this.quizResult = (await QuizService.submitQuiz(
         processedAnswers,
         this.quizId,
       )).data;
