@@ -19,14 +19,16 @@ function ClientException(message) {
   this.type = 'ClientException';
 }
 
-function HistoryRecordConstructor(email, oldhistory, newrecord) {
+function HistoryRecordConstructor(email, oldHistory, newRecord) {
   this.email = email;
-  if (oldhistory) {
-    this.history = oldhistory.history;
+  if (oldHistory) {
+    this.history = oldHistory.history;
+    this.bestScore = Math.max(oldHistory.bestScore, newRecord.score);
   } else {
     this.history = [];
+    this.bestScore = newRecord.score;
   }
-  this.history.push(newrecord);
+  this.history.push(newRecord);
 }
 
 function QuizDataConstructor(email, questions, duration) {
@@ -225,7 +227,7 @@ router.post('/submission', async (req, res, next) => {
     const onGoingData = (await onGoingCollection.findOne({ email: req.session.email }));
     const { endTime } = onGoingData;
     if (Math.floor(Date.now() / 1000) > endTime) {
-      req.send('Late submission, Refuse to grade');
+      res.send('Late submission, Refuse to grade');
       return;
     }
     if (!req.body.data.answers || !Array.isArray(req.body.data.answers)) {
