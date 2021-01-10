@@ -56,6 +56,7 @@
         <v-spacer />
         <v-btn
           :disabled="!loginInfoValid||actionDisabled"
+          text
           @click="login()"
         >
           Login

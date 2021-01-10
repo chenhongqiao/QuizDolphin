@@ -12,9 +12,15 @@
           <v-card-title>
             {{ quiz.quizName }}
           </v-card-title>
+          <v-container>
+            <span>Duration: {{ quiz.duration/60 }} minutes</span>
+          </v-container>
           <v-card-actions>
             <v-spacer />
-            <v-btn @click="toQuiz(quiz.quizId)">
+            <v-btn
+              text
+              @click="toQuiz(quiz.quizId)"
+            >
               Access Quiz
             </v-btn>
           </v-card-actions>
