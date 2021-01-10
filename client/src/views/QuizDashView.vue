@@ -227,7 +227,7 @@ export default {
       this.progressVersion = rawResponse.version;
       this.quizOngoing = true;
       this.quizLoaded = true;
-      setInterval(this.countDown(), 1000);
+      setInterval(() => { this.countDown(); }, 1000);
     } else {
       this.quizStarted = false;
       this.getHistory();
@@ -249,19 +249,14 @@ export default {
       this.quizOngoing = true;
       this.quizStarted = true;
       this.quizLoaded = true;
-      setInterval(this.countDown(), 1000);
+      setInterval(() => { this.countDown(); }, 1000);
     },
     async submitQuiz() {
       this.progressVersion += 1;
       await this.postProgress();
       if (!this.needReload) {
         this.quizOngoing = false;
-        const processedAnswers = this.quizAnswers.map((value, index) => ({
-          uuid: this.quizQuestions[index].uuid,
-          answer: value,
-        }));
         this.quizResult = (await QuizService.submitQuiz(
-          processedAnswers,
           this.quizId,
         )).data;
         if (this.quizResult === 'Not Logged In!') {

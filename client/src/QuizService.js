@@ -65,10 +65,10 @@ class QuizService {
     });
   }
 
-  static submitQuiz(answers, quizId) {
+  static submitQuiz(quizId) {
     return new Promise((resolve, reject) => {
       axios.post(`${url}submission`, {
-        data: { answers, quizId },
+        data: { quizId },
         withCredentials: true,
       }).then((result) => resolve(result))
         .catch((err) => reject(err));

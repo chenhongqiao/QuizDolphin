@@ -230,12 +230,12 @@ router.post('/submission', async (req, res, next) => {
       res.send('Late submission, Refuse to grade');
       return;
     }
-    if (!req.body.data.answers || !Array.isArray(req.body.data.answers)) {
-      throw new ClientException('Invalid Answers Array!');
-    }
+    const redisGet = promisify(redis.get).bind(redis);
+    const userAnswer = JSON.parse(await redisGet(`progress:quiz${quizId}-${req.session.email}`)).attempt;
     const quizResult = await gradingService.gradeQuiz(
       quizId,
-      onGoingData.question, req.body.data.answers,
+      onGoingData.question,
+      userAnswer,
     );
     const historyCollection = await dbService.loadCollection(`quiz${quizId}-history`);
     const oldHistory = await historyCollection.findOne({ email: req.session.email });
