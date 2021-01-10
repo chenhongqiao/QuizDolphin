@@ -71,7 +71,7 @@
         :quiz-data="quizQuestions"
         :quiz-answers.sync="quizAnswers"
         :current-index.sync="currentIndex"
-        @quizDone="gradeQuiz"
+        @quizDone="submitQuiz()"
       />
       <v-container>
         <v-row>
@@ -82,6 +82,28 @@
           </span>
         </v-row>
       </v-container>
+      <v-dialog
+        v-model="needReload"
+        max-width="500px"
+        persistent
+      >
+        <v-card>
+          <v-container>
+            A newer version of your quiz progress detected on cloud.
+            Please click this button to reload.
+          </v-container>
+          <v-divider />
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              text
+              @click="reloadPage()"
+            >
+              Reload
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
     <div v-if="quizGraded">
       <ResultComponent
@@ -132,6 +154,7 @@ export default {
     quizOngoing: false,
     endTime: 0,
     timeLeft: 0,
+    needReload: false,
   }),
   computed: {
     hoursLeft() {
@@ -148,11 +171,11 @@ export default {
     quizAnswers: {
       deep: true,
       handler() {
-        this.progressVersion += 1;
         if (!this.pendingSave) {
           this.pendingSave = true;
           setTimeout(() => {
             if (this.quizOngoing) {
+              this.progressVersion += 1;
               this.pendingSave = false;
               this.postProgress();
             }
@@ -162,11 +185,11 @@ export default {
     },
     currentIndex: {
       handler() {
-        this.progressVersion += 1;
         if (!this.pendingSave) {
           this.pendingSave = true;
           setTimeout(() => {
             if (this.quizOngoing) {
+              this.progressVersion += 1;
               this.pendingSave = false;
               this.postProgress();
             }
@@ -177,7 +200,7 @@ export default {
     timeLeft: {
       handler() {
         if (this.quizOngoing && this.timeLeft <= 1) {
-          this.gradeQuiz();
+          this.submitQuiz();
         }
       },
     },
@@ -228,21 +251,25 @@ export default {
       this.quizLoaded = true;
       setInterval(this.countDown(), 1000);
     },
-    async gradeQuiz() {
-      this.quizOngoing = false;
-      const processedAnswers = this.quizAnswers.map((value, index) => ({
-        uuid: this.quizQuestions[index].uuid,
-        answer: value,
-      }));
-      this.quizResult = (await QuizService.submitQuiz(
-        processedAnswers,
-        this.quizId,
-      )).data;
-      if (this.quizResult === 'Not Logged In!') {
-        this.$store.state.loggedIn = false;
-        this.$router.push('/login');
-      } else {
-        this.quizGraded = true;
+    async submitQuiz() {
+      this.progressVersion += 1;
+      await this.postProgress();
+      if (!this.needReload) {
+        this.quizOngoing = false;
+        const processedAnswers = this.quizAnswers.map((value, index) => ({
+          uuid: this.quizQuestions[index].uuid,
+          answer: value,
+        }));
+        this.quizResult = (await QuizService.submitQuiz(
+          processedAnswers,
+          this.quizId,
+        )).data;
+        if (this.quizResult === 'Not Logged In!') {
+          this.$store.state.loggedIn = false;
+          this.$router.push('/login');
+        } else {
+          this.quizGraded = true;
+        }
       }
     },
     getOrdinal(number) {
@@ -276,7 +303,7 @@ export default {
         this.quizId,
       )).data;
       if (rawResponse === 'Refuse to overwrite!') {
-        window.location.reload();
+        this.needReload = true;
       }
     },
     toLocalTime(record) {
@@ -284,6 +311,9 @@ export default {
     },
     countDown() {
       this.timeLeft = this.endTime - Math.floor(Date.now() / 1000) - 2;
+    },
+    reloadPage() {
+      window.location.reload();
     },
   },
 };
