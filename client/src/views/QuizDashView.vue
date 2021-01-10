@@ -204,7 +204,7 @@ export default {
       this.progressVersion = rawResponse.version;
       this.quizOngoing = true;
       this.quizLoaded = true;
-      this.countDown();
+      setInterval(this.countDown(), 1000);
     } else {
       this.quizStarted = false;
       this.getHistory();
@@ -226,7 +226,7 @@ export default {
       this.quizOngoing = true;
       this.quizStarted = true;
       this.quizLoaded = true;
-      this.countDown();
+      setInterval(this.countDown(), 1000);
     },
     async gradeQuiz() {
       this.quizOngoing = false;
@@ -284,9 +284,6 @@ export default {
     },
     countDown() {
       this.timeLeft = this.endTime - Math.floor(Date.now() / 1000) - 2;
-      if (this.quizOngoing) {
-        setTimeout(() => this.countDown(), 1000);
-      }
     },
   },
 };
