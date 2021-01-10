@@ -3,7 +3,9 @@
 
 ---
 - quizName: ""
+  description: ""
   quizId: 0
   questionCount: 0
-  duration: 0 # In minute
+  duration: 0 # In seconds
+  maxAttempts: 0
 ---

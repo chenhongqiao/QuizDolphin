@@ -3,6 +3,7 @@
 
 ---
 - email: ""
+  bestScore: 0
   history: [
       score: 0,
       toalPoints: 0,
