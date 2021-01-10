@@ -305,7 +305,9 @@ export default {
       return DateTime.fromISO(record.timeStamp).setZone('America/Los_Angeles').toLocaleString(DateTime.DATETIME_MED);
     },
     countDown() {
-      this.timeLeft = this.endTime - Math.floor(Date.now() / 1000) - 2;
+      if (this.quizOngoing) {
+        this.timeLeft = this.endTime - Math.floor(Date.now() / 1000) - 2;
+      }
     },
     reloadPage() {
       window.location.reload();

@@ -225,19 +225,24 @@ router.post('/submission', async (req, res, next) => {
     }
     const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
     const onGoingData = (await onGoingCollection.findOne({ email: req.session.email }));
+    const historyCollection = await dbService.loadCollection(`quiz${quizId}-history`);
+    const redisGet = promisify(redis.get).bind(redis);
+    const userAnswer = JSON.parse(await redisGet(`progress:quiz${quizId}-${req.session.email}`)).attempt;
+    if (!userAnswer || !onGoingData) {
+      const { history } = await historyCollection.findOne({ email: req.session.email });
+      res.send(history[history.length - 1]);
+      return;
+    }
     const { endTime } = onGoingData;
     if (Math.floor(Date.now() / 1000) > endTime) {
       res.send('Late submission, Refuse to grade');
       return;
     }
-    const redisGet = promisify(redis.get).bind(redis);
-    const userAnswer = JSON.parse(await redisGet(`progress:quiz${quizId}-${req.session.email}`)).attempt;
     const quizResult = await gradingService.gradeQuiz(
       quizId,
       onGoingData.question,
       userAnswer,
     );
-    const historyCollection = await dbService.loadCollection(`quiz${quizId}-history`);
     const oldHistory = await historyCollection.findOne({ email: req.session.email });
     const newHistory = new HistoryRecordConstructor(req.session.email, oldHistory, quizResult);
     await historyCollection.replaceOne({ email: req.session.email }, newHistory, { upsert: true });

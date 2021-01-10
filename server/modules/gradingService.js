@@ -27,7 +27,6 @@ async function gradeQuiz(quizId, questionsArray, answersArray) {
   const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
   const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
   const score = answersArray.reduce(async (accumulator, current, index) => {
-    console.log(current);
     const questionUuid = questionsArray[index].uuid;
     const correctAnswer = await answersCollection.findOne({ uuid: questionUuid });
     const question = await questionsCollection.findOne({ uuid: questionUuid });
