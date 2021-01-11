@@ -3,13 +3,11 @@
 
 ---
 - email: ""
-  bestScore: 0
-  history: [
-      score: 0,
-      toalPoints: 0,
-      timeStamp: "",
-      questions: [
-        question: Object
-      ]
+  attemptId: ""
+  score: 0
+  toalPoints: 0
+  timeStamp: ""
+  questions: [
+    question: Object
   ]
 ---

@@ -2,10 +2,7 @@
 # Formats are enforced by validation functions instead, which are designed base on this document.
 
 ---
-- email: ""
-  questions: [
-    question: Object
-  ]
-  endTime: 0 # Unix time in second
-  attemptId: "" # UUID
+- version: 0
+  attempt: []
+  attemptId: ""
 ---
