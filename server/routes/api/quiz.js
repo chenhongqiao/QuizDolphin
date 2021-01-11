@@ -1,10 +1,10 @@
 const express = require('express');
-const { promisify } = require('util');
+const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
 
 const dbService = require('../../modules/dbService');
-const redis = require('../../modules/redisService');
+const redisService = require('../../modules/redisService');
 const gradingService = require('../../modules/gradingService');
 
 function QuizConstructor(quizName, quizId, questionCount, duration) {
@@ -31,16 +31,34 @@ function HistoryRecordConstructor(email, oldHistory, newRecord) {
   this.history.push(newRecord);
 }
 
-function QuizDataConstructor(email, questions, duration) {
+function QuizDataConstructor(email, questions, duration, attemptId) {
   this.email = email;
   this.endTime = Math.floor(Date.now() / 1000) + duration;
   this.question = questions;
+  this.attemptId = attemptId;
+}
+
+function ProgressConstructor(version, attempt, attemptId) {
+  this.version = version;
+  this.attempt = attempt;
+  this.attemptId = attemptId;
 }
 
 function getRandomInteger(min, max) {
   return min + Math.floor(Math.random() * (max - min));
 }
 
+function getInitialAttempt(quizData) {
+  const initialAttempt = [];
+  quizData.questions.forEach((question, index) => {
+    if (question.type === 'single choice' || question.type === 'short response') {
+      initialAttempt[index] = '';
+    } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
+      initialAttempt[index] = [];
+    }
+  });
+  return initialAttempt;
+}
 router.get('/questions', async (req, res, next) => {
   try {
     if (!req.session.loggedin) {
@@ -51,7 +69,18 @@ router.get('/questions', async (req, res, next) => {
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-
+    const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
+    const previousQuizData = await onGoingCollection.findOne({ email: req.session.email });
+    if (previousQuizData) {
+      if (!await redisService.get(`progress:${req.session.email}-${previousQuizData.attemptId}`)) {
+        const initialAttempt = getInitialAttempt(previousQuizData.question);
+        const initialProgress = new ProgressConstructor(1,
+          initialAttempt, previousQuizData.attemptId);
+        await redisService.set(`progress:${req.session.email}-${previousQuizData.attemptId}`, JSON.stringify(initialProgress));
+      }
+      res.send(previousQuizData);
+      return;
+    }
     const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
     const quizCollection = await dbService.loadCollection('quiz');
     const allQuestions = await questionsCollection.find({}).toArray();
@@ -72,14 +101,13 @@ router.get('/questions', async (req, res, next) => {
         existedIndexs.add(index);
       }
     }
-
-    const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
-    if (await onGoingCollection.findOne({ email: req.session.email })) {
-      throw new ClientException('Unfinished Quiz Detected!');
-    }
-    const quizData = new QuizDataConstructor(req.session.email, userQuestions, quizInfo.duration);
+    const attemptId = uuidv4();
+    const quizData = new QuizDataConstructor(req.session.email, userQuestions,
+      quizInfo.duration, attemptId);
+    const initialAttempt = getInitialAttempt(quizData.question);
+    const initialProgress = new ProgressConstructor(1, initialAttempt, attemptId);
     await onGoingCollection.insertOne(quizData);
-
+    await redisService.set(`progress:${req.session.email}-${attemptId}`, JSON.stringify(initialProgress));
     res.send(quizData);
   } catch (err) {
     if (typeof err === 'object') {
@@ -105,41 +133,11 @@ router.get('/history', async (req, res, next) => {
       throw new ClientException('Invalid QuizID!');
     }
     const historyCollection = await dbService.loadCollection(`quiz${quizId}-history`);
-    const userHistory = await historyCollection.findOne({ email: req.session.email });
+    const userHistory = await historyCollection.find({ email: req.session.email }).toArray();
     if (userHistory === null) {
       res.send('No History!');
     } else {
       res.send(userHistory.history);
-    }
-  } catch (err) {
-    if (typeof err === 'object') {
-      if (err.type === 'ClientException') {
-        res.status(400).send(err.message);
-      }
-      next(`${err.type}: ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
-  }
-});
-
-router.get('/ongoing', async (req, res, next) => {
-  try {
-    if (!req.session.loggedin) {
-      res.send('Not Logged In!');
-      return;
-    }
-    const { quizId } = req.query;
-    if (!quizId) {
-      throw new ClientException('Invalid QuizID!');
-    }
-    const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
-    const onGoingData = await onGoingCollection.findOne({ email: req.session.email });
-    if (onGoingData) {
-      res.send(onGoingData);
-    } else {
-      res.send('No Ongoing Quiz!');
     }
   } catch (err) {
     if (typeof err === 'object') {
@@ -161,12 +159,11 @@ router.get('/progress', async (req, res, next) => {
       return;
     }
     const { quizId } = req.query;
+    const { attemptId } = req.query;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const redisGet = promisify(redis.get).bind(redis);
-    const redisKey = `progress:quiz${quizId}-${req.session.email}`;
-    res.send(JSON.parse((await redisGet(redisKey))));
+    res.send(JSON.parse((await redisService.get(`progress:${req.session.email}-${attemptId}`))));
   } catch (err) {
     if (typeof err === 'object') {
       if (err.type === 'ClientException') {
@@ -187,15 +184,17 @@ router.post('/progress', async (req, res, next) => {
       return;
     }
     const { quizId } = req.body.data;
+    const { attemptId } = req.body.data.quizProgress.attemptId;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const redisGet = promisify(redis.get).bind(redis);
-    const redisSet = promisify(redis.set).bind(redis);
-    const redisKey = `progress:quiz${quizId}-${req.session.email}`;
-    const current = JSON.parse((await redisGet(redisKey)));
-    if (!current || current.version < req.body.data.quizProgress.version) {
-      await redisSet(redisKey, JSON.stringify(req.body.data.quizProgress));
+    const current = JSON.parse((await redisService.get(`progress:${req.session.email}-${attemptId}`)));
+    if (!current) {
+      res.send('Invalid Attempt ID or Email');
+      return;
+    }
+    if (current.version < req.body.data.quizProgress.version) {
+      await redisService.set(`progress:${req.session.email}-${attemptId}`, JSON.stringify(req.body.data.quizProgress));
       res.send('Success!');
     } else {
       res.send('Refuse to overwrite!');
@@ -213,24 +212,23 @@ router.post('/progress', async (req, res, next) => {
   }
 });
 
-router.post('/submission', async (req, res, next) => {
+router.get('/result', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
       res.send('Not Logged In!');
       return;
     }
-    const { quizId } = req.body.data;
+    const quizId = parseInt(req.query.quizId, 10);
+    const { attemptId } = req.query;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
     const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
     const onGoingData = (await onGoingCollection.findOne({ email: req.session.email }));
     const historyCollection = await dbService.loadCollection(`quiz${quizId}-history`);
-    const redisGet = promisify(redis.get).bind(redis);
-    const userAnswer = JSON.parse(await redisGet(`progress:quiz${quizId}-${req.session.email}`)).attempt;
-    if (!userAnswer || !onGoingData) {
-      const { history } = await historyCollection.findOne({ email: req.session.email });
-      res.send(history[history.length - 1]);
+    const userAnswer = JSON.parse(await redisService.get(`progress:${req.session.email}-${attemptId}`)).attempt;
+    if (!userAnswer || !onGoingData || onGoingData.attemptId !== attemptId) {
+      res.send(await historyCollection.findOne({ attemptId }));
       return;
     }
     const { endTime } = onGoingData;
@@ -247,8 +245,7 @@ router.post('/submission', async (req, res, next) => {
     const newHistory = new HistoryRecordConstructor(req.session.email, oldHistory, quizResult);
     await historyCollection.replaceOne({ email: req.session.email }, newHistory, { upsert: true });
     await onGoingCollection.deleteOne({ email: req.session.email });
-    const redisDelete = promisify(redis.del).bind(redis);
-    await redisDelete(`progress:quiz${quizId}-${req.session.email}`);
+    await redisService.del(`progress:${req.session.email}-${attemptId}`);
     res.send(quizResult);
   } catch (err) {
     if (err.type === 'ClientException') {
