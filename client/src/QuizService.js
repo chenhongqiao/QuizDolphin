@@ -15,16 +15,6 @@ class QuizService {
     });
   }
 
-  static getOngoing(quizId) {
-    return new Promise((resolve, reject) => {
-      axios.get(`${url}ongoing`, {
-        withCredentials: true,
-        params: { quizId },
-      }).then((data) => resolve(data))
-        .catch((err) => reject(err));
-    });
-  }
-
   static postProgress(quizProgress, quizId) {
     return new Promise((resolve, reject) => {
       axios.post(`${url}progress`, {
@@ -35,11 +25,11 @@ class QuizService {
     });
   }
 
-  static getProgress(quizId) {
+  static getProgress(quizId, attemptId) {
     return new Promise((resolve, reject) => {
       axios.get(`${url}progress`, {
         withCredentials: true,
-        params: { quizId },
+        params: { quizId, attemptId },
       }).then((data) => resolve(data))
         .catch((err) => reject(err));
     });
@@ -53,11 +43,12 @@ class QuizService {
     });
   }
 
-  static getQuizQuestions(quizId) {
+  static getQuizQuestions(quizId, newQuiz) {
     return new Promise((resolve, reject) => {
       axios.get(`${url}questions`, {
         params: {
           quizId,
+          newQuiz,
         },
         withCredentials: true,
       }).then((data) => resolve(data))
@@ -65,10 +56,10 @@ class QuizService {
     });
   }
 
-  static submitQuiz(quizId) {
+  static submitQuiz(quizId, attemptId) {
     return new Promise((resolve, reject) => {
-      axios.post(`${url}submission`, {
-        data: { quizId },
+      axios.get(`${url}result`, {
+        params: { quizId, attemptId },
         withCredentials: true,
       }).then((result) => resolve(result))
         .catch((err) => reject(err));
