@@ -66,7 +66,7 @@ router.post('/login', async (req, res, next) => {
     if (!req.body.data || typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
       throw new ClientException('Invalid Login Information Type!');
     }
-    let success = null;
+    let success = false;
     const usersCollection = await dbService.loadCollection('users');
     const userInformation = await usersCollection.findOne({ email: req.body.data.email });
     if (!userInformation) {
@@ -81,15 +81,13 @@ router.post('/login', async (req, res, next) => {
     }
     // Success or unsuccess is sent together at the end to prevent hackers from guessing
     // if the email or the password is incorrect from response time.
-    if (success === true) {
+    if (success) {
       req.session.loggedin = true;
       req.session.email = req.body.data.email;
       req.session.type = userInformation.type;
       res.send('Success!');
-    } else if (success === false) {
-      res.send('Incorrect Login Information!');
     } else {
-      throw new Error('LogicError: variable success is never mutated');
+      res.send('Incorrect Login Information!');
     }
   } catch (err) {
     if (err.type === 'ClientException') {
