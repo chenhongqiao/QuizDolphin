@@ -3,7 +3,7 @@
 
 ---
 - version: 0
-  attempt: []
+  quizResponses: []
   index: 1
   attemptId: ""
 ---
