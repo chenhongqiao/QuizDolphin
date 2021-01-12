@@ -156,6 +156,7 @@ export default {
     timeLeft: 0,
     needReload: false,
     attemptId: '',
+    timer: undefined,
   }),
   computed: {
     hoursLeft() {
@@ -219,7 +220,7 @@ export default {
       this.progressVersion = progress.version;
       this.quizOngoing = true;
       this.quizLoaded = true;
-      setInterval(() => { this.countDown(); }, 1000);
+      this.timer = setInterval(() => { this.countDown(); }, 1000);
     } else {
       this.quizStarted = false;
       this.getHistory();
@@ -243,6 +244,7 @@ export default {
       setInterval(() => { this.countDown(); }, 1000);
     },
     async submitQuiz() {
+      clearInterval(this.timer);
       this.progressVersion += 1;
       await this.postProgress();
       if (!this.needReload) {
