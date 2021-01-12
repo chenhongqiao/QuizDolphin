@@ -43,7 +43,7 @@
 
           <div v-if="quizData[currentQuestion-1].type==='single choice'">
             <v-radio-group
-              v-model="quizAttempts[currentQuestion-1]"
+              v-model="quizResponses[currentQuestion-1]"
               row
             >
               <v-col
@@ -61,7 +61,7 @@
 
           <div v-if="quizData[currentQuestion-1].type==='short response'">
             <v-text-field
-              v-model="quizAttempts[currentQuestion-1]"
+              v-model="quizResponses[currentQuestion-1]"
               name="Your response"
             />
           </div>
@@ -74,7 +74,7 @@
                 md="3"
               >
                 <v-checkbox
-                  v-model="quizAttempts[currentQuestion-1]"
+                  v-model="quizResponses[currentQuestion-1]"
                   :label="option"
                   :value="option"
                 />
@@ -94,7 +94,7 @@
               </v-col>
               <v-col md="4">
                 <v-select
-                  v-model="quizAttempts[currentQuestion-1][index]"
+                  v-model="quizResponses[currentQuestion-1][index]"
                   :items="quizData[currentQuestion-1].rightcol"
                   dense
                   @input="updateRightCol(index)"
@@ -112,7 +112,7 @@
                 {{ context }}
                 <v-select
                   v-if="quizData[currentQuestion-1].options[index]"
-                  v-model="quizAttempts[currentQuestion-1][index]"
+                  v-model="quizResponses[currentQuestion-1][index]"
                   class="d-inline-flex"
                   :items="quizData[currentQuestion-1].options[index]"
                   dense
@@ -189,18 +189,18 @@ export default {
   name: 'QuizComponent',
   props: {
     quizData: { type: Array, default: null },
-    quizAnswers: { type: Array, default: null },
+    previousResponses: { type: Array, default: null },
     currentIndex: { type: Number, default: 1 },
   },
   data: () => ({
     currentQuestion: 1,
-    quizAttempts: [],
+    quizResponses: [],
     pendingSubmission: false,
     actionDisabled: false,
   }),
   computed: {
     attemptedNumber() {
-      const attempted = this.quizAttempts.reduce((accumulator, current) => {
+      const attempted = this.quizResponses.reduce((accumulator, current) => {
         if (Array.isArray(current)) {
           if (current.length !== 0) {
             return accumulator + 1;
@@ -220,10 +220,10 @@ export default {
     },
   },
   watch: {
-    quizAttempts: {
+    quizResponses: {
       deep: true,
       handler() {
-        this.$emit('update:quizAnswers', this.quizAttempts);
+        this.$emit('update:previousResponses', this.quizResponses);
       },
     },
     currentQuestion: {
@@ -234,23 +234,23 @@ export default {
   },
   beforeMount() {
     this.currentQuestion = this.currentIndex;
-    this.quizAttempts = [...this.quizAnswers];
+    this.quizResponses = [...this.previousResponses];
   },
   methods: {
     submitQuiz() {
       this.actionDisabled = true;
-      this.$emit('update:quizAnswers', this.quizAttempts);
+      this.$emit('update:previousResponses', this.quizResponses);
       this.$emit('quizDone');
     },
     updateRightCol(index) {
-      let targetIndex = this.quizAttempts[this.currentQuestion - 1]
-        .indexOf(this.quizAttempts[this.currentQuestion - 1][index]);
+      let targetIndex = this.quizResponses[this.currentQuestion - 1]
+        .indexOf(this.quizResponses[this.currentQuestion - 1][index]);
       if (targetIndex === index) {
-        targetIndex = this.quizAttempts[this.currentQuestion - 1]
-          .indexOf(this.quizAttempts[this.currentQuestion - 1][index], index + 1);
+        targetIndex = this.quizResponses[this.currentQuestion - 1]
+          .indexOf(this.quizResponses[this.currentQuestion - 1][index], index + 1);
       }
       if (targetIndex !== -1) {
-        this.quizAttempts[this.currentQuestion - 1][targetIndex] = null;
+        this.quizResponses[this.currentQuestion - 1][targetIndex] = null;
       }
     },
   },

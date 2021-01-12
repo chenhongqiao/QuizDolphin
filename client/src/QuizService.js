@@ -15,11 +15,11 @@ class QuizService {
     });
   }
 
-  static postProgress(quizProgress, quizId) {
+  static postProgress(progress, quizId) {
     return new Promise((resolve, reject) => {
       axios.post(`${url}progress`, {
         withCredentials: true,
-        data: { quizProgress, quizId },
+        data: { progress, quizId },
       }).then((data) => resolve(data))
         .catch((err) => reject(err));
     });

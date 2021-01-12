@@ -13,8 +13,8 @@
           <v-container>
             <h2>Problem #{{ currentQuestion }}</h2>
             <div>
-              Score: {{ quizResult.questionsResult[currentQuestion-1].score.toFixed(2) }}
-              out of {{ quizResult.questionsResult[currentQuestion-1].points }}
+              Score: {{ quizResult.results[currentQuestion-1].score.toFixed(2) }}
+              out of {{ quizResult.results[currentQuestion-1].points }}
             </div>
             <div>Type: {{ quizResult.questions[currentQuestion-1].type }}</div>
           </v-container>
@@ -55,12 +55,12 @@
                   md="3"
                 >
                   <div
-                    v-if="isChosen(option ,quizResult.questionsResult[currentQuestion-1].
-                      userAnswer)"
+                    v-if="isChosen(option ,quizResult.results[currentQuestion-1].
+                      response)"
                   >
                     <v-checkbox
                       v-if="isCorrect(option, quizResult
-                        .questionsResult[currentQuestion-1].correctAnswer)"
+                        .results[currentQuestion-1].answer)"
                       color="green"
                       :input-value="true"
                       readonly
@@ -82,7 +82,7 @@
                   </div>
                   <v-checkbox
                     v-else-if="isCorrect(option, quizResult
-                      .questionsResult[currentQuestion-1].correctAnswer)"
+                      .results[currentQuestion-1].answer)"
                     color="green"
                     readonly
                   >
@@ -104,23 +104,23 @@
 
             <div v-if="quizResult.questions[currentQuestion-1].type==='short response'">
               <div
-                v-if="quizResult.questionsResult[currentQuestion-1].userAnswer
-                  ===quizResult.questionsResult[currentQuestion-1].correctAnswer"
+                v-if="quizResult.results[currentQuestion-1].response
+                  ===quizResult.results[currentQuestion-1].answer"
               >
                 <v-text-field
-                  :value="quizResult.questionsResult[currentQuestion-1].userAnswer"
+                  :value="quizResult.results[currentQuestion-1].response"
                   background-color="#66bb6a"
                   readonly
                 />
               </div>
               <div v-else>
                 <v-text-field
-                  :value="quizResult.questionsResult[currentQuestion-1].userAnswer"
+                  :value="quizResult.results[currentQuestion-1].response"
                   background-color="#ef5350"
                   readonly
                 />
                 <div>
-                  Correct Answer: {{ quizResult.questionsResult[currentQuestion-1].correctAnswer }}
+                  Correct Answer: {{ quizResult.results[currentQuestion-1].answer }}
                 </div>
               </div>
             </div>
@@ -133,12 +133,12 @@
                   md="3"
                 >
                   <div
-                    v-if="isChosen(option ,quizResult.questionsResult[currentQuestion-1].
-                      userAnswer)"
+                    v-if="isChosen(option ,quizResult.results[currentQuestion-1].
+                      response)"
                   >
                     <v-checkbox
                       v-if="isCorrect(option, quizResult
-                        .questionsResult[currentQuestion-1].correctAnswer)"
+                        .results[currentQuestion-1].answer)"
                       color="green"
                       :input-value="true"
                       readonly
@@ -160,7 +160,7 @@
                   </div>
                   <v-checkbox
                     v-else-if="isCorrect(option, quizResult
-                      .questionsResult[currentQuestion-1].correctAnswer)"
+                      .results[currentQuestion-1].answer)"
                     color="green"
                     readonly
                   >
@@ -190,12 +190,12 @@
                   </v-container>
                 </v-col>
                 <v-col
-                  v-if="quizResult.questionsResult[currentQuestion-1].userAnswer[index]===
-                    quizResult.questionsResult[currentQuestion-1].correctAnswer[index]"
+                  v-if="quizResult.results[currentQuestion-1].response[index]===
+                    quizResult.results[currentQuestion-1].answer[index]"
                   md="4"
                 >
                   <v-select
-                    :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
+                    :value="quizResult.results[currentQuestion-1].response[index]"
                     :items="quizResult.questions[currentQuestion-1].rightcol"
                     background-color="#66bb6a"
                     readonly
@@ -206,7 +206,7 @@
                   md="4"
                 >
                   <v-select
-                    :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
+                    :value="quizResult.results[currentQuestion-1].response[index]"
                     :items="quizResult.questions[currentQuestion-1].rightcol"
                     background-color="#ef5350"
                     dense
@@ -214,7 +214,7 @@
                   />
                   <div>
                     Correct Answer:
-                    {{ quizResult.questionsResult[currentQuestion-1].correctAnswer[index] }}
+                    {{ quizResult.results[currentQuestion-1].answer[index] }}
                   </div>
                 </v-col>
               </v-row>
@@ -227,13 +227,13 @@
                 :key="'qz'+quizResult.questions[currentQuestion-1].uuid+context"
               >
                 <span
-                  v-if="quizResult.questionsResult[currentQuestion-1].userAnswer[index]===
-                    quizResult.questionsResult[currentQuestion-1].correctAnswer[index]"
+                  v-if="quizResult.results[currentQuestion-1].response[index]===
+                    quizResult.results[currentQuestion-1].answer[index]"
                 >
                   {{ context }}
                   <v-select
                     v-if="quizResult.questions[currentQuestion-1].options[index]"
-                    :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
+                    :value="quizResult.results[currentQuestion-1].response[index]"
                     readonly
                     class="d-inline-flex"
                     background-color="#66bb6a"
@@ -247,15 +247,15 @@
                   {{ context }}
                   <v-select
                     v-if="quizResult.questions[currentQuestion-1].options[index]"
-                    :value="quizResult.questionsResult[currentQuestion-1].userAnswer[index]"
+                    :value="quizResult.results[currentQuestion-1].response[index]"
                     readonly
                     class="d-inline-flex"
                     background-color="#ef5350"
                     :items="quizResult.questions[currentQuestion-1].options[index]"
                     dense
                   />
-                  <span style="color: green"><em>{{ quizResult.questionsResult[currentQuestion-1]
-                    .correctAnswer[index] }}</em></span>
+                  <span style="color: green"><em>{{ quizResult.results[currentQuestion-1]
+                    .answer[index] }}</em></span>
                 </span>
               </span>
             </div>
@@ -290,19 +290,19 @@ export default {
 
   }),
   methods: {
-    isChosen(option, userAnswer) {
-      if (Array.isArray(userAnswer)) {
-        const answerSet = new Set(userAnswer);
+    isChosen(option, response) {
+      if (Array.isArray(response)) {
+        const answerSet = new Set(response);
         return answerSet.has(option);
       }
-      return userAnswer === option;
+      return response === option;
     },
-    isCorrect(userAnswer, correctAnswer) {
-      if (Array.isArray(correctAnswer)) {
-        const answerSet = new Set(correctAnswer);
-        return answerSet.has(userAnswer);
+    isCorrect(response, answer) {
+      if (Array.isArray(answer)) {
+        const answerSet = new Set(answer);
+        return answerSet.has(response);
       }
-      return userAnswer === correctAnswer;
+      return response === answer;
     },
     generateReport() {
       window.scrollTo(0, 0);

@@ -26,9 +26,9 @@ function QuizDataConstructor(email, questions, duration, attemptId) {
   this.attemptId = attemptId;
 }
 
-function ProgressConstructor(version, attempt, attemptId) {
+function ProgressConstructor(version, responses, attemptId) {
   this.version = version;
-  this.attempt = attempt;
+  this.responses = responses;
   this.attemptId = attemptId;
   this.index = 1;
 }
@@ -37,16 +37,16 @@ function getRandomInteger(min, max) {
   return min + Math.floor(Math.random() * (max - min));
 }
 
-function getInitialAttempt(quizData) {
-  const initialAttempt = [];
+function getInitialResponses(quizData) {
+  const initialResponses = [];
   quizData.forEach((question, index) => {
     if (question.type === 'single choice' || question.type === 'short response') {
-      initialAttempt[index] = '';
+      initialResponses[index] = '';
     } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
-      initialAttempt[index] = [];
+      initialResponses[index] = [];
     }
   });
-  return initialAttempt;
+  return initialResponses;
 }
 router.get('/questions', async (req, res, next) => {
   try {
@@ -58,13 +58,13 @@ router.get('/questions', async (req, res, next) => {
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
-    const previousQuizData = await onGoingCollection.findOne({ email: req.session.email });
+    const attemptsCollection = await dbService.loadCollection(`quiz${quizId}-attempts`);
+    const previousQuizData = await attemptsCollection.findOne({ email: req.session.email });
     if (previousQuizData) {
       if (!await redisService.get(`progress:${quizId}-${req.session.email}-${previousQuizData.attemptId}`)) {
-        const initialAttempt = getInitialAttempt(previousQuizData.questions);
+        const initialResponses = getInitialResponses(previousQuizData.questions);
         const initialProgress = new ProgressConstructor(1,
-          initialAttempt, previousQuizData.attemptId);
+          initialResponses, previousQuizData.attemptId);
         await redisService.set(`progress:${quizId}-${req.session.email}-${previousQuizData.attemptId}`, JSON.stringify(initialProgress));
         await redisService.setnx(`endTime:${quizId}-${req.session.email}-${previousQuizData.attemptId}`, JSON.stringify(previousQuizData.endTime));
       }
@@ -73,7 +73,7 @@ router.get('/questions', async (req, res, next) => {
     }
     if (req.query.newQuiz === 'true') {
       const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
-      const quizCollection = await dbService.loadCollection('quiz');
+      const quizCollection = await dbService.loadCollection('quizzes');
       const allQuestions = await questionsCollection.find({}).toArray();
       const allQuestionCount = allQuestions.length;
       const userQuestions = [];
@@ -95,9 +95,9 @@ router.get('/questions', async (req, res, next) => {
       const attemptId = uuidv4();
       const quizData = new QuizDataConstructor(req.session.email, userQuestions,
         quizInfo.duration, attemptId);
-      const initialAttempt = getInitialAttempt(quizData.questions);
-      const initialProgress = new ProgressConstructor(1, initialAttempt, attemptId);
-      await onGoingCollection.insertOne(quizData);
+      const initialResponses = getInitialResponses(quizData.questions);
+      const initialProgress = new ProgressConstructor(1, initialResponses, attemptId);
+      await attemptsCollection.insertOne(quizData);
       await redisService.set(`progress:${quizId}-${req.session.email}-${attemptId}`, JSON.stringify(initialProgress));
       await redisService.setnx(`endTime:${quizId}-${req.session.email}-${attemptId}`, JSON.stringify(quizData.endTime));
       res.send(quizData);
@@ -127,8 +127,8 @@ router.get('/history', async (req, res, next) => {
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const historyCollection = await dbService.loadCollection(`quiz${quizId}-history`);
-    const userHistory = await historyCollection.find({
+    const resultsCollection = await dbService.loadCollection(`quiz${quizId}-results`);
+    const userHistory = await resultsCollection.find({
       $query: { email: req.session.email },
       $orderby: { timeStamp: 1 },
     }).toArray();
@@ -182,20 +182,20 @@ router.post('/progress', async (req, res, next) => {
       return;
     }
     const { quizId } = req.body.data;
-    const { attemptId } = req.body.data.quizProgress;
+    const { attemptId } = req.body.data.progress;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
     const endTime = await redisService.get(`endTime:${quizId}-${req.session.email}-${attemptId}`);
     if (!endTime) {
-      const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
-      const previousQuizData = await onGoingCollection.findOne({ email: req.session.email });
+      const attemptsCollection = await dbService.loadCollection(`quiz${quizId}-attempts`);
+      const previousQuizData = await attemptsCollection.findOne({ email: req.session.email });
       await redisService.setnx(`endTime:${quizId}-${req.session.email}-${previousQuizData.attemptId}`, JSON.stringify(previousQuizData.endTime));
     }
     if (Math.floor(Date.now() / 1000) <= endTime) {
       const current = JSON.parse((await redisService.get(`progress:${quizId}-${req.session.email}-${attemptId}`)));
-      if (!current || current.version < req.body.data.quizProgress.version) {
-        await redisService.set(`progress:${quizId}-${req.session.email}-${attemptId}`, JSON.stringify(req.body.data.quizProgress));
+      if (!current || current.version < req.body.data.progress.version) {
+        await redisService.set(`progress:${quizId}-${req.session.email}-${attemptId}`, JSON.stringify(req.body.data.progress));
         res.send('Success!');
       } else {
         res.send('Refuse to overwrite!');
@@ -227,23 +227,23 @@ router.get('/result', async (req, res, next) => {
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const onGoingCollection = await dbService.loadCollection(`quiz${quizId}-ongoing`);
-    const onGoingData = (await onGoingCollection.findOne({ email: req.session.email }));
-    const historyCollection = await dbService.loadCollection(`quiz${quizId}-history`);
-    const userAnswer = JSON.parse(await redisService.get(`progress:${quizId}-${req.session.email}-${attemptId}`)).attempt;
-    if (!userAnswer || !onGoingData || onGoingData.attemptId !== attemptId) {
-      res.send(await historyCollection.findOne({ attemptId }));
+    const attemptsCollection = await dbService.loadCollection(`quiz${quizId}-attempts`);
+    const attemptData = (await attemptsCollection.findOne({ email: req.session.email }));
+    const resultsCollection = await dbService.loadCollection(`quiz${quizId}-results`);
+    const response = JSON.parse(await redisService.get(`progress:${quizId}-${req.session.email}-${attemptId}`)).responses;
+    if (!response || !attemptData || attemptData.attemptId !== attemptId) {
+      res.send(await resultsCollection.findOne({ attemptId }));
       return;
     }
     const quizResult = await gradingService.gradeQuiz(
       quizId,
-      onGoingData.questions,
-      userAnswer,
+      attemptData.questions,
+      response,
     );
     quizResult.attemptId = attemptId;
     quizResult.email = req.session.email;
-    await historyCollection.insertOne(quizResult);
-    await onGoingCollection.deleteOne({ email: req.session.email });
+    await resultsCollection.insertOne(quizResult);
+    await attemptsCollection.deleteOne({ email: req.session.email });
     await redisService.del(`progress:${quizId}-${req.session.email}-${attemptId}`);
     res.send(quizResult);
   } catch (err) {
@@ -259,7 +259,7 @@ router.get('/result', async (req, res, next) => {
 
 router.get('/list', async (req, res, next) => {
   try {
-    const quizCollection = await dbService.loadCollection('quiz');
+    const quizCollection = await dbService.loadCollection('quizzes');
     const allQuiz = await quizCollection.find({}).toArray();
     res.send(allQuiz);
   } catch (err) {
@@ -273,7 +273,7 @@ router.post('/', async (req, res, next) => {
     throw new ClientException('Unauthorized!');
   }
   try {
-    const quizCollection = await dbService.loadCollection('quiz');
+    const quizCollection = await dbService.loadCollection('quizzes');
     const quizId = await quizCollection.countDocuments() + 1;
     quizCollection.insertOne(new QuizConstructor(req.body.data.quizName, quizId,
       req.body.data.questionCount, req.body.data.duration));
