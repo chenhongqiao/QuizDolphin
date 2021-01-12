@@ -69,7 +69,7 @@
     <div v-if="quizStarted && quizLoaded && !quizGraded">
       <QuizComponent
         :quiz-data="quizQuestions"
-        :quiz-answers.sync="quizAnswers"
+        :previous-responses.sync="quizResponses"
         :current-index.sync="currentIndex"
         @quizDone="submitQuiz()"
       />
@@ -132,7 +132,7 @@ export default {
     quizStarted: true,
     quizQuestions: [],
     quizResult: {},
-    quizAnswers: [],
+    quizResponses: [],
     quizGraded: false,
     quizHistory: null,
     currentIndex: 1,
@@ -155,6 +155,7 @@ export default {
     endTime: 0,
     timeLeft: 0,
     needReload: false,
+    attemptId: '',
   }),
   computed: {
     hoursLeft() {
@@ -168,7 +169,7 @@ export default {
     },
   },
   watch: {
-    quizAnswers: {
+    quizResponses: {
       deep: true,
       handler() {
         if (!this.pendingSave) {
@@ -207,24 +208,15 @@ export default {
   },
   async beforeMount() {
     this.quizId = parseInt(this.$route.params.id, 10);
-    const previous = (await QuizService.getOngoing(this.quizId)).data;
-    if (previous.question) {
-      this.quizQuestions = previous.question;
+    const previous = (await QuizService.getQuizQuestions(this.quizId, false)).data;
+    if (previous !== 'No Ongoing Questions!') {
+      this.quizQuestions = previous.questions;
       this.endTime = previous.endTime;
-      const rawResponse = (await QuizService.getProgress(this.quizId)).data;
-      this.quizAnswers = rawResponse.attempt;
-      if (!this.quizAnswers) {
-        this.quizAnswers = [];
-        this.quizQuestions.forEach((question, index) => {
-          if (question.type === 'single choice' || question.type === 'short response') {
-            this.quizAnswers[index] = '';
-          } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
-            this.quizAnswers[index] = [];
-          }
-        });
-      }
-      this.currentIndex = rawResponse.index;
-      this.progressVersion = rawResponse.version;
+      this.attemptId = previous.attemptId;
+      const progress = (await QuizService.getProgress(this.quizId, this.attemptId)).data;
+      this.quizResponses = progress.responses;
+      this.currentIndex = progress.index;
+      this.progressVersion = progress.version;
       this.quizOngoing = true;
       this.quizLoaded = true;
       setInterval(() => { this.countDown(); }, 1000);
@@ -236,16 +228,15 @@ export default {
   methods: {
     async startNewQuiz() {
       this.actionDisabled = true;
-      const quizData = (await QuizService.getQuizQuestions(this.quizId)).data;
-      this.quizQuestions = quizData.question;
+      const quizData = (await QuizService.getQuizQuestions(this.quizId, true)).data;
+      this.quizQuestions = quizData.questions;
       this.endTime = quizData.endTime;
-      this.quizQuestions.forEach((question, index) => {
-        if (question.type === 'single choice' || question.type === 'short response') {
-          this.quizAnswers[index] = '';
-        } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
-          this.quizAnswers[index] = [];
-        }
-      });
+      this.attemptId = quizData.attemptId;
+      console.log(quizData.attemptId);
+      const progress = (await QuizService.getProgress(this.quizId, this.attemptId)).data;
+      this.quizResponses = progress.responses;
+      this.currentIndex = progress.index;
+      this.progressVersion = progress.version;
       this.quizOngoing = true;
       this.quizStarted = true;
       this.quizLoaded = true;
@@ -257,7 +248,7 @@ export default {
       if (!this.needReload) {
         this.quizOngoing = false;
         this.quizResult = (await QuizService.submitQuiz(
-          this.quizId,
+          this.quizId, this.attemptId,
         )).data;
         if (this.quizResult === 'Not Logged In!') {
           this.$store.state.loggedIn = false;
@@ -294,7 +285,12 @@ export default {
     },
     async postProgress() {
       const rawResponse = (await QuizService.postProgress(
-        { version: this.progressVersion, index: this.currentIndex, attempt: this.quizAnswers },
+        {
+          version: this.progressVersion,
+          index: this.currentIndex,
+          responses: this.quizResponses,
+          attemptId: this.attemptId,
+        },
         this.quizId,
       )).data;
       if (rawResponse === 'Refuse to overwrite!') {
