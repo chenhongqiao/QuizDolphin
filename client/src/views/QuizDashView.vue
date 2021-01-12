@@ -233,7 +233,6 @@ export default {
       this.quizQuestions = quizData.questions;
       this.endTime = quizData.endTime;
       this.attemptId = quizData.attemptId;
-      console.log(quizData.attemptId);
       const progress = (await QuizService.getProgress(this.quizId, this.attemptId)).data;
       this.quizResponses = progress.responses;
       this.currentIndex = progress.index;
