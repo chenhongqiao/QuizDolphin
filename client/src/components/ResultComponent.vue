@@ -110,14 +110,14 @@
                 <v-text-field
                   :value="quizResult.results[currentQuestion-1].response"
                   background-color="#66bb6a"
-                  readonly
+                  disabled
                 />
               </div>
               <div v-else>
                 <v-text-field
                   :value="quizResult.results[currentQuestion-1].response"
                   background-color="#ef5350"
-                  readonly
+                  disabled
                 />
                 <div>
                   Correct Answer: {{ quizResult.results[currentQuestion-1].answer }}
@@ -198,7 +198,7 @@
                     :value="quizResult.results[currentQuestion-1].response[index]"
                     :items="quizResult.questions[currentQuestion-1].rightcol"
                     background-color="#66bb6a"
-                    readonly
+                    disabled
                   />
                 </v-col>
                 <v-col
@@ -210,7 +210,7 @@
                     :items="quizResult.questions[currentQuestion-1].rightcol"
                     background-color="#ef5350"
                     dense
-                    readonly
+                    disabled
                   />
                   <div>
                     Correct Answer:
@@ -234,7 +234,7 @@
                   <v-select
                     v-if="quizResult.questions[currentQuestion-1].options[index]"
                     :value="quizResult.results[currentQuestion-1].response[index]"
-                    readonly
+                    disabled
                     class="d-inline-flex"
                     background-color="#66bb6a"
                     :items="quizResult.questions[currentQuestion-1].options[index]"
@@ -248,7 +248,7 @@
                   <v-select
                     v-if="quizResult.questions[currentQuestion-1].options[index]"
                     :value="quizResult.results[currentQuestion-1].response[index]"
-                    readonly
+                    disabled
                     class="d-inline-flex"
                     background-color="#ef5350"
                     :items="quizResult.questions[currentQuestion-1].options[index]"
@@ -268,6 +268,12 @@
         <v-spacer />
         <v-btn
           class="mb-4"
+          @click="generateReport"
+        >
+          Download Report
+        </v-btn>
+        <v-btn
+          class="mb-4"
           @click="resetQuiz"
         >
           Back to info page
@@ -278,12 +284,12 @@
 </template>
 
 <script>
+import PDFReport from '../PDFReport';
 
 export default {
   name: 'ResultComponent',
   props: {
     quizResult: { type: Object, default: null },
-    totalPoints: { type: Number, default: 0 },
     viewOnly: { type: Boolean, default: true },
   },
   data: () => ({
@@ -304,19 +310,18 @@ export default {
       }
       return response === answer;
     },
-    generateReport() {
-      window.scrollTo(0, 0);
-      this.$refs.html2Pdf.generatePdf();
-    },
     resetQuiz() {
       window.location.reload();
+    },
+    generateReport() {
+      PDFReport.newReport(this.quizResult);
     },
   },
 };
 </script>
 <style>
 .v-select.v-input input {
-  width: 80px;
+  width: 60px;
 }
 .v-select.v-input--is-dirty input {
   width: 4px;

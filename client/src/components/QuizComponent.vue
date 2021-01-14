@@ -258,7 +258,7 @@ export default {
 </script>
 <style>
 .v-select.v-input input {
-  width: 80px;
+  width: 60px;
 }
 .v-select.v-input--is-dirty input {
   width: 4px;
