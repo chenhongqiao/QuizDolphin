@@ -263,7 +263,7 @@
         </v-card>
       </v-container>
     </v-container>
-    <v-container v-if="!viewOnly">
+    <v-container>
       <v-row>
         <v-spacer />
         <v-btn
@@ -273,6 +273,7 @@
           Download Report
         </v-btn>
         <v-btn
+          v-if="!viewOnly"
           class="mb-4"
           @click="resetQuiz"
         >

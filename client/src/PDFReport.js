@@ -112,7 +112,7 @@ class PDFReport {
       head: [['ID', 'Type', 'Context', 'Options', 'Response', 'Answer', 'Score']],
       body: tableBody,
     });
-    report.save('test.pdf');
+    report.save('Report.pdf');
   }
 }
 
