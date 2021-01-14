@@ -105,7 +105,7 @@ class PDFReport {
           row[5] += `${bIndex + 1}. ${result.results[index].answer[bIndex] || ''}\n\n`;
         }
       }
-      row[6] = `${result.results[index].score}/${result.results[index].points}`;
+      row[6] = `${(result.results[index].score).toFixed(2)}/${result.results[index].points}`;
       tableBody[index] = row;
     }
     report.autoTable({
