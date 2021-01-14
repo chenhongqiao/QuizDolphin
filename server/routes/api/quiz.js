@@ -48,13 +48,13 @@ function getInitialResponses(quizData) {
   });
   return initialResponses;
 }
-router.get('/questions', async (req, res, next) => {
+router.get('/:quizId/questions', async (req, res, next) => {
   try {
     if (!req.session.loggedin) {
       res.send('Not Logged In!');
       return;
     }
-    const quizId = parseInt(req.query.quizId, 10);
+    const quizId = parseInt(req.params.quizId, 10);
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
@@ -117,13 +117,13 @@ router.get('/questions', async (req, res, next) => {
   }
 });
 
-router.get('/history', async (req, res, next) => {
+router.get('/:quizId/history', async (req, res, next) => {
   try {
     if (!req.session.loggedin) {
       res.send('Not Logged In!');
       return;
     }
-    const { quizId } = req.query;
+    const { quizId } = req.params;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
@@ -150,13 +150,13 @@ router.get('/history', async (req, res, next) => {
   }
 });
 
-router.get('/progress', async (req, res, next) => {
+router.get('/:quizId/progress', async (req, res, next) => {
   try {
     if (!req.session.loggedin) {
       res.send('Not Logged In!');
       return;
     }
-    const { quizId } = req.query;
+    const { quizId } = req.params;
     const { attemptId } = req.query;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
@@ -175,13 +175,13 @@ router.get('/progress', async (req, res, next) => {
   }
 });
 
-router.post('/progress', async (req, res, next) => {
+router.post('/:quizId/progress', async (req, res, next) => {
   try {
     if (!req.session.loggedin) {
       res.send('Not Logged In!');
       return;
     }
-    const { quizId } = req.body.data;
+    const { quizId } = req.params;
     const { attemptId } = req.body.data.progress;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
@@ -216,13 +216,13 @@ router.post('/progress', async (req, res, next) => {
   }
 });
 
-router.get('/result', async (req, res, next) => {
+router.get('/:quizId/result', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
       res.send('Not Logged In!');
       return;
     }
-    const quizId = parseInt(req.query.quizId, 10);
+    const quizId = parseInt(req.params.quizId, 10);
     const { attemptId } = req.query;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
