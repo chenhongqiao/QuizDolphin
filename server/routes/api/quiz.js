@@ -256,6 +256,7 @@ router.get('/:quizId/result', async (req, res, next) => {
     await resultsCollection.insertOne(quizResult);
     await attemptsCollection.deleteOne({ email: req.session.email });
     await redisService.del(`progress:${quizId}-${req.session.email}-${attemptId}`);
+    await redisService.del(`endTime:${quizId}-${req.session.email}-${attemptId}`);
     res.send(quizResult);
   } catch (err) {
     if (err.type === 'ClientException') {
