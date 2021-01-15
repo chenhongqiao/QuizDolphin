@@ -1,6 +1,8 @@
-function ClientException(message) {
-  this.message = message;
-  this.type = 'ClientException';
+class ClientException {
+  constructor(message) {
+    this.message = message;
+    this.type = 'ClientException';
+  }
 }
 
 function validateQuestion(question) {
@@ -8,8 +10,8 @@ function validateQuestion(question) {
     || !question.points || !question.answer) {
     throw new ClientException('Missing Question Property!');
   }
-  if (question.uuid) {
-    throw new ClientException('Request Should Not Specify UUID!');
+  if (question.questionId) {
+    throw new ClientException('Request Should Not Specify questionId!');
   }
   if (question.type !== 'single choice' && question.type !== 'multiple choice' && question.type !== 'short response'
     && question.type !== 'matching' && question.type !== 'fill in the blanks') {

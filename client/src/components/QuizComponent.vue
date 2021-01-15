@@ -85,7 +85,7 @@
           <div v-if="quizData[currentQuestion-1].type==='matching'">
             <v-row
               v-for="(left,index) in quizData[currentQuestion-1].leftcol"
-              :key="'qz'+quizData[currentQuestion-1].uuid+left"
+              :key="'qz'+quizData[currentQuestion-1].questionId+left"
             >
               <v-col md="8">
                 <v-container>
@@ -107,7 +107,7 @@
             <v-container>
               <span
                 v-for="(context, index) in quizData[currentQuestion-1].context"
-                :key="'qz'+quizData[currentQuestion-1].uuid+context"
+                :key="'qz'+quizData[currentQuestion-1].questionId+context"
               >
                 {{ context }}
                 <v-select

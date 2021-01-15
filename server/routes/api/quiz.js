@@ -1,9 +1,9 @@
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
 const { customAlphabet } = require('nanoid');
 
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 const nanoid16 = customAlphabet(alphabet, 16);
+const nanoid20 = customAlphabet(alphabet, 20);
 
 const router = express.Router();
 
@@ -96,7 +96,14 @@ router.get('/:quizId/questions', async (req, res, next) => {
           existedIndexs.add(index);
         }
       }
-      const attemptId = uuidv4();
+      const resultsCollection = await dbService.loadCollection(`${quizId}-results`);
+      let attemptId = nanoid20();
+      // eslint-disable-next-line no-await-in-loop
+      while (await resultsCollection.findOne({ attemptId })
+      // eslint-disable-next-line no-await-in-loop
+      || await attemptsCollection.findOne({ attemptId })) {
+        attemptId = nanoid20();
+      }
       const quizData = new QuizDataConstructor(req.session.email, userQuestions,
         quizInfo.duration, attemptId);
       const initialResponses = getInitialResponses(quizData.questions);

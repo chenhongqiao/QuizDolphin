@@ -224,7 +224,7 @@
               <span
 
                 v-for="(context, index) in quizResult.questions[currentQuestion-1].context"
-                :key="'qz'+quizResult.questions[currentQuestion-1].uuid+context"
+                :key="'qz'+quizResult.questions[currentQuestion-1].questionId+context"
               >
                 <span
                   v-if="quizResult.results[currentQuestion-1].response[index]===

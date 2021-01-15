@@ -10,8 +10,8 @@ function QuizResultConstructor(score, questions, results, totalPoints) {
   this.results = results;
 }
 
-function QuestionResultConstructor(response, answer, score, uuid, points) {
-  this.uuid = uuid;
+function QuestionResultConstructor(response, answer, score, questionId, points) {
+  this.questionId = questionId;
   this.response = response;
   this.answer = answer;
   this.points = points;
@@ -23,7 +23,7 @@ async function gradeQuiz(quizId, questions, responses) {
   const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
   const answersPromise = [];
   for (let index = 0; index < questions.length; index += 1) {
-    answersPromise[index] = answersCollection.findOne({ uuid: questions[index].uuid });
+    answersPromise[index] = answersCollection.findOne({ questionId: questions[index].questionId });
   }
   const answers = await Promise.all(answersPromise);
   let totalPoints = 0;
@@ -39,12 +39,12 @@ async function gradeQuiz(quizId, questions, responses) {
       if (answer === response) {
         results.push(new QuestionResultConstructor(
           response, answer, question.points,
-          question.uuid, question.points,
+          question.questionId, question.points,
         ));
         score += question.points;
       } else {
         results.push(new QuestionResultConstructor(
-          response, answer, 0, question.uuid, question.points,
+          response, answer, 0, question.questionId, question.points,
         ));
       }
     }
@@ -62,13 +62,13 @@ async function gradeQuiz(quizId, questions, responses) {
       }, 0);
       if (correctCount < 0) {
         results.push(new QuestionResultConstructor(
-          response, answer, 0, question.uuid, question.points,
+          response, answer, 0, question.questionId, question.points,
         ));
       } else {
         results.push(new QuestionResultConstructor(
           response, answer,
           question.points * (correctCount / answersSet.size),
-          question.uuid, question.points,
+          question.questionId, question.points,
         ));
         score += question.points * (correctCount / answersSet.size);
       }
@@ -84,7 +84,7 @@ async function gradeQuiz(quizId, questions, responses) {
       results.push(new QuestionResultConstructor(
         response, answer,
         question.points * (correctMatch / answer.length),
-        question.uuid, question.points,
+        question.questionId, question.points,
       ));
       score += question.points * (correctMatch / answer.length);
     }
@@ -99,7 +99,7 @@ async function gradeQuiz(quizId, questions, responses) {
       results.push(new QuestionResultConstructor(
         response, answer,
         question.points * (correctMatch / answer.length),
-        question.uuid, question.points,
+        question.questionId, question.points,
       ));
       score += question.points * (correctMatch / answer.length);
     }

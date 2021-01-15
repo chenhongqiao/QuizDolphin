@@ -1,7 +1,7 @@
 # This document is intended to be a reference to programmers, not an actual config file to the program.
 # Formats are enforced by validation functions instead, which are designed base on this document.
 
-# Internally, each question has an uuid, which should not be specified in the request and is not shown here.
+# Internally, each question has an questionId, which should not be specified in the request and is not shown here.
 ---
 - type: "single choice"
   context: ""

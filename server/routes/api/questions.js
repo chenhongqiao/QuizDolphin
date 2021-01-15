@@ -1,12 +1,15 @@
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
+const { customAlphabet } = require('nanoid');
+
+const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const nanoid20 = customAlphabet(alphabet, 20);
 const validation = require('../../modules/dataValidation');
 const dbService = require('../../modules/dbService');
 
 const router = express.Router();
 
-function QuestionConstructor(question, uuid) {
-  this.uuid = uuid;
+function QuestionConstructor(question, questionId) {
+  this.questionId = questionId;
   this.context = question.context;
   this.points = question.points;
   this.type = question.type;
@@ -19,8 +22,8 @@ function QuestionConstructor(question, uuid) {
   }
 }
 
-function AnswerConstructor(question, uuid) {
-  this.uuid = uuid;
+function AnswerConstructor(question, questionId) {
+  this.questionId = questionId;
   this.answer = question.answer;
 }
 
@@ -34,23 +37,22 @@ function ClientException(message) {
   this.type = 'ClientException';
 }
 
-/*
-TODO:
-- Duplicated uuid handle
-*/
-
 router.post('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
       throw new ClientException('Unauthorized!');
     }
-    const { quizId } = req.body.data;
+    const { quizId } = req.query;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
     const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
     const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
-    const questionId = uuidv4();
+    let questionId = nanoid20();
+    // eslint-disable-next-line no-await-in-loop
+    while (await questionsCollection.findOne({ questionId })) {
+      questionId = nanoid20();
+    }
     validation.validateQuestion(req.body.data);
     const newQuestion = new QuestionConstructor(req.body.data, questionId);
     const newAnswer = new AnswerConstructor(req.body.data, questionId);
@@ -103,17 +105,17 @@ router.delete('/', async (req, res, next) => {
       throw new ClientException('Unauthorized!');
     }
     const { quizId } = req.query;
-    const { uuid } = req.query;
+    const { questionId } = req.query;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    if (!uuid) {
-      throw new ClientException('Invalid UUID!');
+    if (!questionId) {
+      throw new ClientException('Invalid questionId!');
     }
     const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
     const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
-    await questionsCollection.deleteOne({ uuid });
-    await answersCollection.deleteOne({ uuid });
+    await questionsCollection.deleteOne({ questionId });
+    await answersCollection.deleteOne({ questionId });
     res.send('Success!');
   } catch (err) {
     if (typeof err === 'object') {
@@ -134,19 +136,19 @@ router.put('/', async (req, res, next) => {
       throw new ClientException('Unauthorized!');
     }
     const { quizId } = req.body.data;
-    const { uuid } = req.query;
+    const { questionId } = req.query;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    if (!uuid) {
-      throw new ClientException('Invalid UUID!');
+    if (!questionId) {
+      throw new ClientException('Invalid questionId!');
     }
     const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
     const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
-    await questionsCollection.deleteOne({ uuid });
-    await answersCollection.deleteOne({ uuid });
-    const newQuestion = new QuestionConstructor(req.body.data, uuid);
-    const newAnswer = new AnswerConstructor(req.body.data, uuid);
+    await questionsCollection.deleteOne({ questionId });
+    await answersCollection.deleteOne({ questionId });
+    const newQuestion = new QuestionConstructor(req.body.data, questionId);
+    const newAnswer = new AnswerConstructor(req.body.data, questionId);
     await questionsCollection.insertOne(newQuestion);
     await answersCollection.insertOne(newAnswer);
     res.send('Success!');
