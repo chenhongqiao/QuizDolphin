@@ -1,8 +1,6 @@
-class ClientException {
-  constructor(message) {
-    this.message = message;
-    this.type = 'ClientException';
-  }
+function ClientException(message) {
+  this.message = message;
+  this.type = 'ClientException';
 }
 
 function validateQuestion(question) {
