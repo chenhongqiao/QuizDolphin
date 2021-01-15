@@ -2,7 +2,8 @@ const express = require('express');
 const { customAlphabet } = require('nanoid');
 
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-const nanoid16 = customAlphabet(alphabet, 16);
+const number = '0123456789';
+const nanoid16 = customAlphabet(number, 16);
 const nanoid20 = customAlphabet(alphabet, 20);
 
 const router = express.Router();
@@ -11,16 +12,29 @@ const dbService = require('../../modules/dbService');
 const redisService = require('../../modules/redisService');
 const gradingService = require('../../modules/gradingService');
 
-function QuizConstructor(quizName, quizId, questionCount, duration) {
-  this.quizName = quizName;
+function QuizConstructor(quizInfo, quizId) {
+  this.quizName = quizInfo.quizName;
   this.quizId = quizId;
-  this.questionCount = questionCount;
-  this.duration = duration;
+  this.questionCount = quizInfo.questionCount;
+  this.duration = quizInfo.duration;
 }
 
-function ClientException(message) {
+function BadRequest(message, email, ip) {
   this.message = message;
-  this.type = 'ClientException';
+  this.email = email;
+  this.ip = ip;
+}
+
+function Unauthorized(message, email, ip) {
+  this.message = message;
+  this.email = email;
+  this.ip = ip;
+}
+
+function NotFound(message, email, ip) {
+  this.message = message;
+  this.email = email;
+  this.ip = ip;
 }
 
 function QuizDataConstructor(email, questions, duration, attemptId) {
@@ -60,7 +74,7 @@ router.get('/:quizId/questions', async (req, res, next) => {
     }
     const { quizId } = req.params;
     if (!quizId) {
-      throw new ClientException('Invalid QuizID!');
+      throw new BadRequest('QuizId Is Needed!');
     }
     const attemptsCollection = await dbService.loadCollection(`${quizId}-attempts`);
     const previousQuizData = await attemptsCollection.findOne({ email: req.session.email });
@@ -84,10 +98,6 @@ router.get('/:quizId/questions', async (req, res, next) => {
       const existedIndexs = new Set();
       const quizInfo = await quizCollection.findOne({ quizId });
       const { questionCount } = quizInfo;
-
-      if (!questionCount || questionCount > allQuestionCount) {
-        throw new ClientException('Invalid Question Count!');
-      }
 
       while (userQuestions.length < questionCount) {
         const index = getRandomInteger(0, allQuestionCount);
@@ -116,11 +126,15 @@ router.get('/:quizId/questions', async (req, res, next) => {
       res.send('No Ongoing Questions!');
     }
   } catch (err) {
-    if (typeof err === 'object') {
-      if (err.type === 'ClientException') {
-        res.status(400).send(err.message);
-      }
-      next(`${err.type}: ${err.message}`);
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
     } else {
       res.status(500).send('Internal Error!');
       next(err);
@@ -136,7 +150,7 @@ router.get('/:quizId/history', async (req, res, next) => {
     }
     const { quizId } = req.params;
     if (!quizId) {
-      throw new ClientException('Invalid QuizID!');
+      throw new BadRequest('QuizId Is Needed!');
     }
     const resultsCollection = await dbService.loadCollection(`${quizId}-results`);
     const userHistory = await resultsCollection.find({
@@ -149,11 +163,15 @@ router.get('/:quizId/history', async (req, res, next) => {
       res.send(userHistory);
     }
   } catch (err) {
-    if (typeof err === 'object') {
-      if (err.type === 'ClientException') {
-        res.status(400).send(err.message);
-      }
-      next(`${err.type}: ${err.message}`);
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
     } else {
       res.status(500).send('Internal Error!');
       next(err);
@@ -170,15 +188,19 @@ router.get('/:quizId/progress', async (req, res, next) => {
     const { quizId } = req.params;
     const { attemptId } = req.query;
     if (!quizId) {
-      throw new ClientException('Invalid QuizID!');
+      throw new BadRequest('QuizId Is Needed!');
     }
     res.send(JSON.parse((await redisService.get(`progress:${quizId}-${req.session.email}-${attemptId}`))));
   } catch (err) {
-    if (typeof err === 'object') {
-      if (err.type === 'ClientException') {
-        res.status(400).send(err.message);
-      }
-      next(`${err.type}: ${err.message}`);
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
     } else {
       res.status(500).send('Internal Error!');
       next(err);
@@ -195,7 +217,7 @@ router.post('/:quizId/progress', async (req, res, next) => {
     const { quizId } = req.params;
     const { attemptId } = req.body.data.progress;
     if (!quizId) {
-      throw new ClientException('Invalid QuizID!');
+      throw new BadRequest('QuizId Is Needed!');
     }
     const endTime = await redisService.get(`endTime:${quizId}-${req.session.email}-${attemptId}`);
     if (!endTime) {
@@ -215,11 +237,15 @@ router.post('/:quizId/progress', async (req, res, next) => {
       res.send('Quiz Ended!');
     }
   } catch (err) {
-    if (typeof err === 'object') {
-      if (err.type === 'ClientException') {
-        res.status(400).send(err.message);
-      }
-      next(`${err.type}: ${err.message}`);
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
     } else {
       res.status(500).send('Internal Error!');
       next(err);
@@ -236,7 +262,7 @@ router.get('/:quizId/result', async (req, res, next) => {
     const { quizId } = req.params;
     const { attemptId } = req.query;
     if (!quizId) {
-      throw new ClientException('Invalid QuizID!');
+      throw new BadRequest('QuizId Is Needed!');
     }
     const attemptsCollection = await dbService.loadCollection(`${quizId}-attempts`);
     const attemptData = (await attemptsCollection.findOne({ email: req.session.email }));
@@ -259,9 +285,15 @@ router.get('/:quizId/result', async (req, res, next) => {
     await redisService.del(`endTime:${quizId}-${req.session.email}-${attemptId}`);
     res.send(quizResult);
   } catch (err) {
-    if (err.type === 'ClientException') {
+    if (err instanceof BadRequest) {
       res.status(400).send(err.message);
-      next(`${err.type}: ${err.message}`);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
     } else {
       res.status(500).send('Internal Error!');
       next(err);
@@ -275,30 +307,53 @@ router.get('/list', async (req, res, next) => {
     const allQuiz = await quizCollection.find({}).toArray();
     res.send(allQuiz);
   } catch (err) {
-    res.status(500).send('Internal Error!');
-    next(err);
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
   }
 });
 
+// Below are admin apis
+
 router.post('/', async (req, res, next) => {
-  if (!req.session.loggedin || req.session.type !== 'admin') {
-    throw new ClientException('Unauthorized!');
-  }
   try {
+    if (!req.session.loggedin || req.session.type !== 'admin') {
+      throw new Unauthorized('Admin Privileges Are Needed!');
+    }
     const quizCollection = await dbService.loadCollection('quizzes');
     const quizId = nanoid16();
-    quizCollection.insertOne(new QuizConstructor(req.body.data.quizName, quizId,
-      req.body.data.questionCount, req.body.data.duration));
+    quizCollection.insertOne(new QuizConstructor(req.body.data, quizId));
     res.send('Success!');
   } catch (err) {
-    res.status(500).send('Internal Error!');
-    next(err);
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
   }
 });
 
 router.delete('/:quizId', async (req, res, next) => {
   if (!req.session.loggedin || req.session.type !== 'admin') {
-    throw new ClientException('Unauthorized!');
+    throw new Unauthorized('Admin Privileges Are Needed!');
   }
   try {
     const quizCollection = await dbService.loadCollection('quizzes');
@@ -306,8 +361,51 @@ router.delete('/:quizId', async (req, res, next) => {
     quizCollection.deleteOne({ quizId });
     res.send('Success!');
   } catch (err) {
-    res.status(500).send('Internal Error!');
-    next(err);
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
+  }
+});
+
+router.put('/:quizId', async (req, res, next) => {
+  if (!req.session.loggedin || req.session.type !== 'admin') {
+    throw new Unauthorized('Admin Privileges Are Needed!');
+  }
+  try {
+    const quizCollection = await dbService.loadCollection('quizzes');
+    const { quizId } = req.params;
+    const dbResponse = await quizCollection.updateOne(
+      { quizId },
+      new QuizConstructor(req.body.data, quizId),
+    );
+    if (dbResponse.matchedCount) {
+      throw new NotFound('No Matched Quiz!');
+    }
+    res.send('Success!');
+  } catch (err) {
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
   }
 });
 
