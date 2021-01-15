@@ -135,8 +135,11 @@ router.delete('/', async (req, res, next) => {
     }
     const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
     const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
-    await questionsCollection.deleteOne({ questionId });
-    await answersCollection.deleteOne({ questionId });
+    const questionsResponse = await questionsCollection.deleteOne({ questionId });
+    const answersResponse = await answersCollection.deleteOne({ questionId });
+    if (!questionsResponse.matchedCount || !answersResponse.matchedCount) {
+      throw new NotFound('No Matched Quiz!');
+    }
     res.send('Success!');
   } catch (err) {
     if (err instanceof BadRequest) {
@@ -170,12 +173,17 @@ router.put('/', async (req, res, next) => {
     }
     const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
     const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
-    await questionsCollection.deleteOne({ questionId });
-    await answersCollection.deleteOne({ questionId });
-    const newQuestion = new QuestionConstructor(req.body.data, questionId);
-    const newAnswer = new AnswerConstructor(req.body.data, questionId);
-    await questionsCollection.insertOne(newQuestion);
-    await answersCollection.insertOne(newAnswer);
+    const questionsResponse = await questionsCollection.updateOne(
+      { questionId },
+      QuestionConstructor(req.body.data, questionId),
+    );
+    const answersResponse = await answersCollection.updateOne(
+      { questionId },
+      AnswerConstructor(req.body.data, questionId),
+    );
+    if (!questionsResponse.matchedCount || !answersResponse.matchedCount) {
+      throw new NotFound('No Matched Quiz!');
+    }
     res.send('Success!');
   } catch (err) {
     if (err instanceof BadRequest) {

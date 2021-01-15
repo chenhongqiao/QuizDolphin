@@ -332,7 +332,7 @@ router.post('/', async (req, res, next) => {
     }
     const quizCollection = await dbService.loadCollection('quizzes');
     const quizId = nanoid16();
-    quizCollection.insertOne(new QuizConstructor(req.body.data, quizId));
+    await quizCollection.insertOne(new QuizConstructor(req.body.data, quizId));
     res.send('Success!');
   } catch (err) {
     if (err instanceof BadRequest) {
@@ -358,7 +358,10 @@ router.delete('/:quizId', async (req, res, next) => {
   try {
     const quizCollection = await dbService.loadCollection('quizzes');
     const { quizId } = req.params;
-    quizCollection.deleteOne({ quizId });
+    const dbResponse = await quizCollection.deleteOne({ quizId });
+    if (!dbResponse.matchedCount) {
+      throw new NotFound('No Matched Quiz!');
+    }
     res.send('Success!');
   } catch (err) {
     if (err instanceof BadRequest) {
@@ -388,7 +391,7 @@ router.put('/:quizId', async (req, res, next) => {
       { quizId },
       new QuizConstructor(req.body.data, quizId),
     );
-    if (dbResponse.matchedCount) {
+    if (!dbResponse.matchedCount) {
       throw new NotFound('No Matched Quiz!');
     }
     res.send('Success!');
