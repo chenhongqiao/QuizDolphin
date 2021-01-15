@@ -10,9 +10,22 @@ function getSaltedPassword(password, salt) {
   return hash.digest('hex');
 }
 
-function ClientException(message) {
+function BadRequest(message, email, ip) {
   this.message = message;
-  this.type = 'ClientException';
+  this.email = email;
+  this.ip = ip;
+}
+
+function Unauthorized(message, email, ip) {
+  this.message = message;
+  this.email = email;
+  this.ip = ip;
+}
+
+function NotFound(message, email, ip) {
+  this.message = message;
+  this.email = email;
+  this.ip = ip;
 }
 
 function UserConstructor(email, password, name, type) {
@@ -32,13 +45,13 @@ function UserInformationConstructor(user) {
 router.post('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
-      throw new ClientException('Unauthorized!');
+      throw new Unauthorized('Admin Privileges Are Needed!');
     }
     const usersCollection = await dbService.loadCollection('users');
 
     if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string'
     || typeof req.body.data.type !== 'string' || typeof req.body.data.name !== 'string') {
-      throw new ClientException('Invalid User Information Type!');
+      throw new BadRequest('Invalid User Information Syntax!');
     }
     const userWithSameEmail = await usersCollection.findOne({ email: req.body.data.email });
     if (await userWithSameEmail) {
@@ -51,9 +64,15 @@ router.post('/', async (req, res, next) => {
       res.send('Success!');
     }
   } catch (err) {
-    if (err.type === 'ClientException') {
+    if (err instanceof BadRequest) {
       res.status(400).send(err.message);
-      next(`${err.type}: ${err.message}`);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
     } else {
       res.status(500).send('Internal Error!');
       next(err);
@@ -64,7 +83,7 @@ router.post('/', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
   try {
     if (!req.body.data || typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
-      throw new ClientException('Invalid Login Information Type!');
+      throw new BadRequest('Invalid Login Information Syntax!');
     }
     let success = false;
     const usersCollection = await dbService.loadCollection('users');
@@ -90,9 +109,15 @@ router.post('/login', async (req, res, next) => {
       res.send('Incorrect Login Information!');
     }
   } catch (err) {
-    if (err.type === 'ClientException') {
+    if (err instanceof BadRequest) {
       res.status(400).send(err.message);
-      next(`${err.type}: ${err.message}`);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
     } else {
       res.status(500).send('Internal Error!');
       next(err);
@@ -110,8 +135,19 @@ router.post('/logout', (req, res, next) => {
       res.send('Not Logged In!');
     }
   } catch (err) {
-    res.status(500).send('Internal Error!');
-    next(err);
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
   }
 });
 
@@ -126,11 +162,15 @@ router.get('/current', async (req, res, next) => {
       res.send('Not Logged In!');
     }
   } catch (err) {
-    if (typeof err === 'object') {
-      if (err.type === 'ClientException') {
-        res.status(400).send(err.message);
-      }
-      next(`${err.type}: ${err.message}`);
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
     } else {
       res.status(500).send('Internal Error!');
       next(err);
