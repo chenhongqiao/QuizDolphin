@@ -4,7 +4,7 @@
 ---
 - quizName: ""
   description: ""
-  quizId: 0
+  quizId: ""
   questionCount: 0
   duration: 0 # In seconds
   maxAttempts: 0

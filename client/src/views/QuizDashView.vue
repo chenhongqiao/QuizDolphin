@@ -208,7 +208,7 @@ export default {
     },
   },
   async beforeMount() {
-    this.quizId = parseInt(this.$route.params.id, 10);
+    this.quizId = this.$route.params.id;
     const previous = (await QuizService.getQuizQuestions(this.quizId, false)).data;
     if (previous !== 'No Ongoing Questions!') {
       this.quizQuestions = previous.questions;

@@ -1,5 +1,9 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
+const { customAlphabet } = require('nanoid');
+
+const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const nanoid16 = customAlphabet(alphabet, 16);
 
 const router = express.Router();
 
@@ -54,11 +58,11 @@ router.get('/:quizId/questions', async (req, res, next) => {
       res.send('Not Logged In!');
       return;
     }
-    const quizId = parseInt(req.params.quizId, 10);
+    const { quizId } = req.params;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const attemptsCollection = await dbService.loadCollection(`quiz${quizId}-attempts`);
+    const attemptsCollection = await dbService.loadCollection(`${quizId}-attempts`);
     const previousQuizData = await attemptsCollection.findOne({ email: req.session.email });
     if (previousQuizData) {
       if (!await redisService.get(`progress:${quizId}-${req.session.email}-${previousQuizData.attemptId}`)) {
@@ -72,7 +76,7 @@ router.get('/:quizId/questions', async (req, res, next) => {
       return;
     }
     if (req.query.newQuiz === 'true') {
-      const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
+      const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
       const quizCollection = await dbService.loadCollection('quizzes');
       const allQuestions = await questionsCollection.find({}).toArray();
       const allQuestionCount = allQuestions.length;
@@ -127,7 +131,7 @@ router.get('/:quizId/history', async (req, res, next) => {
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const resultsCollection = await dbService.loadCollection(`quiz${quizId}-results`);
+    const resultsCollection = await dbService.loadCollection(`${quizId}-results`);
     const userHistory = await resultsCollection.find({
       $query: { email: req.session.email },
       $orderby: { timeStamp: 1 },
@@ -188,7 +192,7 @@ router.post('/:quizId/progress', async (req, res, next) => {
     }
     const endTime = await redisService.get(`endTime:${quizId}-${req.session.email}-${attemptId}`);
     if (!endTime) {
-      const attemptsCollection = await dbService.loadCollection(`quiz${quizId}-attempts`);
+      const attemptsCollection = await dbService.loadCollection(`${quizId}-attempts`);
       const previousQuizData = await attemptsCollection.findOne({ email: req.session.email });
       await redisService.setnx(`endTime:${quizId}-${req.session.email}-${previousQuizData.attemptId}`, JSON.stringify(previousQuizData.endTime));
     }
@@ -222,14 +226,14 @@ router.get('/:quizId/result', async (req, res, next) => {
       res.send('Not Logged In!');
       return;
     }
-    const quizId = parseInt(req.params.quizId, 10);
+    const { quizId } = req.params;
     const { attemptId } = req.query;
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const attemptsCollection = await dbService.loadCollection(`quiz${quizId}-attempts`);
+    const attemptsCollection = await dbService.loadCollection(`${quizId}-attempts`);
     const attemptData = (await attemptsCollection.findOne({ email: req.session.email }));
-    const resultsCollection = await dbService.loadCollection(`quiz${quizId}-results`);
+    const resultsCollection = await dbService.loadCollection(`${quizId}-results`);
     const response = JSON.parse(await redisService.get(`progress:${quizId}-${req.session.email}-${attemptId}`)).responses;
     if (!response || !attemptData || attemptData.attemptId !== attemptId) {
       res.send(await resultsCollection.findOne({ attemptId }));
@@ -274,10 +278,25 @@ router.post('/', async (req, res, next) => {
   }
   try {
     const quizCollection = await dbService.loadCollection('quizzes');
-    const quizId = await quizCollection.countDocuments() + 1;
+    const quizId = nanoid16();
     quizCollection.insertOne(new QuizConstructor(req.body.data.quizName, quizId,
       req.body.data.questionCount, req.body.data.duration));
-    res.send('Sucess!');
+    res.send('Success!');
+  } catch (err) {
+    res.status(500).send('Internal Error!');
+    next(err);
+  }
+});
+
+router.delete('/:quizId', async (req, res, next) => {
+  if (!req.session.loggedin || req.session.type !== 'admin') {
+    throw new ClientException('Unauthorized!');
+  }
+  try {
+    const quizCollection = await dbService.loadCollection('quizzes');
+    const { quizId } = req.params;
+    quizCollection.deleteOne({ quizId });
+    res.send('Success!');
   } catch (err) {
     res.status(500).send('Internal Error!');
     next(err);

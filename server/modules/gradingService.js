@@ -20,7 +20,7 @@ function QuestionResultConstructor(response, answer, score, uuid, points) {
 
 async function gradeQuiz(quizId, questions, responses) {
   const results = [];
-  const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
+  const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
   const answersPromise = [];
   for (let index = 0; index < questions.length; index += 1) {
     answersPromise[index] = answersCollection.findOne({ uuid: questions[index].uuid });

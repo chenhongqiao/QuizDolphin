@@ -48,8 +48,8 @@ router.post('/', async (req, res, next) => {
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
-    const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
+    const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
+    const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
     const questionId = uuidv4();
     validation.validateQuestion(req.body.data);
     const newQuestion = new QuestionConstructor(req.body.data, questionId);
@@ -79,8 +79,8 @@ router.get('/list', async (req, res, next) => {
     if (!quizId) {
       throw new ClientException('Invalid QuizID!');
     }
-    const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
-    const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
+    const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
+    const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
     const allQuestions = await questionsCollection.find({}).toArray();
     const allAnswers = await answersCollection.find({}).toArray();
     res.send(new AllQuestionsListConstructor(allQuestions, allAnswers));
@@ -110,8 +110,8 @@ router.delete('/', async (req, res, next) => {
     if (!uuid) {
       throw new ClientException('Invalid UUID!');
     }
-    const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
-    const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
+    const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
+    const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
     await questionsCollection.deleteOne({ uuid });
     await answersCollection.deleteOne({ uuid });
     res.send('Success!');
@@ -141,8 +141,8 @@ router.put('/', async (req, res, next) => {
     if (!uuid) {
       throw new ClientException('Invalid UUID!');
     }
-    const questionsCollection = await dbService.loadCollection(`quiz${quizId}-questions`);
-    const answersCollection = await dbService.loadCollection(`quiz${quizId}-answers`);
+    const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
+    const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
     await questionsCollection.deleteOne({ uuid });
     await answersCollection.deleteOne({ uuid });
     const newQuestion = new QuestionConstructor(req.body.data, uuid);
