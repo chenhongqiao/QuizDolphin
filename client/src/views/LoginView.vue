@@ -4,23 +4,9 @@
     max-width="800px"
     persistent
   >
-    <v-card v-if="getStateStatus">
+    <v-card>
       <v-card-title>
-        You Already Logged In
-      </v-card-title>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          :disabled="actionDisabled"
-          @click="goDashboard()"
-        >
-          Go to Dashboard
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-    <v-card v-if="!getStateStatus">
-      <v-card-title>
-        Please Login First
+        Please Login
       </v-card-title>
       <v-container>
         <v-alert
@@ -86,10 +72,10 @@ export default {
     actionDisabled: false,
     showPassword: false,
   }),
-  computed: {
-    getStateStatus() {
-      return this.$store.state.loggedIn;
-    },
+  beforeMount() {
+    if (this.$store.state.loggedIn) {
+      this.goDashboard();
+    }
   },
   methods: {
     async login() {
