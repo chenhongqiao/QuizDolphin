@@ -28,10 +28,10 @@ function NotFound(message, email, ip) {
   this.ip = ip;
 }
 
-function UserConstructor(email, password, name, type) {
-  this.email = email;
-  this.name = name;
-  this.type = type;
+function UserConstructor(userInfo) {
+  this.email = userInfo.email;
+  this.name = userInfo.name;
+  this.type = userInfo.type;
   this.salt = crypto.randomBytes(32).toString('hex');
   this.password = getSaltedPassword(password, this.salt);
 }
@@ -41,44 +41,6 @@ function UserInformationConstructor(user) {
   this.name = user.name;
   this.type = user.type;
 }
-
-router.post('/', async (req, res, next) => {
-  try {
-    if (!req.session.loggedin || req.session.type !== 'admin') {
-      throw new Unauthorized('Admin Privileges Are Needed!');
-    }
-    const usersCollection = await dbService.loadCollection('users');
-
-    if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string'
-    || typeof req.body.data.type !== 'string' || typeof req.body.data.name !== 'string') {
-      throw new BadRequest('Invalid User Information Syntax!');
-    }
-    const userWithSameEmail = await usersCollection.findOne({ email: req.body.data.email });
-    if (await userWithSameEmail) {
-      res.send('Email Already Exists!');
-    } else {
-      await usersCollection.insertOne(
-        new UserConstructor(req.body.data.email, req.body.data.password,
-          req.body.data.name, req.body.data.type),
-      );
-      res.send('Success!');
-    }
-  } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
-  }
-});
 
 router.post('/session', async (req, res, next) => {
   try {
@@ -161,6 +123,107 @@ router.get('/session', async (req, res, next) => {
     } else {
       res.send('Not Logged In!');
     }
+  } catch (err) {
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
+  }
+});
+
+router.post('/', async (req, res, next) => {
+  try {
+    if (!req.session.loggedin || req.session.type !== 'admin') {
+      throw new Unauthorized('Admin Privileges Are Needed!');
+    }
+    const usersCollection = await dbService.loadCollection('users');
+
+    if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string'
+    || typeof req.body.data.type !== 'string' || typeof req.body.data.name !== 'string') {
+      throw new BadRequest('Invalid User Information Syntax!');
+    }
+    const userWithSameEmail = await usersCollection.findOne({ email: req.body.data.email });
+    if (await userWithSameEmail) {
+      res.send('Email Already Exists!');
+    } else {
+      await usersCollection.insertOne(
+        new UserConstructor(req.body.data),
+      );
+      res.send('Success!');
+    }
+  } catch (err) {
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
+  }
+});
+
+router.delete('/:email', async (req, res, next) => {
+  if (!req.session.loggedin || req.session.type !== 'admin') {
+    throw new Unauthorized('Admin Privileges Are Needed!');
+  }
+  try {
+    const usersCollection = await dbService.loadCollection('users');
+    const { email } = req.params;
+    if (email === req.session.email) {
+      throw new BadRequest('Cannot Delete Yourself');
+    }
+    const dbResponse = await usersCollection.deleteOne({ email });
+    if (!dbResponse.matchedCount) {
+      throw new NotFound('No Matched User!');
+    }
+    res.send('Success!');
+  } catch (err) {
+    if (err instanceof BadRequest) {
+      res.status(400).send(err.message);
+      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof Unauthorized) {
+      res.status(403).send(err.message);
+      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
+    } else if (err instanceof NotFound) {
+      res.status(404).send(err.message);
+      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
+    } else {
+      res.status(500).send('Internal Error!');
+      next(err);
+    }
+  }
+});
+
+router.put('/:email', async (req, res, next) => {
+  if (!req.session.loggedin || req.session.type !== 'admin') {
+    throw new Unauthorized('Admin Privileges Are Needed!');
+  }
+  try {
+    const usersCollection = await dbService.loadCollection('quizzes');
+    const { email } = req.params;
+    const dbResponse = await usersCollection.updateOne(
+      { email },
+      new UserConstructor(req.body.data),
+    );
+    if (!dbResponse.matchedCount) {
+      throw new NotFound('No Matched User!');
+    }
+    res.send('Success!');
   } catch (err) {
     if (err instanceof BadRequest) {
       res.status(400).send(err.message);
