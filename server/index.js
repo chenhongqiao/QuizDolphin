@@ -41,9 +41,9 @@ app.use('/api', rateLimit({
 app.use(history());
 app.use('/', express.static(path.join(__dirname, 'public')));
 
-const questions = require('./routes/api/questions');
+const question = require('./routes/api/question');
 
-app.use('/api/questions', questions);
+app.use('/api/question', question);
 
 const heartbeat = require('./routes/api/heartbeat');
 
@@ -53,9 +53,9 @@ const quiz = require('./routes/api/quiz');
 
 app.use('/api/quiz', quiz);
 
-const users = require('./routes/api/users');
+const user = require('./routes/api/user');
 
-app.use('/api/users', users);
+app.use('/api/user', user);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server started on port ${port}`));

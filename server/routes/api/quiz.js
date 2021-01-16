@@ -66,7 +66,7 @@ function getInitialResponses(quizData) {
   });
   return initialResponses;
 }
-router.get('/:quizId/questions', async (req, res, next) => {
+router.get('/:quizId/attempt', async (req, res, next) => {
   try {
     if (!req.session.loggedin) {
       res.send('Not Logged In!');
@@ -253,7 +253,7 @@ router.post('/:quizId/progress', async (req, res, next) => {
   }
 });
 
-router.get('/:quizId/result', async (req, res, next) => {
+router.post('/:quizId/attempt', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
       res.send('Not Logged In!');
