@@ -94,9 +94,9 @@ export default {
   methods: {
     async login() {
       this.actionDisabled = true;
-      const response = (await UserService.login(this.loginInfo)).data;
+      const response = (await UserService.postSession(this.loginInfo)).data;
       if (response === 'Success!') {
-        const userInformation = (await UserService.getCurrentUser()).data;
+        const userInformation = (await UserService.getSession()).data;
         this.$store.commit('login', userInformation);
         this.$router.go(-1);
       } else {

@@ -174,7 +174,7 @@
           <v-btn
             text
             :disabled="actionDisabled"
-            @click="submitQuiz"
+            @click="postAttempt"
           >
             Submit
           </v-btn>
@@ -237,7 +237,7 @@ export default {
     this.quizResponses = [...this.previousResponses];
   },
   methods: {
-    submitQuiz() {
+    postAttempt() {
       this.actionDisabled = true;
       this.$emit('update:previousResponses', this.quizResponses);
       this.$emit('quizDone');

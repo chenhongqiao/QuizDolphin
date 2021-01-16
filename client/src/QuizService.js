@@ -42,9 +42,9 @@ class QuizService {
     });
   }
 
-  static getQuizQuestions(quizId, newQuiz) {
+  static getAttempt(quizId, newQuiz) {
     return new Promise((resolve, reject) => {
-      axios.get(`${url}${quizId}/questions`, {
+      axios.get(`${url}${quizId}/attempt`, {
         params: {
           newQuiz,
         },
@@ -54,9 +54,9 @@ class QuizService {
     });
   }
 
-  static submitQuiz(quizId, attemptId) {
+  static postAttempt(quizId, attemptId) {
     return new Promise((resolve, reject) => {
-      axios.get(`${url}${quizId}/result`, {
+      axios.post(`${url}${quizId}/attempt`, {
         params: { attemptId },
         withCredentials: true,
       }).then((result) => resolve(result))

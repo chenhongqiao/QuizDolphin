@@ -2,21 +2,21 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
-const url = `${window.location.origin}/api/users/`;
+const url = `${window.location.origin}/api/user/`;
 
 class UserService {
-  static getCurrentUser() {
+  static getSession() {
     return new Promise((resolve, reject) => {
-      axios.get(`${url}current`, {
+      axios.get(`${url}session`, {
         withCredentials: true,
       }).then((data) => resolve(data))
         .catch((err) => reject(err));
     });
   }
 
-  static login(information) {
+  static postSession(information) {
     return new Promise((resolve, reject) => {
-      axios.post(`${url}login`, {
+      axios.post(`${url}session`, {
         withCredentials: true,
         data: information,
       }).then((data) => resolve(data))
@@ -24,9 +24,9 @@ class UserService {
     });
   }
 
-  static logout() {
+  static deleteSession() {
     return new Promise((resolve, reject) => {
-      axios.post(`${url}logout`, {
+      axios.delete(`${url}session`, {
         withCredentials: true,
       }).then((data) => resolve(data))
         .catch((err) => reject(err));

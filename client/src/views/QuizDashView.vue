@@ -71,7 +71,7 @@
         :quiz-data="quizQuestions"
         :previous-responses.sync="quizResponses"
         :current-index.sync="currentIndex"
-        @quizDone="submitQuiz()"
+        @quizDone="postAttempt()"
       />
       <v-container>
         <v-row>
@@ -202,14 +202,14 @@ export default {
     timeLeft: {
       handler() {
         if (this.quizOngoing && this.timeLeft <= 1) {
-          this.submitQuiz();
+          this.postAttempt();
         }
       },
     },
   },
   async beforeMount() {
     this.quizId = this.$route.params.id;
-    const previous = (await QuizService.getQuizQuestions(this.quizId, false)).data;
+    const previous = (await QuizService.getAttempt(this.quizId, false)).data;
     if (previous !== 'No Ongoing Questions!') {
       this.quizQuestions = previous.questions;
       this.endTime = previous.endTime;
@@ -229,7 +229,7 @@ export default {
   methods: {
     async startNewQuiz() {
       this.actionDisabled = true;
-      const quizData = (await QuizService.getQuizQuestions(this.quizId, true)).data;
+      const quizData = (await QuizService.getAttempt(this.quizId, true)).data;
       this.quizQuestions = quizData.questions;
       this.endTime = quizData.endTime;
       this.attemptId = quizData.attemptId;
@@ -242,13 +242,13 @@ export default {
       this.quizLoaded = true;
       setInterval(() => { this.countDown(); }, 1000);
     },
-    async submitQuiz() {
+    async postAttempt() {
       clearInterval(this.timer);
       this.progressVersion += 1;
       await this.postProgress();
       if (!this.needReload) {
         this.quizOngoing = false;
-        this.quizResult = (await QuizService.submitQuiz(
+        this.quizResult = (await QuizService.postAttempt(
           this.quizId, this.attemptId,
         )).data;
         if (this.quizResult === 'Not Logged In!') {

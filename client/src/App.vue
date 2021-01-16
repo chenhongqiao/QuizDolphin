@@ -85,7 +85,7 @@ export default {
     errorMessage: '',
   }),
   async beforeMount() {
-    const userInformation = (await UserService.getCurrentUser()).data;
+    const userInformation = (await UserService.getSession()).data;
     if (userInformation !== 'Not Logged In!') {
       this.$store.commit('login', userInformation);
     } else if (this.$route.path !== '/login') {
@@ -98,7 +98,7 @@ export default {
   },
   methods: {
     async logout() {
-      const rawResponse = (await UserService.logout()).data;
+      const rawResponse = (await UserService.deleteSession()).data;
       if (rawResponse === 'Success!' || rawResponse === 'Not Logged In!') {
         this.$store.commit('logout');
         if (this.$route.path !== '/login') {

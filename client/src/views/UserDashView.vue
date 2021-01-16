@@ -12,9 +12,10 @@
           <v-card-title>
             {{ quiz.quizName }}
           </v-card-title>
-          <v-container>
-            <span>Duration: {{ quiz.duration/60 }} minutes</span>
-          </v-container>
+          <v-card-text>
+            <div>Duration: {{ quiz.duration/60 }} minutes</div>
+            <div>Question: {{ quiz.questionCount }} questions </div>
+          </v-card-text>
           <v-card-actions>
             <v-spacer />
             <v-btn
