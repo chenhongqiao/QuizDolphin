@@ -56,8 +56,7 @@ class QuizService {
 
   static postAttempt(quizId, attemptId) {
     return new Promise((resolve, reject) => {
-      axios.post(`${url}${quizId}/attempt`, {
-        params: { attemptId },
+      axios.post(`${url}${quizId}/attempt/${attemptId}`, {
         withCredentials: true,
       }).then((result) => resolve(result))
         .catch((err) => reject(err));

@@ -80,7 +80,7 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.post('/login', async (req, res, next) => {
+router.post('/session', async (req, res, next) => {
   try {
     if (!req.body.data || typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
       throw new BadRequest('Invalid Login Information Syntax!');
@@ -125,7 +125,7 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
-router.post('/logout', (req, res, next) => {
+router.delete('/session', (req, res, next) => {
   try {
     if (req.session.loggedin === true) {
       req.session.loggedin = false;
@@ -151,7 +151,7 @@ router.post('/logout', (req, res, next) => {
   }
 });
 
-router.get('/current', async (req, res, next) => {
+router.get('/session', async (req, res, next) => {
   try {
     if (req.session.loggedin === true) {
       const usersCollection = await dbService.loadCollection('users');

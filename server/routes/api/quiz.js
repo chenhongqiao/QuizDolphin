@@ -253,14 +253,14 @@ router.post('/:quizId/progress', async (req, res, next) => {
   }
 });
 
-router.post('/:quizId/attempt', async (req, res, next) => {
+router.post('/:quizId/attempt/:attemptId', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
       res.send('Not Logged In!');
       return;
     }
     const { quizId } = req.params;
-    const { attemptId } = req.query;
+    const { attemptId } = req.params;
     if (!quizId) {
       throw new BadRequest('QuizId Is Needed!');
     }
