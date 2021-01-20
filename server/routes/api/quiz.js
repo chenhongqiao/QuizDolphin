@@ -56,7 +56,7 @@ router.get('/:quizId/attempt', async (req, res, next) => {
     }
     const { quizId } = req.params;
     if (!quizId) {
-      res.status(400).send('QuizId Is Needed!');
+      res.status(400).send('QuizId Is Required!');
       return;
     }
     const attemptsCollection = await dbService.loadCollection(`${quizId}-attempts`);
@@ -121,7 +121,7 @@ router.get('/:quizId/history', async (req, res, next) => {
     }
     const { quizId } = req.params;
     if (!quizId) {
-      res.status(400).send('QuizId Is Needed!');
+      res.status(400).send('QuizId Is Required!');
       return;
     }
     const resultsCollection = await dbService.loadCollection(`${quizId}-results`);
@@ -148,7 +148,7 @@ router.get('/:quizId/progress', async (req, res, next) => {
     const { quizId } = req.params;
     const { attemptId } = req.query;
     if (!quizId) {
-      res.status(400).send('QuizId Is Needed!');
+      res.status(400).send('QuizId Is Required!');
       return;
     }
     res.send(JSON.parse((await redisService.get(`progress:${quizId}-${req.session.email}-${attemptId}`))));
@@ -166,7 +166,7 @@ router.post('/:quizId/progress', async (req, res, next) => {
     const { quizId } = req.params;
     const { attemptId } = req.body.data.progress;
     if (!quizId) {
-      res.status(400).send('QuizId Is Needed!');
+      res.status(400).send('QuizId Is Required!');
       return;
     }
     const endTime = await redisService.get(`endTime:${quizId}-${req.session.email}-${attemptId}`);
@@ -200,7 +200,7 @@ router.post('/:quizId/attempt/:attemptId', async (req, res, next) => {
     const { quizId } = req.params;
     const { attemptId } = req.params;
     if (!quizId) {
-      res.status(400).send('QuizId Is Needed!');
+      res.status(400).send('QuizId Is Required!');
       return;
     }
     const attemptsCollection = await dbService.loadCollection(`${quizId}-attempts`);
@@ -243,7 +243,7 @@ router.get('/list', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
-      res.status(403).send('Admin Privileges Are Needed!');
+      res.status(403).send('Admin Privileges Are Required!');
       return;
     }
     const quizCollection = await dbService.loadCollection('quizzes');
@@ -257,7 +257,7 @@ router.post('/', async (req, res, next) => {
 
 router.delete('/:quizId', async (req, res, next) => {
   if (!req.session.loggedin || req.session.type !== 'admin') {
-    res.status(403).send('Admin Privileges Are Needed!');
+    res.status(403).send('Admin Privileges Are Required!');
     return;
   }
   try {
@@ -265,7 +265,7 @@ router.delete('/:quizId', async (req, res, next) => {
     const { quizId } = req.params;
     const dbResponse = await quizCollection.deleteOne({ quizId });
     if (!dbResponse.matchedCount) {
-      res.status(404).send('No Matched Quiz!');
+      res.status(404).send('No Matching Quiz!');
       return;
     }
     res.send('Success!');
@@ -276,7 +276,7 @@ router.delete('/:quizId', async (req, res, next) => {
 
 router.put('/:quizId', async (req, res, next) => {
   if (!req.session.loggedin || req.session.type !== 'admin') {
-    res.status(403).send('Admin Privileges Are Needed!');
+    res.status(403).send('Admin Privileges Are Required!');
     return;
   }
   try {
@@ -287,7 +287,7 @@ router.put('/:quizId', async (req, res, next) => {
       new QuizConstructor(req.body.data, quizId),
     );
     if (!dbResponse.matchedCount) {
-      res.status(404).send('No Matched Quiz!');
+      res.status(404).send('No Matching Quiz!');
       return;
     }
     res.send('Success!');

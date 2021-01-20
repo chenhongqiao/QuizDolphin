@@ -92,7 +92,7 @@ router.get('/session', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
-      res.status(403).send('Admin Privileges Are Needed!');
+      res.status(403).send('Admin Privileges Are Required!');
       return;
     }
     const usersCollection = await dbService.loadCollection('users');
@@ -118,7 +118,7 @@ router.post('/', async (req, res, next) => {
 
 router.delete('/:email', async (req, res, next) => {
   if (!req.session.loggedin || req.session.type !== 'admin') {
-    res.status(403).send('Admin Privileges Are Needed!');
+    res.status(403).send('Admin Privileges Are Required!');
     return;
   }
   try {
@@ -130,7 +130,7 @@ router.delete('/:email', async (req, res, next) => {
     }
     const dbResponse = await usersCollection.deleteOne({ email });
     if (!dbResponse.matchedCount) {
-      res.status(401).send('No Matched User!');
+      res.status(404).send('No Matching User!');
       return;
     }
     res.send('Success!');
@@ -141,7 +141,7 @@ router.delete('/:email', async (req, res, next) => {
 
 router.put('/:email', async (req, res, next) => {
   if (!req.session.loggedin || req.session.type !== 'admin') {
-    res.status(403).send('Admin Privileges Are Needed!');
+    res.status(403).send('Admin Privileges Are Required!');
     return;
   }
   try {
@@ -152,7 +152,7 @@ router.put('/:email', async (req, res, next) => {
       new UserConstructor(req.body.data),
     );
     if (!dbResponse.matchedCount) {
-      res.status(401).send('No Matched User!');
+      res.status(404).send('No Matching User!');
       return;
     }
     res.send('Success!');
