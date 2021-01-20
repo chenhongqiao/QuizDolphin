@@ -10,30 +10,12 @@ function getSaltedPassword(password, salt) {
   return hash.digest('hex');
 }
 
-function BadRequest(message, email, ip) {
-  this.message = message;
-  this.email = email;
-  this.ip = ip;
-}
-
-function Unauthorized(message, email, ip) {
-  this.message = message;
-  this.email = email;
-  this.ip = ip;
-}
-
-function NotFound(message, email, ip) {
-  this.message = message;
-  this.email = email;
-  this.ip = ip;
-}
-
 function UserConstructor(userInfo) {
   this.email = userInfo.email;
   this.name = userInfo.name;
   this.type = userInfo.type;
   this.salt = crypto.randomBytes(32).toString('hex');
-  this.password = getSaltedPassword(password, this.salt);
+  this.password = getSaltedPassword(this.password, this.salt);
 }
 
 function UserInformationConstructor(user) {
@@ -45,7 +27,8 @@ function UserInformationConstructor(user) {
 router.post('/session', async (req, res, next) => {
   try {
     if (!req.body.data || typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
-      throw new BadRequest('Invalid Login Information Syntax!');
+      res.status(400).send('Invalid Login Information Syntax!');
+      return;
     }
     let success = false;
     const usersCollection = await dbService.loadCollection('users');
@@ -68,22 +51,10 @@ router.post('/session', async (req, res, next) => {
       req.session.type = userInformation.type;
       res.send('Success!');
     } else {
-      res.send('Incorrect Login Information!');
+      res.status(401).send('Incorrect Login Information!');
     }
   } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
+    next(err);
   }
 });
 
@@ -94,22 +65,11 @@ router.delete('/session', (req, res, next) => {
       req.session.email = '';
       res.send('Success!');
     } else {
-      res.send('Not Logged In!');
+      res.status(401).send('Not Logged In!');
+      return;
     }
   } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
+    next(err);
   }
 });
 
@@ -121,35 +81,26 @@ router.get('/session', async (req, res, next) => {
       const processedInformation = new UserInformationConstructor(userInformation);
       res.send(processedInformation);
     } else {
-      res.send('Not Logged In!');
+      res.status(401).send('Not Logged In!');
+      return;
     }
   } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
+    next(err);
   }
 });
 
 router.post('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
-      throw new Unauthorized('Admin Privileges Are Needed!');
+      res.status(403).send('Admin Privileges Are Needed!');
+      return;
     }
     const usersCollection = await dbService.loadCollection('users');
 
     if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string'
     || typeof req.body.data.type !== 'string' || typeof req.body.data.name !== 'string') {
-      throw new BadRequest('Invalid User Information Syntax!');
+      res.status(400).send('Invalid Login Information Syntax!');
+      return;
     }
     const userWithSameEmail = await usersCollection.findOne({ email: req.body.data.email });
     if (await userWithSameEmail) {
@@ -161,57 +112,37 @@ router.post('/', async (req, res, next) => {
       res.send('Success!');
     }
   } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
+    next(err);
   }
 });
 
 router.delete('/:email', async (req, res, next) => {
   if (!req.session.loggedin || req.session.type !== 'admin') {
-    throw new Unauthorized('Admin Privileges Are Needed!');
+    res.status(403).send('Admin Privileges Are Needed!');
+    return;
   }
   try {
     const usersCollection = await dbService.loadCollection('users');
     const { email } = req.params;
     if (email === req.session.email) {
-      throw new BadRequest('Cannot Delete Yourself');
+      res.status(400).send('Can Not Delete Yourself!');
+      return;
     }
     const dbResponse = await usersCollection.deleteOne({ email });
     if (!dbResponse.matchedCount) {
-      throw new NotFound('No Matched User!');
+      res.status(401).send('No Matched User!');
+      return;
     }
     res.send('Success!');
   } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
+    next(err);
   }
 });
 
 router.put('/:email', async (req, res, next) => {
   if (!req.session.loggedin || req.session.type !== 'admin') {
-    throw new Unauthorized('Admin Privileges Are Needed!');
+    res.status(403).send('Admin Privileges Are Needed!');
+    return;
   }
   try {
     const usersCollection = await dbService.loadCollection('quizzes');
@@ -221,23 +152,12 @@ router.put('/:email', async (req, res, next) => {
       new UserConstructor(req.body.data),
     );
     if (!dbResponse.matchedCount) {
-      throw new NotFound('No Matched User!');
+      res.status(401).send('No Matched User!');
+      return;
     }
     res.send('Success!');
   } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
+    next(err);
   }
 });
 

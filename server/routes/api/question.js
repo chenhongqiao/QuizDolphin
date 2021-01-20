@@ -32,32 +32,16 @@ function AllQuestionsListConstructor(questions, answers) {
   this.answers = answers;
 }
 
-function BadRequest(message, email, ip) {
-  this.message = message;
-  this.email = email;
-  this.ip = ip;
-}
-
-function Unauthorized(message, email, ip) {
-  this.message = message;
-  this.email = email;
-  this.ip = ip;
-}
-
-function NotFound(message, email, ip) {
-  this.message = message;
-  this.email = email;
-  this.ip = ip;
-}
-
 router.post('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
-      throw new Unauthorized('Admin Privileges Are Needed!');
+      res.status(403).send('Admin Privileges Are Needed!');
+      return;
     }
     const { quizId } = req.query;
     if (!quizId) {
-      throw new BadRequest('QuizID Is Needed!');
+      res.status(400).send('QuizId Is Needed!');
+      return;
     }
     const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
     const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
@@ -73,30 +57,20 @@ router.post('/', async (req, res, next) => {
     await answersCollection.insertOne(newAnswer);
     res.send('Success!');
   } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
+    next(err);
   }
 });
 
 router.get('/list', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
-      throw new Unauthorized('Admin Privileges Are Needed!');
+      res.status(403).send('Admin Privileges Are Needed!');
+      return;
     }
     const { quizId } = req.query;
     if (!quizId) {
-      throw new BadRequest('QuizID Is Needed!');
+      res.status(400).send('QuizId Is Needed!');
+      return;
     }
     const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
     const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
@@ -104,72 +78,54 @@ router.get('/list', async (req, res, next) => {
     const allAnswers = await answersCollection.find({}).toArray();
     res.send(new AllQuestionsListConstructor(allQuestions, allAnswers));
   } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
+    next(err);
   }
 });
 
 router.delete('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
-      throw new Unauthorized('Admin Privileges Are Needed!');
+      res.status(403).send('Admin Privileges Are Needed!');
+      return;
     }
     const { quizId } = req.query;
     const { questionId } = req.query;
     if (!quizId) {
-      throw new BadRequest('QuizID Is Needed!');
+      res.status(400).send('QuizId Is Needed!');
+      return;
     }
     if (!questionId) {
-      throw new BadRequest('QuestionID Is Needed!');
+      res.status(400).send('QuestionID Is Needed!');
+      return;
     }
     const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
     const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
     const questionsResponse = await questionsCollection.deleteOne({ questionId });
     const answersResponse = await answersCollection.deleteOne({ questionId });
     if (!questionsResponse.matchedCount || !answersResponse.matchedCount) {
-      throw new NotFound('No Matched Quiz!');
+      res.status(404).send('No Matched Quiz!');
+      return;
     }
     res.send('Success!');
   } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
+    next(err);
   }
 });
 
 router.put('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.type !== 'admin') {
-      throw new Unauthorized('Admin Privileges Are Needed!');
+      res.status(403).send('Admin Privileges Are Needed!');
+      return;
     }
     const { quizId } = req.body.data;
     const { questionId } = req.query;
     if (!quizId) {
-      throw new BadRequest('QuizID Is Needed!');
+      res.status(400).send('QuizId Is Needed!'); return;
     }
     if (!questionId) {
-      throw new BadRequest('QuestionID Is Needed!');
+      res.status(400).send('QuestionID Is Needed!');
+      return;
     }
     const questionsCollection = await dbService.loadCollection(`${quizId}-questions`);
     const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
@@ -182,23 +138,12 @@ router.put('/', async (req, res, next) => {
       AnswerConstructor(req.body.data, questionId),
     );
     if (!questionsResponse.matchedCount || !answersResponse.matchedCount) {
-      throw new NotFound('No Matched Quiz!');
+      res.status(404).send('No Matched Quiz!');
+      return;
     }
     res.send('Success!');
   } catch (err) {
-    if (err instanceof BadRequest) {
-      res.status(400).send(err.message);
-      next(`BadRequest from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof Unauthorized) {
-      res.status(403).send(err.message);
-      next(`Unauthorized from ${err.ip} ${err.email} ${err.message}`);
-    } else if (err instanceof NotFound) {
-      res.status(404).send(err.message);
-      next(`NotFound from ${err.ip} ${err.email} ${err.message}`);
-    } else {
-      res.status(500).send('Internal Error!');
-      next(err);
-    }
+    next(err);
   }
 });
 
