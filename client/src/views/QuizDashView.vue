@@ -209,37 +209,52 @@ export default {
   },
   async beforeMount() {
     this.quizId = this.$route.params.id;
-    const previous = (await QuizService.getAttempt(this.quizId, false)).data;
-    if (previous !== 'No Ongoing Questions!') {
-      this.quizQuestions = previous.questions;
-      this.endTime = previous.endTime;
-      this.attemptId = previous.attemptId;
-      const progress = (await QuizService.getProgress(this.quizId, this.attemptId)).data;
-      this.quizResponses = progress.responses;
-      this.currentIndex = progress.index;
-      this.progressVersion = progress.version;
-      this.quizOngoing = true;
-      this.quizLoaded = true;
-      this.timer = setInterval(() => { this.countDown(); }, 1000);
-    } else {
-      this.quizStarted = false;
-      this.getHistory();
+    try {
+      const previous = (await QuizService.getAttempt(this.quizId, false)).data;
+      if (previous !== 'No Ongoing Questions!') {
+        this.quizQuestions = previous.questions;
+        this.endTime = previous.endTime;
+        this.attemptId = previous.attemptId;
+        const progress = (await QuizService.getProgress(this.quizId, this.attemptId)).data;
+        this.quizResponses = progress.responses;
+        this.currentIndex = progress.index;
+        this.progressVersion = progress.version;
+        this.quizOngoing = true;
+        this.quizLoaded = true;
+        this.timer = setInterval(() => { this.countDown(); }, 1000);
+      } else {
+        this.quizStarted = false;
+        this.getHistory();
+      }
+    } catch (err) {
+      if (err.response.status === 401) {
+        this.$store.commit('logout');
+        this.$router.push('/login');
+      }
     }
   },
   methods: {
     async startNewQuiz() {
       this.actionDisabled = true;
-      const quizData = (await QuizService.getAttempt(this.quizId, true)).data;
-      this.quizQuestions = quizData.questions;
-      this.endTime = quizData.endTime;
-      this.attemptId = quizData.attemptId;
-      const progress = (await QuizService.getProgress(this.quizId, this.attemptId)).data;
-      this.quizResponses = progress.responses;
-      this.currentIndex = progress.index;
-      this.progressVersion = progress.version;
-      this.quizOngoing = true;
-      this.quizStarted = true;
-      this.quizLoaded = true;
+      try {
+        const quizData = (await QuizService.getAttempt(this.quizId, true)).data;
+        this.quizQuestions = quizData.questions;
+        this.endTime = quizData.endTime;
+        this.attemptId = quizData.attemptId;
+        const progress = (await QuizService.getProgress(this.quizId, this.attemptId)).data;
+        this.quizResponses = progress.responses;
+        this.currentIndex = progress.index;
+        this.progressVersion = progress.version;
+        this.quizOngoing = true;
+        this.quizStarted = true;
+        this.quizLoaded = true;
+      } catch (err) {
+        if (err.response.status === 401) {
+          this.$store.commit('logout');
+          this.$router.push('/login');
+        }
+      }
+      this.actionDisabled = false;
       setInterval(() => { this.countDown(); }, 1000);
     },
     async postAttempt() {
@@ -247,15 +262,17 @@ export default {
       this.progressVersion += 1;
       await this.postProgress();
       if (!this.needReload) {
-        this.quizOngoing = false;
-        this.quizResult = (await QuizService.postAttempt(
-          this.quizId, this.attemptId,
-        )).data;
-        if (this.quizResult === 'Not Logged In!') {
-          this.$store.state.loggedIn = false;
-          this.$router.push('/login');
-        } else {
+        try {
+          this.quizOngoing = false;
+          this.quizResult = (await QuizService.postAttempt(
+            this.quizId, this.attemptId,
+          )).data;
           this.quizGraded = true;
+        } catch (err) {
+          if (err.response.status === 401) {
+            this.$store.commit('logout');
+            this.$router.push('/login');
+          }
         }
       }
     },
@@ -272,30 +289,39 @@ export default {
       return `${number}th`;
     },
     async getHistory() {
-      const rawResponse = (await QuizService.getQuizHistory(this.quizId)).data;
-      if (rawResponse === 'Not Logged In!') {
-        this.$store.state.loggedIn = false;
-        this.$router.push('/login');
-      } else if (rawResponse !== 'No History!') {
-        rawResponse.forEach((value, index) => {
+      try {
+        const history = (await QuizService.getQuizHistory(this.quizId)).data;
+        history.forEach((value, index) => {
           this.historyChartData.labels.push(this.getOrdinal(index + 1));
           this.historyChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
         });
-        this.quizHistory = rawResponse.reverse();
+        this.quizHistory = history.reverse();
+      } catch (err) {
+        if (err.response.status === 401) {
+          this.$store.commit('logout');
+          this.$router.push('/login');
+        }
       }
     },
     async postProgress() {
-      const rawResponse = (await QuizService.postProgress(
-        {
-          version: this.progressVersion,
-          index: this.currentIndex,
-          responses: this.quizResponses,
-          attemptId: this.attemptId,
-        },
-        this.quizId,
-      )).data;
-      if (rawResponse === 'Refuse to overwrite!') {
-        this.needReload = true;
+      try {
+        const rawResponse = (await QuizService.postProgress(
+          {
+            version: this.progressVersion,
+            index: this.currentIndex,
+            responses: this.quizResponses,
+            attemptId: this.attemptId,
+          },
+          this.quizId,
+        )).data;
+        if (rawResponse === 'Refuse to overwrite!') {
+          this.needReload = true;
+        }
+      } catch (err) {
+        if (err.response.status === 401) {
+          this.$store.commit('logout');
+          this.$router.push('/login');
+        }
       }
     },
     toLocalTime(record) {

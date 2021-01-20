@@ -15,9 +15,14 @@ const routes = [
     component: () => import('../views/LoginView.vue'),
   },
   {
-    path: '/',
+    path: '/dashboard',
     name: 'User Dashboard',
     component: () => import('../views/UserDashView.vue'),
+  },
+  {
+    path: '/',
+    name: 'Root',
+    redirect: '/dashboard',
   },
 ];
 

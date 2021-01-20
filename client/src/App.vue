@@ -85,11 +85,15 @@ export default {
     errorMessage: '',
   }),
   async beforeMount() {
-    const userInformation = (await UserService.getSession()).data;
-    if (userInformation !== 'Not Logged In!') {
+    try {
+      const userInformation = (await UserService.getSession()).data;
       this.$store.commit('login', userInformation);
-    } else if (this.$route.path !== '/login') {
-      this.$router.push('/login');
+    } catch (err) {
+      if (err.response.status === 401) {
+        if (this.$route.path !== '/login') {
+          this.$router.push('/login');
+        }
+      }
     }
   },
   errorCaptured(err) {
@@ -98,9 +102,11 @@ export default {
   },
   methods: {
     async logout() {
-      const rawResponse = (await UserService.deleteSession()).data;
-      if (rawResponse === 'Success!' || rawResponse === 'Not Logged In!') {
+      try {
+        await UserService.deleteSession();
         this.$store.commit('logout');
+        this.$router.push('/login');
+      } catch (err) {
         if (this.$route.path !== '/login') {
           this.$router.push('/login');
         }

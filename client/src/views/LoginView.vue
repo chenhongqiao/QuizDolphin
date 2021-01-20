@@ -74,26 +74,25 @@ export default {
   }),
   beforeMount() {
     if (this.$store.state.loggedIn) {
-      this.goDashboard();
+      this.$router.push('/');
     }
   },
   methods: {
     async login() {
       this.actionDisabled = true;
-      const response = (await UserService.postSession(this.loginInfo)).data;
-      if (response === 'Success!') {
+      try {
+        await UserService.postSession(this.loginInfo);
         const userInformation = (await UserService.getSession()).data;
         this.$store.commit('login', userInformation);
         this.$router.go(-1);
-      } else {
-        this.hasLoginError = true;
-        this.loginResponse = response;
-        this.loginInfo.password = '';
+      } catch (err) {
+        if (err.response.status === 401) {
+          this.hasLoginError = true;
+          this.loginResponse = err.response.data;
+          this.loginInfo.password = '';
+        }
       }
       this.actionDisabled = false;
-    },
-    goDashboard() {
-      this.$router.push('/');
     },
     dismissError() {
       this.hasLoginError = false;
