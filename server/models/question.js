@@ -1,5 +1,4 @@
 function Question(question, questionId) {
-  console.log(question);
   this.questionId = questionId;
   this.quizId = question.quizId;
   this.context = question.context;

@@ -9,7 +9,6 @@ async function newQuestion(question) {
   while (await questionsCollection.findOne({ questionId })) {
     questionId = nanoid.charId();
   }
-  console.log(new questionModel.Question(question, questionId));
   return questionsCollection.insertOne(new questionModel.Question(question, questionId));
 }
 

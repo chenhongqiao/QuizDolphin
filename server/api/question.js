@@ -28,7 +28,7 @@ router.delete('/:questionId', async (req, res, next) => {
       res.status(400).send('QuestionID Is Required!');
       return;
     }
-    const status = questionService.deleteQuestion(questionId);
+    const status = await questionService.deleteQuestion(questionId);
     if (!status.matchedCount) {
       res.status(404).send('No Matching Quiz!');
       return;

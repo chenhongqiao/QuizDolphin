@@ -7,13 +7,10 @@ async function gradeQuiz(attemptId, email) {
   const attemptsCollection = await mongodb.loadCollection('attempts');
   const resultsCollection = await mongodb.loadCollection('results');
   const attemptData = (await attemptsCollection.findOne({ attemptId }));
-  console.log(attemptData);
   const { responses } = JSON.parse(await redis.get(`progress:${attemptId}`));
   const results = [];
   const { questions } = attemptData;
-  console.log(questions);
   const { answers } = attemptData;
-  console.log(answers);
   let totalPoints = 0;
   let score = 0;
   for (let index = 0; index < questions.length; index += 1) {
@@ -84,7 +81,6 @@ async function gradeQuiz(attemptId, email) {
         }
         return count;
       }, 0);
-      console.log(answer);
       results.push(new resultModel.QuestionResult(
         response, answer,
         question.points * (correctMatch / answer.length),

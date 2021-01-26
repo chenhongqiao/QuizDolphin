@@ -13,7 +13,6 @@ async function newAttempt(quizId, email) {
   const selectedQuestions = [];
   const selectedAnswers = [];
   const selectedIndexes = new Set();
-  console.log(questions.length);
   while (selectedQuestions.length < questionCount) {
     // console.log(selectedQuestions.length);
     const index = random.integer(0, questions.length);
@@ -61,7 +60,6 @@ async function quizAttemptId(email, quizId) {
   const attemptsCollection = await mongodb.loadCollection('attempts');
   // eslint-disable-next-line max-len
   const attemptId = (await attemptsCollection.find({ email, quizId }).project({ attemptId: 1, _id: 0 }).toArray())[0];
-  console.log(attemptId);
   return attemptId;
 }
 

@@ -65,7 +65,7 @@ router.post('/', async (req, res, next) => {
       return;
     }
 
-    const status = userService.newUser(req.body.data);
+    const status = await userService.newUser(req.body.data);
     if (status === 'Email Already Exists!') {
       res.send('Email Already Exists!');
     } else {
@@ -105,7 +105,7 @@ router.put('/:email', async (req, res, next) => {
   }
   try {
     const { email } = req.params;
-    const status = userService.updateUser(email, req.body.data);
+    const status = await userService.updateUser(email, req.body.data);
     if (!status.matchedCount) {
       res.status(404).send('No Matching User!');
       return;

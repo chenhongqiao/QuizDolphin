@@ -5,7 +5,6 @@ async function login(email, password, session) {
   let success = false;
   const usersCollection = await mongodb.loadCollection('users');
   const userInformation = await usersCollection.findOne({ email });
-  console.log(email);
   if (!userInformation) {
     success = false;
   } else {
@@ -22,7 +21,6 @@ async function login(email, password, session) {
       success = false;
     }
   }
-  console.log(success);
   return success;
 }
 
