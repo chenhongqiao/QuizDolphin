@@ -2,10 +2,10 @@
   "name": "fbla21cp",
   "version": "1.0.0",
   "description": "FBLA 2021 Coding and Programming Project",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "nodemon server/index.js"
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js"
   },
   "repository": "git@github.com:chenhongqiao/FBLA21CP.git",
   "author": "Harry Chen <harrychen0314@gmail.com>",

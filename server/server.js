@@ -8,7 +8,7 @@ const RedisStore = require('connect-redis')(session);
 const rateLimit = require('express-rate-limit');
 const history = require('connect-history-api-fallback');
 const path = require('path');
-const redisService = require('./modules/redisService');
+const redis = require('./databases/redis');
 
 const app = express();
 
@@ -24,7 +24,7 @@ app.use(session({
   cookie: {
     secure: false,
   },
-  store: new RedisStore({ client: redisService.client }),
+  store: new RedisStore({ client: redis.client }),
 }));
 app.use('/api', rateLimit({
   windowMs: 1000,
@@ -41,21 +41,25 @@ app.use('/api', rateLimit({
 app.use(history());
 app.use('/', express.static(path.join(__dirname, 'public')));
 
-const question = require('./routes/api/question');
+const question = require('./api/question');
 
 app.use('/api/question', question);
 
-const heartbeat = require('./routes/api/heartbeat');
+const attempt = require('./api/attempt');
 
-app.use('/api/heartbeat', heartbeat);
+app.use('/api/attempt', attempt);
 
-const quiz = require('./routes/api/quiz');
+const quiz = require('./api/quiz');
 
 app.use('/api/quiz', quiz);
 
-const user = require('./routes/api/user');
+const user = require('./api/user');
 
 app.use('/api/user', user);
+
+const result = require('./api/result');
+
+app.use('/api/result', result);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server started on port ${port}`));

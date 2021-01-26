@@ -1,73 +1,109 @@
-{
-"data":{
-    "context": "Who is the first President of the United States?",
-    "points": 5,
-    "type": "single choice",
-    "options": [
-      "Abraham Lincoln",
-      "George Washington",
-      "Benjamin Franklin",
-      "Alexander Hamilton"
-    ],
-    "answer": "George Washington"
+[
+  {
+    "data": {
+      "context": "Who is the first President of the United States?",
+      "quizId": "8314066799632215",
+      "points": 5,
+      "type": "single choice",
+      "options": [
+        "Abraham Lincoln",
+        "George Washington",
+        "Benjamin Franklin",
+        "Alexander Hamilton"
+      ],
+      "answer": "George Washington"
     }
-}
-{
-"data":{
-    "context": [ "When prices", ", revenue", ", while expenses", "." ],
-    "points": 5,
-    "type": "fill in the blanks",
-    "options": [
-      [ "increase", "decrease" ],
-      [ "increase", "decrease" ],
-      [ "increase", "decrease", "stay the same" ]
-    ],
-    "answer": [ "increase", "increase", "stay the same" ]
+  },
+  {
+    "data": {
+      "context": [
+        "When prices",
+        ", revenue",
+        ", while expenses",
+        "."
+      ],
+      "quizId": "8314066799632215",
+      "points": 5,
+      "type": "fill in the blanks",
+      "options": [
+        [
+          "increase",
+          "decrease"
+        ],
+        [
+          "increase",
+          "decrease"
+        ],
+        [
+          "increase",
+          "decrease",
+          "stay the same"
+        ]
+      ],
+      "answer": [
+        "increase",
+        "increase",
+        "stay the same"
+      ]
+    }
+  },
+  {
+    "data": {
+      "context": "Please match the following stages in business cycle to its name",
+      "quizId": "8314066799632215",
+      "points": 5,
+      "type": "matching",
+      "rightcol": [
+        "Trough",
+        "Peak",
+        "Expansion",
+        "Contraction"
+      ],
+      "leftcol": [
+        "When business activity is growing",
+        "When business activity is slow",
+        "The highest point of business activity",
+        "The lowest point of business activity"
+      ],
+      "answer": [
+        "Expansion",
+        "Contraction",
+        "Peak",
+        "Trough"
+      ]
+    }
+  },
+  {
+    "data": {
+      "context": "Which of the following components are used to calculate GDP (check all that apply)",
+      "quizId": "8314066799632215",
+      "points": 5,
+      "type": "multiple choice",
+      "options": [
+        "Consumer Spending",
+        "Education Spending",
+        "Groceries Spending",
+        "Government Spending",
+        "Net Exports",
+        "Industry Product",
+        "Agriculture Product",
+        "Business Spending"
+      ],
+      "answer": [
+        "Consumer Spending",
+        "Government Spending",
+        "Business Spending",
+        "Net Exports"
+      ]
+    }
+  },
+  {
+    "data": {
+      "context": "What is it called when the supply of a product is lower than its demand?",
+      "quizId": "8314066799632215",
+      "points": 5,
+      "type": "short response",
+      "answer": "Shortage"
+    }
   }
-}
-{
-"data":  {
-    "context": "Please match the following stages in business cycle to its name",
-    "points": 5,
-    "type": "matching",
-    "rightcol": [ "Trough", "Peak", "Expansion", "Contraction" ],
-    "leftcol": [
-      "When business activity is growing",
-      "When business activity is slow",
-      "The highest point of business activity",
-      "The lowest point of business activity"
-    ],
-    "answer": [ "Expansion", "Contraction", "Peak", "Trough" ]
-  }
-}
-{
-"data": {
-    "context": "Which of the following components are used to calculate GDP (check all that apply)",
-    "points": 5,
-    "type": "multiple choice",
-    "options": [
-      "Consumer Spending",
-      "Education Spending",
-      "Groceries Spending",
-      "Government Spending",
-      "Net Exports",
-      "Industry Product",
-      "Agriculture Product",
-      "Business Spending"
-    ],
-    "answer": [
-      "Consumer Spending",
-      "Government Spending",
-      "Business Spending",
-      "Net Exports"
-    ]
-  }
-}
-{
-"data":{
-    "context": "What is it called when the supply of a product is lower than its demand?",
-    "points": 5,
-    "type": "short response",
-    "answer": "Shortage"
-  }
-}
+]

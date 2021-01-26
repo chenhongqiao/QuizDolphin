@@ -1,49 +1,37 @@
-const { DateTime } = require('luxon');
+const mongodb = require('../databases/mongodb');
+const redis = require('../databases/redis');
 
-const dbService = require('./dbService');
+const resultModel = require('../models/result');
 
-function QuizResultConstructor(score, questions, results, totalPoints) {
-  this.score = score;
-  this.totalPoints = totalPoints;
-  this.timeStamp = DateTime.local().toUTC().toISO();
-  this.questions = questions;
-  this.results = results;
-}
-
-function QuestionResultConstructor(response, answer, score, questionId, points) {
-  this.questionId = questionId;
-  this.response = response;
-  this.answer = answer;
-  this.points = points;
-  this.score = score;
-}
-
-async function gradeQuiz(quizId, questions, responses) {
+async function gradeQuiz(attemptId, email) {
+  const attemptsCollection = await mongodb.loadCollection('attempts');
+  const resultsCollection = await mongodb.loadCollection('results');
+  const attemptData = (await attemptsCollection.findOne({ attemptId }));
+  console.log(attemptData);
+  const { responses } = JSON.parse(await redis.get(`progress:${attemptId}`));
   const results = [];
-  const answersCollection = await dbService.loadCollection(`${quizId}-answers`);
-  const answersPromise = [];
-  for (let index = 0; index < questions.length; index += 1) {
-    answersPromise[index] = answersCollection.findOne({ questionId: questions[index].questionId });
-  }
-  const answers = await Promise.all(answersPromise);
+  const { questions } = attemptData;
+  console.log(questions);
+  const { answers } = attemptData;
+  console.log(answers);
   let totalPoints = 0;
   let score = 0;
   for (let index = 0; index < questions.length; index += 1) {
     const question = questions[index];
     const response = responses[index];
-    const { answer } = answers[index];
+    const answer = answers[index];
     totalPoints += question.points;
     // Grade single choice and short response questions
     if (question.type === 'single choice' || question.type === 'short response') {
       // Gain full points only if user's input match exactly with correct answer
       if (answer === response) {
-        results.push(new QuestionResultConstructor(
+        results.push(new resultModel.QuestionResult(
           response, answer, question.points,
           question.questionId, question.points,
         ));
         score += question.points;
       } else {
-        results.push(new QuestionResultConstructor(
+        results.push(new resultModel.QuestionResult(
           response, answer, 0, question.questionId, question.points,
         ));
       }
@@ -61,11 +49,11 @@ async function gradeQuiz(quizId, questions, responses) {
         return -Infinity;
       }, 0);
       if (correctCount < 0) {
-        results.push(new QuestionResultConstructor(
+        results.push(new resultModel.QuestionResult(
           response, answer, 0, question.questionId, question.points,
         ));
       } else {
-        results.push(new QuestionResultConstructor(
+        results.push(new resultModel.QuestionResult(
           response, answer,
           question.points * (correctCount / answersSet.size),
           question.questionId, question.points,
@@ -81,7 +69,7 @@ async function gradeQuiz(quizId, questions, responses) {
         }
         return count;
       }, 0);
-      results.push(new QuestionResultConstructor(
+      results.push(new resultModel.QuestionResult(
         response, answer,
         question.points * (correctMatch / answer.length),
         question.questionId, question.points,
@@ -96,7 +84,8 @@ async function gradeQuiz(quizId, questions, responses) {
         }
         return count;
       }, 0);
-      results.push(new QuestionResultConstructor(
+      console.log(answer);
+      results.push(new resultModel.QuestionResult(
         response, answer,
         question.points * (correctMatch / answer.length),
         question.questionId, question.points,
@@ -104,9 +93,13 @@ async function gradeQuiz(quizId, questions, responses) {
       score += question.points * (correctMatch / answer.length);
     }
   }
-  const quizResult = new QuizResultConstructor(score, questions,
-    results, totalPoints);
-  return quizResult;
+  const quizResult = new resultModel.QuizResult(score, questions,
+    results, totalPoints, attemptId, email, attemptData.quizId);
+  await resultsCollection.insertOne(quizResult);
+  await attemptsCollection.deleteOne({ attemptId });
+  await redis.del(`progress:${attemptId}`);
+  await redis.del(`endTime:${attemptId}`);
+  return attemptId;
 }
 
 module.exports = { gradeQuiz };
