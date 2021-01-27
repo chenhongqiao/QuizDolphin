@@ -9,18 +9,34 @@ async function newQuestion(question) {
   while (await questionsCollection.findOne({ questionId })) {
     questionId = nanoid.charId();
   }
-  return questionsCollection.insertOne(new questionModel.Question(question, questionId));
+  const questionData = questionModel.Question(question, questionId);
+  if (questionData.invalid) {
+    return { success: false, message: 'Incorrect Question Syntax!' };
+  }
+  questionsCollection.insertOne(questionData);
+  return { success: true, data: questionId };
 }
 
 async function deleteQuestion(questionId) {
   const questionsCollection = await mongodb.loadCollection('questions');
-  return questionsCollection.deleteOne({ questionId });
+  const status = await questionsCollection.deleteOne({ questionId });
+  if (status.deletedCount === 0) {
+    return { success: false, message: 'No Matching Question!' };
+  }
+  return { success: true };
 }
 
 async function updateQuestion(questionId, question) {
   const questionsCollection = await mongodb.loadCollection('questions');
-  return questionsCollection.updateOne({ questionId },
-    new questionModel.Question(question, questionId));
+  const questionData = questionModel.Question(question, questionId);
+  if (questionData.invalid) {
+    return { success: false, message: 'Incorrect Question Syntax!' };
+  }
+  const status = await questionsCollection.updateOne({ questionId }, questionData);
+  if (status.matchedCount === 0) {
+    return { success: false, message: 'No Matching Question!' };
+  }
+  return { success: true };
 }
 
 module.exports = { newQuestion, deleteQuestion, updateQuestion };

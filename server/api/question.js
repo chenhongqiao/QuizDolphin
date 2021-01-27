@@ -10,8 +10,15 @@ router.post('/', async (req, res, next) => {
       res.status(403).send('Admin Privileges Are Required!');
       return;
     }
-    await questionService.newQuestion(req.body.data);
-    res.send('Success!');
+    const response = await questionService.newQuestion(req.body.data);
+    if (!response.success) {
+      if (response.message === 'Incorrect Question Syntax!') {
+        res.status(400).send('Incorrect Question Syntax!');
+        return;
+      }
+    } else {
+      res.send(response.data);
+    }
   } catch (err) {
     next(err);
   }
@@ -28,12 +35,15 @@ router.delete('/:questionId', async (req, res, next) => {
       res.status(400).send('QuestionID Is Required!');
       return;
     }
-    const status = await questionService.deleteQuestion(questionId);
-    if (!status.matchedCount) {
-      res.status(404).send('No Matching Quiz!');
-      return;
+    const response = await questionService.deleteQuestion(questionId);
+    if (!response.success) {
+      if (response.message === 'No Matching Question!') {
+        res.status(404).send('No Matching Question!');
+        return;
+      }
+    } else {
+      res.send('Success!');
     }
-    res.send('Success!');
   } catch (err) {
     next(err);
   }
@@ -50,13 +60,20 @@ router.put('/:questionId', async (req, res, next) => {
       res.status(400).send('QuestionID Is Required!');
       return;
     }
-    const status = await questionService.updateQuestion(questionId, req.body.data);
+    const response = await questionService.updateQuestion(questionId, req.body.data);
 
-    if (!status.matchedCount) {
-      res.status(404).send('No Matching Quiz!');
-      return;
+    if (!response.success) {
+      if (response.message === 'Incorrect Question Syntax!') {
+        res.status(400).send('Incorrect Question Syntax!');
+        return;
+      }
+      if (response.message === 'No Matching Question!') {
+        res.status(404).send('No Matching Question!');
+        return;
+      }
+    } else {
+      res.send('Success!');
     }
-    res.send('Success!');
   } catch (err) {
     next(err);
   }
