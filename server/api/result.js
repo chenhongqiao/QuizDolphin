@@ -15,8 +15,15 @@ router.get('/:attemptId', async (req, res, next) => {
       res.status(400).send('Missing Paramater!');
       return;
     }
-    const quizResult = await resultService.getResult(attemptId);
-    res.send(quizResult);
+    const response = await resultService.getResult(attemptId);
+    if (!response.success) {
+      if (response.message === 'No Matching Result!') {
+        res.status(404).send('No Matching Result!');
+      }
+      throw new Error('Unexpected Service Response!');
+    } else {
+      res.send(response.data);
+    }
   } catch (err) {
     next(err);
   }
