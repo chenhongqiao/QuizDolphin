@@ -12,8 +12,8 @@ router.post('/', async (req, res, next) => {
     }
     const response = await questionService.newQuestion(req.body.data);
     if (!response.success) {
-      if (response.message === 'Incorrect Question Syntax!') {
-        res.status(400).send('Incorrect Question Syntax!');
+      if (response.message === 'Invalid Question Syntax!') {
+        res.status(400).send('Invalid Question Syntax!');
         return;
       }
     } else {
@@ -63,8 +63,8 @@ router.put('/:questionId', async (req, res, next) => {
     const response = await questionService.updateQuestion(questionId, req.body.data);
 
     if (!response.success) {
-      if (response.message === 'Incorrect Question Syntax!') {
-        res.status(400).send('Incorrect Question Syntax!');
+      if (response.message === 'Invalid Question Syntax!') {
+        res.status(400).send('Invalid Question Syntax!');
         return;
       }
       if (response.message === 'No Matching Question!') {

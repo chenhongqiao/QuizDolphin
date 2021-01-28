@@ -12,7 +12,7 @@ class QuestionService {
     }
     const questionData = new questionModel.Question(question, questionId);
     if (questionData.invalid) {
-      return { success: false, message: 'Incorrect Question Syntax!' };
+      return { success: false, message: 'Invalid Question Syntax!' };
     }
     questionsCollection.insertOne(questionData);
     return { success: true, data: questionId };
@@ -31,7 +31,7 @@ class QuestionService {
     const questionsCollection = await mongodb.loadCollection('questions');
     const questionData = new questionModel.Question(question, questionId);
     if (questionData.invalid) {
-      return { success: false, message: 'Incorrect Question Syntax!' };
+      return { success: false, message: 'Invalid Question Syntax!' };
     }
     const status = await questionsCollection.updateOne({ questionId }, questionData);
     if (status.matchedCount === 0) {

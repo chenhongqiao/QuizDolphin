@@ -132,8 +132,8 @@ router.post('/', async (req, res, next) => {
     }
     const response = await quizService.newQuiz(req.body.data);
     if (!response.success) {
-      if (response.message === 'Incorrect Quiz Syntax!') {
-        res.status(400).send('Incorrect Quiz Syntax!');
+      if (response.message === 'Invalid Quiz Syntax!') {
+        res.status(400).send('Invalid Quiz Syntax!');
         return;
       }
       throw Error('Unexpected Service Response!');

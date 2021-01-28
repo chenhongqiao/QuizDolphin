@@ -109,7 +109,7 @@ class QuizService {
     }
     const quiz = new quizModel.Info(quizInfo, quizId);
     if (quiz.invalid) {
-      return { success: false, message: 'Incorrect Quiz Syntax!' };
+      return { success: false, message: 'Invalid Quiz Syntax!' };
     }
     quizCollection.insertOne(quiz);
     return { success: true, data: quizId };
@@ -117,8 +117,8 @@ class QuizService {
 
   static async deleteQuiz(quizId) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    const dbRes = await quizCollection.deleteOne({ quizId });
-    if (dbRes.deletedCount === 0) {
+    const status = await quizCollection.deleteOne({ quizId });
+    if (status.deletedCount === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
     return { success: true };
@@ -126,11 +126,11 @@ class QuizService {
 
   static async updateQuiz(quizId, quizInfo) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    const dbRes = await quizCollection.updateOne(
+    const status = await quizCollection.updateOne(
       { quizId },
       new quizModel.Info(quizInfo, quizId),
     );
-    if (dbRes.matchedCount === 0) {
+    if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
     return { success: true };
