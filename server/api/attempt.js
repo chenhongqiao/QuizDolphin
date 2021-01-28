@@ -100,7 +100,16 @@ router.post('/:attemptId', async (req, res, next) => {
       res.status(400).send('Missing Parameters!');
       return;
     }
-    res.send(await gradingService.gradeQuiz(attemptId, req.session.email));
+    const response = await gradingService.gradeQuiz(attemptId, req.session.email);
+    if (!response.success) {
+      if (response.message === 'No Matching Attempt!' || response.message === 'No Privileges!') {
+        res.status(404).send('No Matching Attempt!');
+        return;
+      }
+    } else {
+      res.send(response.data);
+    }
+    res.send();
   } catch (err) {
     next(err);
   }
