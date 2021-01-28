@@ -19,7 +19,7 @@ class AttemptService {
       if (!await quizDataCursor.count()) {
         return { success: false, message: 'No Matching Progress!' };
       }
-      const quizData = quizDataCursor.toArray()[0];
+      const quizData = (await quizDataCursor.toArray())[0];
       if (Math.floor(Date.now() / 1000) <= quizData.endTime) {
         await redis.setnx(`endTime:${quizData.attemptId}`, JSON.stringify(quizData.endTime));
       } else {
@@ -43,7 +43,7 @@ class AttemptService {
     if (!await quizDataCursor.count()) {
       return { success: false, message: 'No Matching Attempt!' };
     }
-    const quizData = quizDataCursor.toArray()[0];
+    const quizData = (await quizDataCursor.toArray())[0];
     delete quizData.answers;
     return { success: true, data: quizData };
   }

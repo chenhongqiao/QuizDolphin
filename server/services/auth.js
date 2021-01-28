@@ -27,7 +27,7 @@ class AuthService {
     if (await userInformationCursor.count() === 0) {
       return { success: false, message: 'No Matching User!' };
     }
-    const userInformation = userInformationCursor.toArray()[0];
+    const userInformation = (await userInformationCursor.toArray())[0];
     delete userInformation.password;
     delete userInformation.salt;
     return { success: true, data: userInformation };

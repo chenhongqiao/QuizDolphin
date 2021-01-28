@@ -88,7 +88,7 @@ class QuizService {
 
   static async getQuizList() {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    return quizCollection.find({}).toArray();
+    return { success: true, data: await quizCollection.find({}).toArray() };
   }
 
   static async getQuizInfo(quizId) {
@@ -97,7 +97,7 @@ class QuizService {
     if (await quizInfoCursor.count() === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
-    return { success: true, data: quizInfoCursor.toArray()[0] };
+    return { success: true, data: (await quizInfoCursor.toArray())[0] };
   }
 
   static async newQuiz(quizInfo) {

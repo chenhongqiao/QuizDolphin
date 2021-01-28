@@ -7,7 +7,7 @@ class ResultService {
     if (await resultCursor.count() === 0) {
       return { success: false, message: 'No Matching Result!' };
     }
-    return { success: true, data: resultCursor.toArray()[0] };
+    return { success: true, data: (await resultCursor.toArray())[0] };
   }
 }
 

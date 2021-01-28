@@ -11,7 +11,7 @@ class GradingService {
     if (await attemptDataCursor.count() === 0) {
       return { success: false, message: 'No Matching Attempt!' };
     }
-    const attemptData = attemptDataCursor.toArray()[0];
+    const attemptData = (await attemptDataCursor.toArray())[0];
     if (attemptData.email !== email) {
       return { success: false, message: 'No Privileges!' };
     }
