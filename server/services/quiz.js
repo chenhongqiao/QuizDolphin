@@ -68,8 +68,10 @@ class QuizService {
     if (!(await this.getQuizInfo(quizId)).success) {
       return { success: false, message: 'No Matching Quiz!' };
     }
-    // eslint-disable-next-line max-len
-    const attemptId = (await attemptsCollection.find({ email, quizId }).project({ attemptId: 1, _id: 0 }).toArray())[0];
+    const attemptId = (await attemptsCollection
+      .find({ email, quizId })
+      .project({ attemptId: 1, _id: 0 })
+      .toArray())[0];
     return { success: true, data: attemptId };
   }
 
@@ -78,7 +80,6 @@ class QuizService {
     if (!(await this.getQuizInfo(quizId)).success) {
       return { success: false, message: 'No Matching Quiz!' };
     }
-    // eslint-disable-next-line max-len
     const results = await resultsCollection.find({
       $query: { email, quizId },
       $orderby: { timeStamp: 1 },

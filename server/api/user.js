@@ -11,7 +11,6 @@ router.post('/session', async (req, res, next) => {
       res.status(400).send('Invalid Login Information Syntax!');
       return;
     }
-    // eslint-disable-next-line max-len
     const response = await authService.login(req.body.data.email, req.body.data.password);
     // Success or unsuccess is sent together at the end to prevent hackers from guessing
     // if the email or the password is Invalid from response time.

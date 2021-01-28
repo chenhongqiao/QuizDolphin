@@ -26,6 +26,10 @@ app.use(session({
   },
   store: new RedisStore({ client: redis.client }),
 }));
+
+app.use(history());
+app.use('/', express.static(path.join(__dirname, 'public')));
+
 app.use('/api', rateLimit({
   windowMs: 1000,
   max: 4,
@@ -37,9 +41,6 @@ app.use('/api', rateLimit({
   },
   message: 'Request too frequent, please try again later.',
 }));
-
-app.use(history());
-app.use('/', express.static(path.join(__dirname, 'public')));
 
 const question = require('./api/question');
 
@@ -61,5 +62,14 @@ const result = require('./api/result');
 
 app.use('/api/result', result);
 
+app.use('/api', (err, req, res) => {
+  if (err) {
+    res.status(500).send('Internal Error');
+    // eslint-disable-next-line no-console
+    console.error(err);
+  }
+});
+
 const port = process.env.PORT || 5000;
+// eslint-disable-next-line no-console
 app.listen(port, () => console.log(`Server started on port ${port}`));
