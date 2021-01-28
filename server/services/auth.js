@@ -1,35 +1,37 @@
 const mongodb = require('../databases/mongodb');
 const passwordUtils = require('../utils/password');
 
-async function login(email, password, session) {
-  let success = false;
-  const usersCollection = await mongodb.loadCollection('users');
-  const userInformation = await usersCollection.findOne({ email });
-  if (!userInformation) {
-    success = false;
-  } else {
-    const saltedPassword = passwordUtils.saltedPassword(password, userInformation.salt);
-    if (saltedPassword === userInformation.password) {
-      success = true;
-      // eslint-disable-next-line no-param-reassign
-      session.loggedin = true;
-      // eslint-disable-next-line no-param-reassign
-      session.email = email;
-      // eslint-disable-next-line no-param-reassign
-      session.type = userInformation.type;
-    } else {
+class AuthService {
+  static async login(email, password) {
+    let success = false;
+    const usersCollection = await mongodb.loadCollection('users');
+    const userInformation = await usersCollection.findOne({ email });
+    if (!userInformation) {
       success = false;
+    } else {
+      const saltedPassword = passwordUtils.saltedPassword(password, userInformation.salt);
+      if (saltedPassword === userInformation.password) {
+        success = true;
+        delete userInformation.password;
+        delete userInformation.salt;
+      } else {
+        success = false;
+      }
     }
+    return { success, data: userInformation };
   }
-  return success;
+
+  static async getInfo(email) {
+    const usersCollection = await mongodb.loadCollection('users');
+    const userInformationCursor = await usersCollection.find({ email });
+    if (await userInformationCursor.count() === 0) {
+      return { success: false, message: 'No Matching User!' };
+    }
+    const userInformation = userInformationCursor.toArray()[0];
+    delete userInformation.password;
+    delete userInformation.salt;
+    return { success: true, data: userInformation };
+  }
 }
 
-async function info(email) {
-  const usersCollection = await mongodb.loadCollection('users');
-  const userInformation = await usersCollection.findOne({ email });
-  delete userInformation.password;
-  delete userInformation.salt;
-  return userInformation;
-}
-
-module.exports = { login, info };
+module.exports = AuthService;
