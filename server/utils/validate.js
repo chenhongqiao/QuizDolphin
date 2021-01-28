@@ -74,6 +74,9 @@ function validateQuestion(question) {
         answerSet.delete(question.rightcol[index]);
       }
     }
+    if (answerSet.size !== 0) {
+      return false;
+    }
   } else if (question.type === 'fill in the blanks') {
     if (!Array.isArray(question.context) || !Array.isArray(question.answer)
       || !Array.isArray(question.options)) {
