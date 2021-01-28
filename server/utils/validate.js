@@ -29,7 +29,7 @@ function validateQuestion(question) {
     if (!Array.isArray(question.options) || typeof question.context !== 'string' || !Array.isArray(question.answer)) {
       return false;
     }
-    for (let index = 0; index < question.answer; index += 1) {
+    for (let index = 0; index < question.answer.length; index += 1) {
       if (typeof question.answer[index] !== 'string') {
         return false;
       }
