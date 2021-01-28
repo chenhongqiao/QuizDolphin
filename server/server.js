@@ -62,11 +62,13 @@ const result = require('./api/result');
 
 app.use('/api/result', result);
 
-app.use('/api', (err, req, res) => {
+app.use('/api', (err, req, res, next) => {
   if (err) {
     res.status(500).send('Internal Error');
     // eslint-disable-next-line no-console
     console.error(err);
+  } else {
+    next(err);
   }
 });
 

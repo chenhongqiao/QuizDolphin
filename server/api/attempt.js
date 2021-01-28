@@ -56,7 +56,7 @@ router.post('/:attemptId/progress', async (req, res, next) => {
         return;
       }
     } else {
-      res.send(response.data);
+      res.send('Success!');
     }
     res.send(await attemptService.postProgress(attemptId, req.body.data));
   } catch (err) {

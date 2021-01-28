@@ -19,6 +19,7 @@ router.get('/:attemptId', async (req, res, next) => {
     if (!response.success) {
       if (response.message === 'No Matching Result!') {
         res.status(404).send('No Matching Result!');
+        return;
       }
       throw new Error('Unexpected Service Response!');
     } else {

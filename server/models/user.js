@@ -5,7 +5,7 @@ function User(userInfo) {
   this.name = userInfo.name;
   this.type = userInfo.type;
   this.salt = passwordUtils.newSalt();
-  this.password = passwordUtils.saltedPassword(this.password, this.salt);
+  this.password = passwordUtils.saltedPassword(userInfo.password, this.salt);
 }
 
 module.exports = { User };
