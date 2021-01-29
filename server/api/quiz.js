@@ -108,7 +108,7 @@ router.get('/list', async (req, res, next) => {
 
 router.get('/:quizId/questions', async (req, res, next) => {
   try {
-    if (!req.session.loggedin || req.session.type !== 'admin') {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send({ message: 'Need Admin Privilege!' });
       return;
     }
@@ -130,7 +130,7 @@ router.get('/:quizId/questions', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    if (!req.session.loggedin || req.session.type !== 'admin') {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send({ message: 'Need Admin Privilege!' });
       return;
     }
@@ -151,7 +151,7 @@ router.post('/', async (req, res, next) => {
 
 router.delete('/:quizId', async (req, res, next) => {
   try {
-    if (!req.session.loggedin || req.session.type !== 'admin') {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send({ message: 'Need Admin Privilege!' });
       return;
     }
@@ -173,7 +173,7 @@ router.delete('/:quizId', async (req, res, next) => {
 
 router.put('/:quizId', async (req, res, next) => {
   try {
-    if (!req.session.loggedin || req.session.type !== 'admin') {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send({ message: 'Need Admin Privilege!' });
       return;
     }

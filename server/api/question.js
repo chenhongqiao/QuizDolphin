@@ -6,7 +6,7 @@ const questionService = require('../services/question');
 
 router.post('/', async (req, res, next) => {
   try {
-    if (!req.session.loggedin || req.session.type !== 'admin') {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send({ message: 'Need Admin Privilege!' });
       return;
     }
@@ -26,7 +26,7 @@ router.post('/', async (req, res, next) => {
 
 router.delete('/:questionId', async (req, res, next) => {
   try {
-    if (!req.session.loggedin || req.session.type !== 'admin') {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send({ message: 'Need Admin Privilege!' });
       return;
     }
@@ -51,7 +51,7 @@ router.delete('/:questionId', async (req, res, next) => {
 
 router.put('/:questionId', async (req, res, next) => {
   try {
-    if (!req.session.loggedin || req.session.type !== 'admin') {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send({ message: 'Need Admin Privilege!' });
       return;
     }
