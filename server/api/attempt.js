@@ -16,7 +16,7 @@ router.get('/:attemptId/progress', async (req, res, next) => {
       res.status(400).send({ message: 'Missing Parameter!' });
       return;
     }
-    const response = await attemptService.getProgress(attemptId);
+    const response = await attemptService.getProgress(attemptId, req.session.email);
     if (!response.success) {
       if (response.message === 'No Matching Progress!') {
         res.status(404).send({ message: 'No Matching Progress!' });
@@ -30,7 +30,7 @@ router.get('/:attemptId/progress', async (req, res, next) => {
   }
 });
 
-router.post('/:attemptId/progress', async (req, res, next) => {
+router.put('/:attemptId/progress', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
       res.status(401).send({ message: 'Not Logged In!' });
@@ -41,7 +41,7 @@ router.post('/:attemptId/progress', async (req, res, next) => {
       res.status(400).send({ message: 'Missing Parameter!' });
       return;
     }
-    const response = await attemptService.postProgress(attemptId, req.body.data);
+    const response = await attemptService.postProgress(attemptId, req.body.data, req.session.email);
     if (!response.success) {
       if (response.message === 'No Matching Progress!') {
         res.status(404).send({ message: 'No Matching Progress!' });
@@ -56,9 +56,8 @@ router.post('/:attemptId/progress', async (req, res, next) => {
         return;
       }
     } else {
-      res.send({ data: response.data });
+      res.status(204).end();
     }
-    res.send({ data: await attemptService.postProgress(attemptId, req.body.data) });
   } catch (err) {
     next(err);
   }
@@ -75,7 +74,7 @@ router.get('/:attemptId', async (req, res, next) => {
       res.status(400).send({ message: 'Missing Parameter!' });
       return;
     }
-    const response = await attemptService.getAttemptData(attemptId);
+    const response = await attemptService.getAttemptData(attemptId, req.session.email);
     if (!response.success) {
       if (response.message === 'No Matching Attempt!') {
         res.status(404).send({ message: 'No Matching Attempt!' });
@@ -101,7 +100,7 @@ router.post('/:attemptId', async (req, res, next) => {
     }
     const response = await gradingService.gradeQuiz(attemptId, req.session.email);
     if (!response.success) {
-      if (response.message === 'No Matching Attempt!' || response.message === 'No Privileges!') {
+      if (response.message === 'No Matching Attempt!') {
         res.status(404).send({ message: 'No Matching Attempt!' });
         return;
       }

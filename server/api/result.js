@@ -15,7 +15,7 @@ router.get('/:attemptId', async (req, res, next) => {
       res.status(400).send({ message: 'Missing Parameter!' });
       return;
     }
-    const response = await resultService.getResult(attemptId);
+    const response = await resultService.getResult(attemptId, req.session.email);
     if (!response.success) {
       if (response.message === 'No Matching Result!') {
         res.status(404).send({ message: 'No Matching Result!' });

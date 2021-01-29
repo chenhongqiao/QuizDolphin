@@ -164,7 +164,7 @@ router.delete('/:quizId', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.status(204).end();
+      res.send({ data: 'Success!' });
     }
   } catch (err) {
     next(err);

@@ -42,7 +42,7 @@ router.delete('/:questionId', async (req, res, next) => {
         return;
       }
     } else {
-      res.status(204).end();
+      res.send({ data: 'Success!' });
     }
   } catch (err) {
     next(err);

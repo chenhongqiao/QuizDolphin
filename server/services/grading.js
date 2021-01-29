@@ -7,14 +7,11 @@ class GradingService {
   static async gradeQuiz(attemptId, email) {
     const attemptsCollection = await mongodb.loadCollection('attempts');
     const resultsCollection = await mongodb.loadCollection('results');
-    const attemptDataCursor = await attemptsCollection.find({ attemptId });
+    const attemptDataCursor = await attemptsCollection.find({ attemptId, email });
     if (await attemptDataCursor.count() === 0) {
       return { success: false, message: 'No Matching Attempt!' };
     }
     const attemptData = (await attemptDataCursor.toArray())[0];
-    if (attemptData.email !== email) {
-      return { success: false, message: 'No Privileges!' };
-    }
     const { responses } = JSON.parse(await redis.get(`progress:${attemptId}`));
     const results = [];
     const { questions } = attemptData;

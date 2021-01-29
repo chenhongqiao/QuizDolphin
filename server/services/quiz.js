@@ -7,7 +7,7 @@ const quizModel = require('../models/quiz');
 class QuizService {
   static async newAttempt(quizId, email) {
     const questionsCollection = await mongodb.loadCollection('questions');
-    if (this.getOngoingId(email, quizId).data) {
+    if ((await this.getOngoingId(email, quizId)).data) {
       return { success: false, message: 'No Simultaneous Attempts Allowed!' };
     }
     const quizInfoRes = await this.getQuizInfo(quizId);
@@ -56,7 +56,7 @@ class QuizService {
       attemptId,
       quizId,
     );
-    const initialProgress = new quizModel.Progress(1, responses, attemptId);
+    const initialProgress = new quizModel.Progress(1, responses, attemptId, email);
     await attemptsCollection.insertOne(quizData);
     await redis.set(`progress:${attemptId}`, JSON.stringify(initialProgress));
     await redis.setnx(`endTime:${attemptId}`, JSON.stringify(quizData.endTime));

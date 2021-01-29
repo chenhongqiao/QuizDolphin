@@ -14,8 +14,9 @@ function Data(email, questions, answers, duration, attemptId, quizId) {
   this.quizId = quizId;
 }
 
-function Progress(version, responses, attemptId) {
+function Progress(version, responses, attemptId, email) {
   this.version = version;
+  this.email = email;
   this.responses = responses;
   this.attemptId = attemptId;
   this.index = 1;

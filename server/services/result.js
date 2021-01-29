@@ -1,13 +1,14 @@
 const mongodb = require('../databases/mongodb');
 
 class ResultService {
-  static async getResult(attemptId) {
+  static async getResult(attemptId, email) {
     const resultsCollection = await mongodb.loadCollection('results');
-    const resultCursor = await resultsCollection.find({ attemptId });
+    const resultCursor = await resultsCollection.find({ attemptId, email });
     if (await resultCursor.count() === 0) {
       return { success: false, message: 'No Matching Result!' };
     }
-    return { success: true, data: (await resultCursor.toArray())[0] };
+    const result = (await resultCursor.toArray())[0];
+    return { success: true, data: result };
   }
 }
 

@@ -20,7 +20,7 @@ router.post('/session', async (req, res, next) => {
       req.session.email = response.data.email;
       req.session.type = response.data.type;
       req.session.loggedin = true;
-      res.status(204).end();
+      res.send({ data: 'Success!' });
     }
   } catch (err) {
     next(err);
@@ -34,7 +34,7 @@ router.delete('/session', (req, res, next) => {
       return;
     }
     req.session.destroy();
-    res.status(204).end();
+    res.send({ data: 'Success!' });
   } catch (err) {
     next(err);
   }
@@ -106,7 +106,7 @@ router.delete('/:email', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.status(204).end();
+      res.send({ data: 'Success!' });
     }
   } catch (err) {
     next(err);
