@@ -48,7 +48,7 @@ class QuizService {
         responses[index] = [];
       }
     });
-    const quizData = new quizModel.Data(
+    const quizData = new quizModel.QuizData(
       email,
       selectedQuestions,
       selectedAnswers,
@@ -56,7 +56,7 @@ class QuizService {
       attemptId,
       quizId,
     );
-    const initialProgress = new quizModel.Progress(1, responses, attemptId, email);
+    const initialProgress = new quizModel.QuizProgress(1, responses, attemptId, email);
     await attemptsCollection.insertOne(quizData);
     await redis.set(`progress:${attemptId}`, JSON.stringify(initialProgress));
     await redis.setnx(`endTime:${attemptId}`, JSON.stringify(quizData.endTime));
@@ -108,7 +108,7 @@ class QuizService {
     while (await quizCollection.findOne({ quizId })) {
       quizId = nanoid.numId;
     }
-    const quiz = new quizModel.Info(quizInfo, quizId);
+    const quiz = new quizModel.QuizInfo(quizInfo, quizId);
     if (quiz.invalid) {
       return { success: false, message: 'Invalid Quiz Syntax!' };
     }
@@ -127,10 +127,11 @@ class QuizService {
 
   static async updateQuiz(quizId, quizInfo) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    const status = await quizCollection.updateOne(
-      { quizId },
-      new quizModel.Info(quizInfo, quizId),
-    );
+    const quiz = new quizModel.QuizInfo(quizInfo, quizId);
+    if (quiz.invalid) {
+      return { success: false, message: 'Invalid Quiz Syntax!' };
+    }
+    const status = await quizCollection.updateOne({ quizId }, quiz);
     if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }

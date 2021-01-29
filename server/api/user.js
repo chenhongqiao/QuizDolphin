@@ -18,7 +18,7 @@ router.post('/session', async (req, res, next) => {
       res.status(401).send({ message: 'Invalid Login Information!' });
     } else {
       req.session.email = response.data.email;
-      req.session.type = response.data.type;
+      req.session.role = response.data.role;
       req.session.loggedin = true;
       res.send({ data: 'Success!' });
     }
@@ -64,7 +64,7 @@ router.get('/session', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    if (!req.session.loggedin || req.session.type !== 'admin') {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send({ message: 'Need Admin Privileges!' });
       return;
     }
@@ -88,7 +88,7 @@ router.post('/', async (req, res, next) => {
 });
 
 router.delete('/:email', async (req, res, next) => {
-  if (!req.session.loggedin || req.session.type !== 'admin') {
+  if (!req.session.loggedin || req.session.role !== 'admin') {
     res.status(403).send({ message: 'Need Admin Privileges!' });
     return;
   }
@@ -114,7 +114,7 @@ router.delete('/:email', async (req, res, next) => {
 });
 
 router.put('/:email', async (req, res, next) => {
-  if (!req.session.loggedin || req.session.type !== 'admin') {
+  if (!req.session.loggedin || req.session.role !== 'admin') {
     res.status(403).send({ message: 'Need Admin Privileges!' });
     return;
   }

@@ -5,5 +5,5 @@
 - email: ""
   password: ""
   name: ""
-  type: "" # user/admin
+  role: "" # user/admin
 ---

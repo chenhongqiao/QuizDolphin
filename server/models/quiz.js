@@ -1,11 +1,17 @@
-function Info(quizInfo, quizId) {
-  this.quizName = quizInfo.quizName;
-  this.quizId = quizId;
-  this.questionCount = quizInfo.questionCount;
-  this.duration = quizInfo.duration;
+const validate = require('../utils/validate');
+
+function QuizInfo(quizInfo, quizId) {
+  if (validate.ValidateQuizInfo(quizInfo)) {
+    this.quizName = quizInfo.quizName;
+    this.quizId = quizId;
+    this.questionCount = quizInfo.questionCount;
+    this.duration = quizInfo.duration;
+  } else {
+    this.invalid = true;
+  }
 }
 
-function Data(email, questions, answers, duration, attemptId, quizId) {
+function QuizData(email, questions, answers, duration, attemptId, quizId) {
   this.email = email;
   this.endTime = Math.floor(Date.now() / 1000) + duration;
   this.questions = questions;
@@ -14,7 +20,7 @@ function Data(email, questions, answers, duration, attemptId, quizId) {
   this.quizId = quizId;
 }
 
-function Progress(version, responses, attemptId, email) {
+function QuizProgress(version, responses, attemptId, email) {
   this.version = version;
   this.email = email;
   this.responses = responses;
@@ -22,4 +28,4 @@ function Progress(version, responses, attemptId, email) {
   this.index = 1;
 }
 
-module.exports = { Info, Data, Progress };
+module.exports = { QuizInfo, QuizData, QuizProgress };
