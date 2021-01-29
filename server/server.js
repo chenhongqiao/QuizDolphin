@@ -27,9 +27,6 @@ app.use(session({
   store: new RedisStore({ client: redis.client }),
 }));
 
-app.use(history());
-app.use('/', express.static(path.join(__dirname, 'public')));
-
 app.use('/api', rateLimit({
   windowMs: 1000,
   max: 4,
@@ -62,15 +59,19 @@ const result = require('./api/result');
 
 app.use('/api/result', result);
 
-app.use('/api', (err, req, res, next) => {
-  if (err) {
-    res.status(500).send('Internal Error');
-    // eslint-disable-next-line no-console
-    console.error(err);
-  } else {
-    next(err);
-  }
+app.use('/api', (req, res) => {
+  res.status(404).send({ message: 'Invalid API Endpoint' });
 });
+
+// eslint-disable-next-line no-unused-vars
+app.use('/api', (err, req, res, next) => {
+  res.status(500).send({ message: 'Internal Error' });
+  // eslint-disable-next-line no-console
+  console.error(err);
+});
+
+app.use(history());
+app.use(express.static(path.join(__dirname, 'public')));
 
 const port = process.env.PORT || 5000;
 // eslint-disable-next-line no-console

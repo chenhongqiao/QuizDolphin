@@ -37,7 +37,7 @@ class QuestionService {
     if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching Question!' };
     }
-    return { success: true };
+    return { success: true, data: questionId };
   }
 }
 module.exports = QuestionService;

@@ -30,7 +30,7 @@ class AttemptService {
       const currentProgress = JSON.parse((await redis.get(`progress:${attemptId}`)));
       if (!currentProgress || currentProgress.version < progress.version) {
         await redis.set(`progress:${attemptId}`, JSON.stringify(progress));
-        return { success: true };
+        return { success: true, data: attemptId };
       }
       return { success: false, message: 'Refuse To Overwrite!' };
     }

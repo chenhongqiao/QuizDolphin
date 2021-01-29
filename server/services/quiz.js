@@ -134,7 +134,7 @@ class QuizService {
     if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
-    return { success: true };
+    return { success: true, data: quizId };
   }
 
   static async getQuestions(quizId) {

@@ -13,7 +13,7 @@ class UserService {
       return { success: false, message: 'Invalid User Syntax!' };
     }
     await usersCollection.insertOne(user);
-    return { success: true };
+    return { success: true, data: user.email };
   }
 
   static async deleteUser(email) {
@@ -35,7 +35,7 @@ class UserService {
     if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching User!' };
     }
-    return { success: true };
+    return { success: true, data: email };
   }
 }
 module.exports = UserService;
