@@ -1,5 +1,6 @@
-function integer(min, max) {
-  return min + Math.floor(Math.random() * (max - min));
+class RandomGenerator {
+  static integer(min, max) {
+    return min + Math.floor(Math.random() * (max - min));
+  }
 }
-
-module.exports = { integer };
+module.exports = RandomGenerator;
