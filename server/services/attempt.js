@@ -1,5 +1,6 @@
 const redis = require('../databases/redis');
 const mongodb = require('../databases/mongodb');
+const quizModel = require('../models/quiz');
 
 class AttemptService {
   static async getProgress(attemptId, email) {
@@ -16,29 +17,25 @@ class AttemptService {
 
   static async postProgress(attemptId, progress, email) {
     const endTime = await redis.get(`endTime:${attemptId}`);
-    if (!endTime) {
-      const attemptsCollection = await mongodb.loadCollection('attempts');
-      const quizDataCursor = await attemptsCollection.find(
-        { attemptId, email },
-        { endTime: 1, _id: 0 },
-      );
-      if (!await quizDataCursor.count()) {
-        return { success: false, message: 'No Matching Progress!' };
-      }
-      const quizData = (await quizDataCursor.toArray())[0];
-      if (Math.floor(Date.now() / 1000) <= quizData.endTime) {
-        await redis.setnx(`endTime:${quizData.attemptId}`, JSON.stringify(quizData.endTime));
-      } else {
-        return { success: false, message: 'Quiz Ended!' };
-      }
-    }
-    if (Math.floor(Date.now() / 1000) <= endTime) {
+    if (endTime && Math.floor(Date.now() / 1000) <= endTime) {
       const currentProgress = JSON.parse((await redis.get(`progress:${attemptId}`)));
-      if (currentProgress.email !== email) {
+      if (!currentProgress || currentProgress.email !== email) {
         return { success: false, message: 'No Matching Progress!' };
       }
-      if (!currentProgress || currentProgress.version < progress.version) {
-        await redis.set(`progress:${attemptId}`, JSON.stringify(progress));
+      if (currentProgress.version < progress.version) {
+        console.log('verifying!');
+        const newProgress = new quizModel.QuizProgress(
+          progress.version,
+          progress.responses,
+          currentProgress.types,
+          currentProgress.attemptId,
+          currentProgress.email,
+          progress.index,
+        );
+        if (newProgress.invalid) {
+          return { success: false, message: 'Invalid Progress Syntax!' };
+        }
+        await redis.set(`progress:${attemptId}`, JSON.stringify(newProgress));
         return { success: true };
       }
       return { success: false, message: 'Refuse To Overwrite!' };
@@ -48,8 +45,8 @@ class AttemptService {
 
   static async getAttemptData(attemptId, email) {
     const attemptsCollection = await mongodb.loadCollection('attempts');
-    const quizDataCursor = await attemptsCollection.find({ attemptId, email }, { _id: 0 });
-    if (!await quizDataCursor.count()) {
+    const quizDataCursor = await attemptsCollection.find({ attemptId, email }).project({ _id: 0 });
+    if (await quizDataCursor.count() === 0) {
       return { success: false, message: 'No Matching Attempt!' };
     }
     const quizData = (await quizDataCursor.toArray())[0];

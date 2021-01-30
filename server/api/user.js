@@ -5,15 +5,21 @@ const router = express.Router();
 const authService = require('../services/auth');
 const userService = require('../services/user');
 
+const randomUtil = require('../utils/random');
+
 router.post('/session', async (req, res, next) => {
   try {
-    if (!req.body.data || typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
+    if (!req.body.data) {
+      res.status(400).send({ message: 'Missing Body Data!' });
+      return;
+    }
+    if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
       res.status(400).send({ message: 'Invalid Login Information Syntax!' });
       return;
     }
     const response = await authService.login(req.body.data.email, req.body.data.password);
-    // Success or unsuccess is sent together at the end to prevent hackers from guessing
-    // if the email or the password is Invalid from response time.
+    // Sleep for 100~300ms to prevent brute force and disguise auth behavior
+    await new Promise((resolve) => setTimeout(resolve, randomUtil.integer(100, 300)));
     if (!response.success) {
       res.status(401).send({ message: 'Invalid Login Information!' });
     } else {
@@ -68,6 +74,10 @@ router.post('/', async (req, res, next) => {
       res.status(403).send({ message: 'Need Admin Privileges!' });
       return;
     }
+    if (!req.body.data) {
+      res.status(400).send({ message: 'Missing Body Data!' });
+      return;
+    }
     const response = await userService.newUser(req.body.data);
     if (!response.success) {
       if (response.message === 'Invalid User Syntax!') {
@@ -94,6 +104,10 @@ router.delete('/:email', async (req, res, next) => {
   }
   try {
     const { email } = req.params;
+    if (!email) {
+      res.status(400).send({ message: 'Missing Parameter!' });
+      return;
+    }
     if (email === req.session.email) {
       res.status(400).send({ message: 'Can Not Delete Yourself!' });
       return;
@@ -120,6 +134,14 @@ router.put('/:email', async (req, res, next) => {
   }
   try {
     const { email } = req.params;
+    if (!email) {
+      res.status(400).send({ message: 'Missing Parameter!' });
+      return;
+    }
+    if (!req.body.data) {
+      res.status(400).send({ message: 'Missing Body Data!' });
+      return;
+    }
     const response = await userService.updateUser(email, req.body.data);
     if (!response.success) {
       if (response.message === 'No Matching User!') {

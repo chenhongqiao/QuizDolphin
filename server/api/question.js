@@ -10,12 +10,17 @@ router.post('/', async (req, res, next) => {
       res.status(403).send({ message: 'Need Admin Privilege!' });
       return;
     }
+    if (!req.body.data) {
+      res.status(400).send({ message: 'Missing Body Data!' });
+      return;
+    }
     const response = await questionService.newQuestion(req.body.data);
     if (!response.success) {
       if (response.message === 'Invalid Question Syntax!') {
         res.status(400).send({ message: 'Invalid Question Syntax!' });
         return;
       }
+      throw Error('Unexpected Service Response!');
     } else {
       res.send({ data: response.data });
     }
@@ -41,6 +46,7 @@ router.delete('/:questionId', async (req, res, next) => {
         res.status(404).send({ message: 'No Matching Question!' });
         return;
       }
+      throw Error('Unexpected Service Response!');
     } else {
       res.send({ data: 'Success!' });
     }
@@ -60,8 +66,11 @@ router.put('/:questionId', async (req, res, next) => {
       res.status(400).send({ message: 'Missing Parameter!' });
       return;
     }
+    if (!req.body.data) {
+      res.status(400).send({ message: 'Missing Body Data!' });
+      return;
+    }
     const response = await questionService.updateQuestion(questionId, req.body.data);
-
     if (!response.success) {
       if (response.message === 'Invalid Question Syntax!') {
         res.status(400).send({ message: 'Invalid Question Syntax!' });
@@ -71,6 +80,7 @@ router.put('/:questionId', async (req, res, next) => {
         res.status(404).send({ message: 'No Matching Question!' });
         return;
       }
+      throw Error('Unexpected Service Response!');
     } else {
       res.send({ data: response.data });
     }

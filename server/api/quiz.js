@@ -71,7 +71,6 @@ router.get('/:quizId/history', async (req, res, next) => {
       res.status(400).send({ message: 'Missing Parameter!' });
       return;
     }
-
     const response = await quizService.getHistoryId(req.session.email, quizId);
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {
@@ -113,6 +112,10 @@ router.get('/:quizId/questions', async (req, res, next) => {
       return;
     }
     const { quizId } = req.params;
+    if (!quizId) {
+      res.status(400).send({ message: 'Missing Parameter!' });
+      return;
+    }
     const response = await quizService.getQuestions(quizId);
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {
@@ -132,6 +135,10 @@ router.post('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send({ message: 'Need Admin Privilege!' });
+      return;
+    }
+    if (!req.body.data) {
+      res.status(400).send({ message: 'Missing Body Data!' });
       return;
     }
     const response = await quizService.newQuiz(req.body.data);
@@ -156,6 +163,14 @@ router.delete('/:quizId', async (req, res, next) => {
       return;
     }
     const { quizId } = req.params;
+    if (!quizId) {
+      res.status(400).send({ message: 'Missing Parameter!' });
+      return;
+    }
+    if (!req.body.data) {
+      res.status(400).send({ message: 'Missing Body Data!' });
+      return;
+    }
     const response = await quizService.deleteQuiz(quizId);
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {
@@ -178,6 +193,14 @@ router.put('/:quizId', async (req, res, next) => {
       return;
     }
     const { quizId } = req.params;
+    if (!quizId) {
+      res.status(400).send({ message: 'Missing Parameter!' });
+      return;
+    }
+    if (!req.body.data) {
+      res.status(400).send({ message: 'Missing Body Data!' });
+      return;
+    }
     const response = await quizService.updateQuiz(quizId, req.body.data);
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {

@@ -4,8 +4,8 @@ const userModel = require('../models/user');
 class UserService {
   static async newUser(userInfo) {
     const usersCollection = await mongodb.loadCollection('users');
-    const userWithSameEmail = await usersCollection.findOne({ email: userInfo.email });
-    if (userWithSameEmail) {
+    const userWithSameEmail = await usersCollection.find({ email: userInfo.email });
+    if (await userWithSameEmail.count()) {
       return { success: false, message: 'Email Already Exists!' };
     }
     const user = new userModel.User(userInfo);

@@ -1,7 +1,7 @@
-const validate = require('../utils/validate');
+const validateUtils = require('../utils/validate');
 
 function QuizInfo(quizInfo, quizId) {
-  if (validate.ValidateQuizInfo(quizInfo)) {
+  if (validateUtils.validateQuizInfo(quizInfo)) {
     this.quizName = quizInfo.quizName;
     this.quizId = quizId;
     this.questionCount = quizInfo.questionCount;
@@ -12,20 +12,29 @@ function QuizInfo(quizInfo, quizId) {
 }
 
 function QuizData(email, questions, answers, duration, attemptId, quizId) {
-  this.email = email;
-  this.endTime = Math.floor(Date.now() / 1000) + duration;
-  this.questions = questions;
-  this.answers = answers;
-  this.attemptId = attemptId;
-  this.quizId = quizId;
+  if (validateUtils.validateQuizData(email, questions, answers, duration, attemptId, quizId)) {
+    this.email = email;
+    this.endTime = Math.floor(Date.now() / 1000) + duration;
+    this.questions = questions;
+    this.answers = answers;
+    this.attemptId = attemptId;
+    this.quizId = quizId;
+  } else {
+    this.invalid = true;
+  }
 }
 
-function QuizProgress(version, responses, attemptId, email) {
-  this.version = version;
-  this.email = email;
-  this.responses = responses;
-  this.attemptId = attemptId;
-  this.index = 1;
+function QuizProgress(version, responses, types, attemptId, email, index) {
+  if (validateUtils.validateProgress(version, responses, types, attemptId, email, index)) {
+    this.version = version;
+    this.email = email;
+    this.types = types;
+    this.responses = responses;
+    this.attemptId = attemptId;
+    this.index = index;
+  } else {
+    this.invalid = true;
+  }
 }
 
 module.exports = { QuizInfo, QuizData, QuizProgress };

@@ -1,14 +1,14 @@
 const mongodb = require('../databases/mongodb');
-const nanoid = require('../utils/nanoid');
+const nanoidUtils = require('../utils/nanoid');
 const questionModel = require('../models/question');
 
 class QuestionService {
   static async newQuestion(question) {
     const questionsCollection = await mongodb.loadCollection('questions');
-    let questionId = nanoid.charId();
+    let questionId = nanoidUtils.charId();
     // eslint-disable-next-line no-await-in-loop
     while (await questionsCollection.findOne({ questionId })) {
-      questionId = nanoid.charId();
+      questionId = nanoidUtils.charId();
     }
     const questionData = new questionModel.Question(question, questionId);
     if (questionData.invalid) {

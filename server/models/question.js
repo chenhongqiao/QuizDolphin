@@ -1,7 +1,7 @@
-const validate = require('../utils/validate');
+const validateUtils = require('../utils/validate');
 
 function Question(question, questionId) {
-  if (validate.validateQuestion(question)) {
+  if (validateUtils.validateQuestion(question)) {
     this.questionId = questionId;
     this.quizId = question.quizId;
     this.context = question.context;

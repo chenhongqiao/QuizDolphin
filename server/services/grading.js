@@ -7,7 +7,8 @@ class GradingService {
   static async gradeQuiz(attemptId, email) {
     const attemptsCollection = await mongodb.loadCollection('attempts');
     const resultsCollection = await mongodb.loadCollection('results');
-    const attemptDataCursor = await attemptsCollection.find({ attemptId, email });
+    const attemptDataCursor = await attemptsCollection
+      .find({ attemptId, email }).project({ _id: 0 });
     if (await attemptDataCursor.count() === 0) {
       return { success: false, message: 'No Matching Attempt!' };
     }
@@ -93,9 +94,15 @@ class GradingService {
         ));
         score += question.points * (correctMatch / answer.length);
       }
+      if (results[index].invalid) {
+        throw Error('Error Generating Quiz Result!');
+      }
     }
     const quizResult = new resultModel.QuizResult(score, questions,
       results, totalPoints, attemptId, email, attemptData.quizId);
+    if (quizResult.invalid) {
+      throw Error('Error Generating Quiz Result!');
+    }
     await resultsCollection.insertOne(quizResult);
     await attemptsCollection.deleteOne({ attemptId });
     await redis.del(`progress:${attemptId}`);

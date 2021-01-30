@@ -1,7 +1,8 @@
 const mongodb = require('../databases/mongodb');
 const redis = require('../databases/redis');
-const random = require('../utils/random');
-const nanoid = require('../utils/nanoid');
+const randomUtils = require('../utils/random');
+const nanoidUtils = require('../utils/nanoid');
+const progressUtils = require('../utils/progress');
 const quizModel = require('../models/quiz');
 
 class QuizService {
@@ -15,14 +16,14 @@ class QuizService {
       return { success: false, message: 'No Matching Quiz!' };
     }
     const quizInfo = quizInfoRes.data;
-    const questions = await questionsCollection.find({ quizId }).toArray();
+    const questions = await questionsCollection.find({ quizId }).project({ _id: 0 }).toArray();
     const { questionCount } = quizInfo;
     const selectedQuestions = [];
     const selectedAnswers = [];
     const selectedIndexes = new Set();
     while (selectedQuestions.length < questionCount) {
     // console.log(selectedQuestions.length);
-      const index = random.integer(0, questions.length);
+      const index = randomUtils.integer(0, questions.length);
       if (!selectedIndexes.has(index)) {
         const { answer } = questions[index];
         selectedAnswers.push(answer);
@@ -33,21 +34,14 @@ class QuizService {
     }
     const resultsCollection = await mongodb.loadCollection('results');
     const attemptsCollection = await mongodb.loadCollection('attempts');
-    let attemptId = nanoid.charId();
+    let attemptId = nanoidUtils.charId();
     // eslint-disable-next-line no-await-in-loop
     while (await resultsCollection.findOne({ attemptId })
       // eslint-disable-next-line no-await-in-loop
       || await attemptsCollection.findOne({ attemptId })) {
-      attemptId = nanoid.charId();
+      attemptId = nanoidUtils.charId();
     }
-    const responses = [];
-    selectedQuestions.forEach((question, index) => {
-      if (question.type === 'single choice' || question.type === 'short response') {
-        responses[index] = '';
-      } else if (question.type === 'multiple choice' || question.type === 'matching' || question.type === 'fill in the blanks') {
-        responses[index] = [];
-      }
-    });
+    const initProgress = progressUtils.getInitialProgress(selectedQuestions);
     const quizData = new quizModel.QuizData(
       email,
       selectedQuestions,
@@ -56,9 +50,14 @@ class QuizService {
       attemptId,
       quizId,
     );
-    const initialProgress = new quizModel.QuizProgress(1, responses, attemptId, email);
+    if (quizData.invalid) {
+      throw new Error('Failed Generating QuizData!');
+    }
+    const progress = new quizModel.QuizProgress(1,
+      initProgress.responses,
+      initProgress.types, attemptId, email, 1);
     await attemptsCollection.insertOne(quizData);
-    await redis.set(`progress:${attemptId}`, JSON.stringify(initialProgress));
+    await redis.set(`progress:${attemptId}`, JSON.stringify(progress));
     await redis.setnx(`endTime:${attemptId}`, JSON.stringify(quizData.endTime));
     return { success: true, data: attemptId };
   }
@@ -83,18 +82,20 @@ class QuizService {
     const results = await resultsCollection.find({
       $query: { email, quizId },
       $orderby: { timeStamp: 1 },
-    }).project({ attemptId: 1, _id: 0 }).toArray();
+    }).project({
+      attemptId: 1, timeStamp: 1, score: 1, _id: 0,
+    }).toArray();
     return { success: true, data: results };
   }
 
   static async getQuizList() {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    return { success: true, data: await quizCollection.find({}).toArray() };
+    return { success: true, data: await quizCollection.find({}).project({ _id: 0 }).toArray() };
   }
 
   static async getQuizInfo(quizId) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    const quizInfoCursor = await quizCollection.find({ quizId }).limit(1);
+    const quizInfoCursor = await quizCollection.find({ quizId }).project({ _id: 0 });
     if (await quizInfoCursor.count() === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
@@ -103,10 +104,10 @@ class QuizService {
 
   static async newQuiz(quizInfo) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    let quizId = nanoid.numId;
+    let quizId = nanoidUtils.numId;
     // eslint-disable-next-line no-await-in-loop
     while (await quizCollection.findOne({ quizId })) {
-      quizId = nanoid.numId;
+      quizId = nanoidUtils.numId;
     }
     const quiz = new quizModel.QuizInfo(quizInfo, quizId);
     if (quiz.invalid) {
@@ -143,7 +144,10 @@ class QuizService {
     if (!(await this.getQuizInfo(quizId)).success) {
       return { success: false, message: 'No Matching Quiz!' };
     }
-    return { success: true, data: await questionsCollection.find({ quizId }).toArray() };
+    return {
+      success: true,
+      data: await questionsCollection.find({ quizId }).project({ _id: 0 }).toArray(),
+    };
   }
 }
 module.exports = QuizService;

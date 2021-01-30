@@ -65,9 +65,13 @@ app.use('/api', (req, res) => {
 
 // eslint-disable-next-line no-unused-vars
 app.use('/api', (err, req, res, next) => {
-  res.status(500).send({ message: 'Internal Error' });
-  // eslint-disable-next-line no-console
-  console.error(err);
+  if (err.status) {
+    res.status(err.status).send({ message: err.message });
+  } else {
+    res.status(500).send({ message: 'Internal Error!' });
+    // eslint-disable-next-line no-console
+    console.error(err);
+  }
 });
 
 app.use(history());
