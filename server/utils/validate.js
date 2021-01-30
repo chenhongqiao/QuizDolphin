@@ -136,7 +136,6 @@ class DataValidate {
   }
 
   static validateProgress(version, responses, types, attemptId, email, qindex) {
-    console.log(responses);
     if (typeof version !== 'number' || !Array.isArray(responses) || !Array.isArray(types)
     || typeof attemptId !== 'string' || typeof email !== 'string' || typeof qindex !== 'number') {
       return false;

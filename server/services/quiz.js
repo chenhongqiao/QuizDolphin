@@ -22,7 +22,6 @@ class QuizService {
     const selectedAnswers = [];
     const selectedIndexes = new Set();
     while (selectedQuestions.length < questionCount) {
-    // console.log(selectedQuestions.length);
       const index = randomUtils.integer(0, questions.length);
       if (!selectedIndexes.has(index)) {
         const { answer } = questions[index];

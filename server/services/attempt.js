@@ -23,7 +23,6 @@ class AttemptService {
         return { success: false, message: 'No Matching Progress!' };
       }
       if (currentProgress.version < progress.version) {
-        console.log('verifying!');
         const newProgress = new quizModel.QuizProgress(
           progress.version,
           progress.responses,
