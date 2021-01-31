@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const quizService = require('../services/quiz');
+const jobsService = require('../jobs/agenda');
 
 router.get('/:quizId/ongoing', async (req, res, next) => {
   try {
@@ -53,7 +54,10 @@ router.get('/:quizId/attempt', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send({ data: response.data });
+      await jobsService.gradeQuiz(
+        response.data.attemptId, response.data.email, response.data.endTime,
+      );
+      res.send({ data: response.data.attemptId });
     }
   } catch (err) {
     next(err);
