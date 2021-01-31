@@ -1,15 +1,18 @@
 const redis = require('redis');
 const { promisify } = require('util');
 
-const client = redis.createClient({
-  port: process.env.REDISPORT,
-  host: process.env.REDISHOST,
-});
-const get = promisify(client.get).bind(client);
-const set = promisify(client.set).bind(client);
-const setnx = promisify(client.setnx).bind(client);
-const del = promisify(client.del).bind(client);
+class Redis {
+  static client = redis.createClient({
+    port: process.env.REDISPORT,
+    host: process.env.REDISHOST,
+  });;
 
-module.exports = {
-  get, set, setnx, del, client,
-};
+  static get = promisify(this.client.get).bind(this.client);
+
+  static set = promisify(this.client.set).bind(this.client);
+
+  static setnx = promisify(this.client.setnx).bind(this.client);
+
+  static del = promisify(this.client.del).bind(this.client);
+}
+module.exports = Redis;
