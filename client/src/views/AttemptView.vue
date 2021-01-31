@@ -154,6 +154,12 @@
     </v-container>
     <v-container>
       <v-row>
+        <div v-if="needSave">
+          Saving to cloud...
+        </div>
+        <div v-else>
+          Progress Saved
+        </div>
         <v-spacer />
         <TimerComponent
           :end-time="endTime"
