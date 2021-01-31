@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="resultLoaded">
     <v-container>
       <h2> Quiz result </h2>
       <div>
@@ -272,31 +272,42 @@
         >
           Download Report
         </v-btn>
-        <v-btn
-          v-if="!viewOnly"
-          class="mb-4"
-          @click="resetQuiz"
-        >
-          Back to info page
-        </v-btn>
       </v-row>
     </v-container>
   </div>
 </template>
 
 <script>
-import PDFReport from '../PDFReport';
+import PDFReport from '../services/PDFReport';
+import ResultService from '../services/ResultService';
 
 export default {
-  name: 'ResultComponent',
-  props: {
-    quizResult: { type: Object, default: null },
-    viewOnly: { type: Boolean, default: true },
-  },
+  name: 'ResultView',
   data: () => ({
-
+    attemptId: undefined,
+    quizResult: {},
+    resultLoaded: false,
   }),
+  async mounted() {
+    this.attemptId = this.$route.params.id;
+    await this.loadResult();
+    this.resultLoaded = true;
+  },
   methods: {
+    async loadResult() {
+      try {
+        this.quizResult = await ResultService.getResult(this.attemptId);
+      } catch (err) {
+        if (err.response.status === 401) {
+          this.$store.commit('logout');
+          this.$router.push({ name: 'Login' });
+        } else if (err.response.status === 404) {
+        // TODO: 404 Page
+        } else {
+          throw err;
+        }
+      }
+    },
     isChosen(option, response) {
       if (Array.isArray(response)) {
         const answerSet = new Set(response);
@@ -311,20 +322,9 @@ export default {
       }
       return response === answer;
     },
-    resetQuiz() {
-      window.location.reload();
-    },
     generateReport() {
       PDFReport.newReport(this.quizResult);
     },
   },
 };
 </script>
-<style>
-.v-select.v-input input {
-  width: 60px;
-}
-.v-select.v-input--is-dirty input {
-  width: 4px;
-}
-</style>

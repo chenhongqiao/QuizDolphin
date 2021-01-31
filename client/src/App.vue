@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import UserService from './UserService';
+import UserService from './services/UserService';
 
 export default {
   name: 'App',
@@ -86,7 +86,7 @@ export default {
   }),
   async beforeMount() {
     try {
-      const userInformation = (await UserService.getSession()).data;
+      const userInformation = (await UserService.getSessionInfo());
       this.$store.commit('login', userInformation);
     } catch (err) {
       if (err.response.status === 401) {
@@ -116,7 +116,7 @@ export default {
       window.location.reload();
     },
     goDashboard() {
-      if (this.$route.path !== '/') {
+      if (this.$route.path !== '/home' && this.$route.path !== '/') {
         this.$router.push('/');
       }
     },

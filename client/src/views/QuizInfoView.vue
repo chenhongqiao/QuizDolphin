@@ -1,0 +1,202 @@
+<template>
+  <div>
+    <div v-if="attemptId">
+      <v-container>
+        <h3 class="text-center">
+          Ongoing Attempt
+        </h3>
+      </v-container>
+      <v-container
+        class="text-center"
+      >
+        <v-btn
+          :disabled="actionDisabled"
+          @click="continueAttempt()"
+        >
+          Continue
+        </v-btn>
+      </v-container>
+    </div>
+    <div v-else>
+      <v-container>
+        <h3 class="text-center">
+          New Attempt
+        </h3>
+      </v-container>
+      <v-container
+        class="text-center"
+      >
+        <v-btn
+          :disabled="actionDisabled"
+          @click="startNewQuiz()"
+        >
+          Start
+        </v-btn>
+      </v-container>
+    </div>
+    <v-container>
+      <v-tabs>
+        <v-tab> Records </v-tab>
+        <v-tab> Graphs </v-tab>
+        <v-tab-item>
+          <div v-if="quizHistory">
+            <v-container>
+              <h3 class="text-center">
+                Previous Attempts
+              </h3>
+            </v-container>
+            <v-simple-table>
+              <thead>
+                <tr>
+                  <th class="text-left">
+                    Time Stamp
+                  </th>
+                  <th>
+                    Score
+                  </th>
+                  <th class="text-right" />
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(record, index) in quizHistory"
+                  :key="'r'+index+record"
+                >
+                  <td>{{ toLocalTime(record) }} </td>
+                  <td>
+                    {{ record.score.toFixed(2) }}/{{ record.totalPoints.toFixed(2) }}
+                  </td>
+                  <td class="text-right">
+                    <v-btn
+                      depressed
+                      @click="toResult(record.attemptId)"
+                    >
+                      View Detail
+                    </v-btn>
+                  </td>
+                </tr>
+              </tbody>
+            </v-simple-table>
+          </div>
+        </v-tab-item>
+
+        <v-tab-item>
+          <v-container>
+            <h3 class="text-center">
+              Performance History
+            </h3>
+            <LineChartComponent
+              :chart-data="historyChartData"
+              :options="{maintainAspectRatio: false}"
+              :style="'height=200px;'"
+            />
+          </v-container>
+        </v-tab-item>
+      </v-tabs>
+    </v-container>
+  </div>
+</template>
+
+<script>
+import { DateTime } from 'luxon';
+import QuizService from '../services/QuizService';
+import LineChartComponent from '../components/LineChartComponent.vue';
+
+export default {
+  name: 'QuizDashView',
+  components: {
+    LineChartComponent,
+  },
+  data: () => ({
+    quizHistory: [],
+    quizId: '',
+    historyChartData: {
+      labels: [],
+      datasets: [
+        {
+          label: 'Quiz Score (percentage)',
+          backgroundColor: '#1565c0',
+          data: [],
+        },
+      ],
+    },
+    actionDisabled: false,
+    attemptId: '',
+  }),
+  async mounted() {
+    this.quizId = this.$route.params.id;
+    try {
+      this.attemptId = await QuizService.getOngoingAttempt(this.quizId);
+      const history = (await QuizService.getAttemptHistory(this.quizId));
+      history.forEach((value, index) => {
+        this.historyChartData.labels.push(this.getOrdinal(index + 1));
+        this.historyChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
+      });
+      this.quizHistory = history.reverse();
+    } catch (err) {
+      if (err.response.status === 401) {
+        this.$store.commit('logout');
+        this.$router.push({ name: 'Login' });
+      } else if (err.response.status === 404) {
+        // TODO: 404 Page
+      } else {
+        throw err;
+      }
+    }
+  },
+  methods: {
+    continueAttempt() {
+      this.$router.push({ name: 'Attempt', params: { id: this.attemptId } });
+    },
+    toResult(attemptId) {
+      this.$router.push({ name: 'Result', params: { id: attemptId } });
+    },
+    async startNewQuiz() {
+      this.actionDisabled = true;
+      try {
+        this.attemptId = await QuizService.getQuizAttempt(this.quizId);
+      } catch (err) {
+        if (err.response.status === 401) {
+          this.$store.commit('logout');
+          this.$router.push({ name: 'Login' });
+        } else if (err.response.status === 404) {
+        // TODO: 404 Page
+        } else {
+          throw err;
+        }
+      }
+      this.$router.push({ name: 'Attempt', params: { id: this.attemptId } });
+    },
+    getOrdinal(number) {
+      if (number % 10 === 1 && number % 100 !== 11) {
+        return `${number}st`;
+      }
+      if (number % 10 === 2 && number % 100 !== 12) {
+        return `${number}nd`;
+      }
+      if (number % 10 === 3 && number % 100 !== 13) {
+        return `${number}rd`;
+      }
+      return `${number}th`;
+    },
+    async getHistory() {
+      try {
+        const history = (await QuizService.getQuizHistory(this.quizId)).data;
+        history.forEach((value, index) => {
+          this.historyChartData.labels.push(this.getOrdinal(index + 1));
+          this.historyChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
+        });
+        this.quizHistory = history.reverse();
+      } catch (err) {
+        if (err.response.status === 401) {
+          this.$store.commit('logout');
+          this.$router.push('/login');
+        }
+      }
+    },
+    toLocalTime(record) {
+      return DateTime.fromISO(record.timeStamp).setZone('America/Los_Angeles').toLocaleString(DateTime.DATETIME_MED);
+    },
+  },
+};
+</script>

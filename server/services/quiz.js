@@ -70,7 +70,10 @@ class QuizService {
       .find({ email, quizId })
       .project({ attemptId: 1, _id: 0 })
       .toArray())[0];
-    return { success: true, data: attemptId };
+    if (!attemptId) {
+      return { success: true, data: null };
+    }
+    return { success: true, data: attemptId.attemptId };
   }
 
   static async getHistoryId(email, quizId) {
@@ -82,7 +85,7 @@ class QuizService {
       $query: { email, quizId },
       $orderby: { timeStamp: 1 },
     }).project({
-      attemptId: 1, timeStamp: 1, score: 1, _id: 0,
+      attemptId: 1, timeStamp: 1, score: 1, totalPoints: 1, _id: 0,
     }).toArray();
     return { success: true, data: results };
   }

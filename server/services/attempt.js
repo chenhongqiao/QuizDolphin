@@ -15,7 +15,7 @@ class AttemptService {
     return { success: true, data: progress };
   }
 
-  static async postProgress(attemptId, progress, email) {
+  static async putProgress(attemptId, progress, email) {
     const endTime = Date.parse(await redis.get(`endTime:${attemptId}`));
     if (endTime && Date.now() <= endTime) {
       const currentProgress = JSON.parse((await redis.get(`progress:${attemptId}`)));
@@ -44,8 +44,12 @@ class AttemptService {
 
   static async getAttemptData(attemptId, email) {
     const attemptsCollection = await mongodb.loadCollection('attempts');
+    const resultsCollection = await mongodb.loadCollection('results');
     const quizDataCursor = await attemptsCollection.find({ attemptId, email }).project({ _id: 0 });
     if (await quizDataCursor.count() === 0) {
+      if (await resultsCollection.find({ attemptId, email }).project({ _id: 0 }).count()) {
+        return { success: false, message: 'Quiz Ended!' };
+      }
       return { success: false, message: 'No Matching Attempt!' };
     }
     const quizData = (await quizDataCursor.toArray())[0];

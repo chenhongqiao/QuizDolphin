@@ -10,6 +10,9 @@ class GradingService {
     const attemptDataCursor = await attemptsCollection
       .find({ attemptId, email }).project({ _id: 0 });
     if (await attemptDataCursor.count() === 0) {
+      if (await resultsCollection.find({ attemptId, email }).project({ _id: 0 }).count()) {
+        return { success: false, message: 'Quiz Ended!' };
+      }
       return { success: false, message: 'No Matching Attempt!' };
     }
     const attemptData = (await attemptDataCursor.toArray())[0];

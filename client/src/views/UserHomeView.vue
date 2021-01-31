@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import QuizService from '../QuizService';
+import QuizService from '../services/QuizService';
 
 export default {
   name: 'UserDashView',
@@ -44,8 +44,8 @@ export default {
       return this.$store.state.name;
     },
   },
-  async beforeMount() {
-    this.quizList = (await QuizService.getQuizList()).data;
+  async mounted() {
+    this.quizList = (await QuizService.getQuizList());
   },
   methods: {
     toQuiz(quizId) {

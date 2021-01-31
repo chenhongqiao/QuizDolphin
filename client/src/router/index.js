@@ -6,8 +6,18 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/quiz/:id',
-    name: 'Quiz',
-    component: () => import('../views/QuizDashView.vue'),
+    name: 'QuizInfo',
+    component: () => import('../views/QuizInfoView.vue'),
+  },
+  {
+    path: '/attempt/:id',
+    name: 'Attempt',
+    component: () => import('../views/AttemptView.vue'),
+  },
+  {
+    path: '/result/:id',
+    name: 'Result',
+    component: () => import('../views/ResultView.vue'),
   },
   {
     path: '/login',
@@ -15,14 +25,14 @@ const routes = [
     component: () => import('../views/LoginView.vue'),
   },
   {
-    path: '/dashboard',
-    name: 'User Dashboard',
-    component: () => import('../views/UserDashView.vue'),
+    path: '/home',
+    name: 'User Home',
+    component: () => import('../views/UserHomeView.vue'),
   },
   {
     path: '/',
     name: 'Root',
-    redirect: '/dashboard',
+    redirect: '/home',
   },
 ];
 

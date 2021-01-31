@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import UserService from '../UserService';
+import UserService from '../services/UserService';
 
 export default {
   name: 'LoginView',
@@ -82,7 +82,7 @@ export default {
       this.actionDisabled = true;
       try {
         await UserService.postSession(this.loginInfo);
-        const userInformation = (await UserService.getSession()).data;
+        const userInformation = (await UserService.getSessionInfo());
         this.$store.commit('login', userInformation);
         this.$router.go(-1);
       } catch (err) {

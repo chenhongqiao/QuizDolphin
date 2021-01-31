@@ -1,9 +1,0 @@
-# This document is intended to be a reference to programmers, not an actual config file to the program.
-# Formats are enforced by validation functions instead, which are designed base on this document.
-
----
-- email: ""
-  password: ""
-  name: ""
-  role: "" # user/admin
----

@@ -47,7 +47,7 @@ router.put('/:attemptId/progress', async (req, res, next) => {
       res.status(400).send({ message: 'Missing Body Data!' });
       return;
     }
-    const response = await attemptService.postProgress(attemptId, req.body.data, req.session.email);
+    const response = await attemptService.putProgress(attemptId, req.body.data, req.session.email);
     if (!response.success) {
       if (response.message === 'Invalid Progress Syntax!') {
         res.status(400).send({ message: 'Invalid Progress Syntax!' });
@@ -91,6 +91,10 @@ router.get('/:attemptId', async (req, res, next) => {
         res.status(404).send({ message: 'No Matching Attempt!' });
         return;
       }
+      if (response.message === 'Quiz Ended!') {
+        res.status(410).send({ message: 'Quiz Ended!' });
+        return;
+      }
       throw Error('Unexpected Service Response!');
     } else {
       res.send({ data: response.data });
@@ -114,6 +118,10 @@ router.post('/:attemptId', async (req, res, next) => {
     if (!response.success) {
       if (response.message === 'No Matching Attempt!') {
         res.status(404).send({ message: 'No Matching Attempt!' });
+        return;
+      }
+      if (response.message === 'Quiz Ended!') {
+        res.status(410).send({ message: 'Quiz Ended!' });
         return;
       }
       throw Error('Unexpected Service Response!');
