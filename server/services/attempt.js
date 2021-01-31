@@ -16,8 +16,8 @@ class AttemptService {
   }
 
   static async postProgress(attemptId, progress, email) {
-    const endTime = await redis.get(`endTime:${attemptId}`);
-    if (endTime && Math.floor(Date.now() / 1000) <= endTime) {
+    const endTime = Date.parse(await redis.get(`endTime:${attemptId}`));
+    if (endTime && Date.now() <= endTime) {
       const currentProgress = JSON.parse((await redis.get(`progress:${attemptId}`)));
       if (!currentProgress || currentProgress.email !== email) {
         return { success: false, message: 'No Matching Progress!' };

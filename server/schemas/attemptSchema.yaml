@@ -6,6 +6,6 @@
   questions: [
     question: Object
   ]
-  endTime: 0 # Unix time in second
+  endTime: 0 # Unix time in millisecond
   attemptId: "" # UUID
 ---
