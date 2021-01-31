@@ -4,6 +4,7 @@ const randomUtils = require('../utils/random');
 const nanoidUtils = require('../utils/nanoid');
 const progressUtils = require('../utils/progress');
 const quizModel = require('../models/quiz');
+const jobService = require('../jobs/agenda');
 
 class QuizService {
   static async newAttempt(quizId, email) {
@@ -58,6 +59,7 @@ class QuizService {
     await attemptsCollection.insertOne(quizData);
     await redis.set(`progress:${attemptId}`, JSON.stringify(progress));
     await redis.setnx(`endTime:${attemptId}`, JSON.stringify(quizData.endTime));
+    await jobService.gradeQuiz(attemptId, email, quizInfo.duration);
     return { success: true, data: attemptId };
   }
 
