@@ -6,7 +6,7 @@
   >
     <v-card>
       <v-card-title>
-        Please Login
+        Login
       </v-card-title>
       <v-container>
         <v-alert
@@ -72,7 +72,7 @@ export default {
     actionDisabled: false,
     showPassword: false,
   }),
-  beforeMount() {
+  mounted() {
     if (this.$store.state.loggedIn) {
       this.$router.push('/');
     }

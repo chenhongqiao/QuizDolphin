@@ -1,7 +1,6 @@
 <template>
   <div>
-    Time Left:
-    {{ hoursLeft }} hours {{ minutesLeft }} minutes {{ secondsLeft }} seconds
+    Time Left: {{ hoursLeft }} h {{ minutesLeft }} min {{ secondsLeft }} sec
   </div>
 </template>
 <script>

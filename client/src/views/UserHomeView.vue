@@ -1,12 +1,13 @@
 <template>
-  <div>
+  <div v-if="dashLoaded">
     <v-container>
       <h2>Welcome back, {{ getUserName }}</h2>
     </v-container>
-    <v-col>
-      <v-container
+    <v-container>
+      <div
         v-for="quiz in quizList"
         :key="'ql'+quiz"
+        class="my-2"
       >
         <v-card>
           <v-card-title>
@@ -26,8 +27,8 @@
             </v-btn>
           </v-card-actions>
         </v-card>
-      </v-container>
-    </v-col>
+      </div>
+    </v-container>
   </div>
 </template>
 
@@ -38,6 +39,7 @@ export default {
   name: 'UserDashView',
   data: () => ({
     quizList: [],
+    dashLoaded: false,
   }),
   computed: {
     getUserName() {
@@ -46,6 +48,7 @@ export default {
   },
   async mounted() {
     this.quizList = (await QuizService.getQuizList());
+    this.dashLoaded = true;
   },
   methods: {
     toQuiz(quizId) {

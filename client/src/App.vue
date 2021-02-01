@@ -84,7 +84,7 @@ export default {
     hasError: false,
     errorMessage: '',
   }),
-  async beforeMount() {
+  async mounted() {
     try {
       const userInformation = (await UserService.getSessionInfo());
       this.$store.commit('login', userInformation);

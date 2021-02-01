@@ -1,99 +1,98 @@
 <template>
   <div>
-    <div v-if="attemptId">
+    <div v-if="infoLoaded">
       <v-container>
-        <h3 class="text-center">
-          Ongoing Attempt
-        </h3>
-      </v-container>
-      <v-container
-        class="text-center"
-      >
-        <v-btn
-          :disabled="actionDisabled"
-          @click="continueAttempt()"
-        >
-          Continue
-        </v-btn>
-      </v-container>
-    </div>
-    <div v-else>
-      <v-container>
-        <h3 class="text-center">
-          New Attempt
-        </h3>
-      </v-container>
-      <v-container
-        class="text-center"
-      >
-        <v-btn
-          :disabled="actionDisabled"
-          @click="startNewQuiz()"
-        >
-          Start
-        </v-btn>
-      </v-container>
-    </div>
-    <v-container>
-      <v-tabs>
-        <v-tab> Records </v-tab>
-        <v-tab> Graphs </v-tab>
-        <v-tab-item>
-          <div v-if="quizHistory">
-            <v-container>
-              <h3 class="text-center">
-                Previous Attempts
-              </h3>
-            </v-container>
-            <v-simple-table>
-              <thead>
-                <tr>
-                  <th class="text-left">
-                    Time Stamp
-                  </th>
-                  <th>
-                    Score
-                  </th>
-                  <th class="text-right" />
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(record, index) in quizHistory"
-                  :key="'r'+index+record"
-                >
-                  <td>{{ toLocalTime(record) }} </td>
-                  <td>
-                    {{ record.score.toFixed(2) }}/{{ record.totalPoints.toFixed(2) }}
-                  </td>
-                  <td class="text-right">
-                    <v-btn
-                      depressed
-                      @click="toResult(record.attemptId)"
-                    >
-                      View Detail
-                    </v-btn>
-                  </td>
-                </tr>
-              </tbody>
-            </v-simple-table>
+        <div v-if="attemptId">
+          <div class="text-h6 text-center ma-2">
+            Ongoing Attempt
           </div>
-        </v-tab-item>
+          <div
+            class="text-center ma-2"
+          >
+            <v-btn
+              :disabled="actionDisabled"
+              @click="continueAttempt()"
+            >
+              Continue
+            </v-btn>
+          </div>
+        </div>
+        <div v-else>
+          <div class="text-h6 text-center ma-2">
+            New Attempt
+          </div>
+          <div
+            class="text-center ma-2"
+          >
+            <v-btn
+              :disabled="actionDisabled"
+              @click="startNewQuiz()"
+            >
+              Start
+            </v-btn>
+          </div>
+        </div>
+      </v-container>
+      <v-container>
+        <v-tabs>
+          <v-tab> Records </v-tab>
+          <v-tab> Graphs </v-tab>
+          <v-tab-item>
+            <div v-if="quizHistory">
+              <div class="text-h6 text-center ma-2">
+                Previous Attempts
+              </div>
+              <v-simple-table>
+                <thead>
+                  <tr>
+                    <th class="text-left">
+                      Time Stamp
+                    </th>
+                    <th class="text-left">
+                      Score
+                    </th>
+                    <th class="text-right">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(record, index) in quizHistory"
+                    :key="'r'+index+record"
+                  >
+                    <td>{{ toLocalTime(record) }} </td>
+                    <td class="text-left">
+                      {{ record.score.toFixed(2) }}/{{ record.totalPoints.toFixed(2) }}
+                    </td>
+                    <td class="text-right">
+                      <a @click="toResult(record.attemptId)">
+                        View
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </v-simple-table>
+            </div>
+          </v-tab-item>
 
-        <v-tab-item>
-          <v-container>
-            <h3 class="text-center">
+          <v-tab-item>
+            <div class="text-h6 text-center ma-2">
               Performance History
-            </h3>
+            </div>
             <LineChartComponent
               :chart-data="historyChartData"
               :options="{maintainAspectRatio: false}"
               :style="'height=200px;'"
             />
-          </v-container>
-        </v-tab-item>
-      </v-tabs>
-    </v-container>
+          </v-tab-item>
+        </v-tabs>
+      </v-container>
+    </div>
+    <v-progress-linear
+      v-else
+      indeterminate
+    />
   </div>
 </template>
 
@@ -122,6 +121,7 @@ export default {
     },
     actionDisabled: false,
     attemptId: '',
+    infoLoaded: false,
   }),
   async mounted() {
     this.quizId = this.$route.params.id;
@@ -133,6 +133,7 @@ export default {
         this.historyChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
       });
       this.quizHistory = history.reverse();
+      this.infoLoaded = true;
     } catch (err) {
       if (err.response.status === 401) {
         this.$store.commit('logout');

@@ -1,223 +1,219 @@
 <template>
-  <div v-if="quizRunning">
-    <v-container>
-      <v-card>
-        <v-container>
-          <h2>Problem #{{ questionIndex }}</h2>
-          <div>Points: {{ questions[questionIndex-1].points }}</div>
-          <div>Type: {{ questions[questionIndex-1].type }}</div>
-        </v-container>
-        <v-divider />
-
-        <v-container
-          v-if="questions[questionIndex-1].type!=='fill in the blanks'"
-        >
-          <h3>Context:</h3>
-          <div class="text-center">
-            {{ questions[questionIndex-1].context }}
-          </div>
-        </v-container>
-
-        <v-container>
-          <h3
-            v-if="questions[questionIndex-1].type==='single choice'||
-              questions[questionIndex-1].type==='multiple choice'"
-          >
-            Options:
-          </h3>
-          <h3
-            v-if="questions[questionIndex-1].type==='short response'"
-          >
-            Your Response:
-          </h3>
-          <h3
-            v-if="questions[questionIndex-1].type==='matching'"
-          >
-            Matching:
-          </h3>
-          <h3
-            v-if="questions[questionIndex-1].type==='fill in the blanks'"
-          >
-            Fill in the Blanks:
-          </h3>
-
-          <div v-if="questions[questionIndex-1].type==='single choice'">
-            <v-radio-group
-              v-model="responses[questionIndex-1]"
-              row
-            >
-              <v-col
-                v-for="option in questions[questionIndex-1].options"
-                :key="option"
-                md="3"
-              >
-                <v-radio
-                  :label="option"
-                  :value="option"
-                />
-              </v-col>
-            </v-radio-group>
-          </div>
-
-          <div v-if="questions[questionIndex-1].type==='short response'">
-            <v-text-field
-              v-model="responses[questionIndex-1]"
-              name="Your response"
-            />
-          </div>
-
-          <div v-if="questions[questionIndex-1].type==='multiple choice'">
-            <v-row wrap>
-              <v-col
-                v-for="option in questions[questionIndex-1].options"
-                :key="option"
-                md="3"
-              >
-                <v-checkbox
-                  v-model="responses[questionIndex-1]"
-                  :label="option"
-                  :value="option"
-                />
-              </v-col>
-            </v-row>
-          </div>
-
-          <div v-if="questions[questionIndex-1].type==='matching'">
-            <v-row
-              v-for="(left,index) in questions[questionIndex-1].leftcol"
-              :key="'qz'+questions[questionIndex-1].questionId+left"
-            >
-              <v-col md="8">
-                <v-container>
-                  {{ left }}
-                </v-container>
-              </v-col>
-              <v-col md="4">
-                <v-select
-                  v-model="responses[questionIndex-1][index]"
-                  :items="questions[questionIndex-1].rightcol"
-                  dense
-                  @input="updateRightCol(index)"
-                />
-              </v-col>
-            </v-row>
-          </div>
-
-          <div v-if="questions[questionIndex-1].type==='fill in the blanks'">
-            <v-container>
-              <span
-                v-for="(context, index) in questions[questionIndex-1].context"
-                :key="'qz'+questions[questionIndex-1].questionId+context"
-              >
-                {{ context }}
-                <v-select
-                  v-if="questions[questionIndex-1].options[index]"
-                  v-model="responses[questionIndex-1][index]"
-                  class="d-inline-flex"
-                  :items="questions[questionIndex-1].options[index]"
-                  dense
-                />
-              </span>
-            </v-container>
-          </div>
-        </v-container>
-      </v-card>
-    </v-container>
-
-    <v-container>
-      <v-row>
-        <v-spacer />
-        <v-btn
-          @click="questionIndex-=1"
-        >
-          Back
-        </v-btn>
-        <v-btn
-          v-if="questionIndex < questions.length"
-          @click="questionIndex+=1;"
-        >
-          Next
-        </v-btn>
-        <v-btn
-          v-if="questionIndex === questions.length"
-          @click="pendingSubmission=true"
-        >
-          Submit!
-        </v-btn>
-      </v-row>
-    </v-container>
-    <v-container>
-      <v-pagination
-        v-model="questionIndex"
-        :length="questions.length"
-      />
-    </v-container>
-    <v-container>
-      <v-row>
-        <div v-if="needSave">
-          Saving to cloud...
-        </div>
-        <div v-else>
-          Progress Saved
-        </div>
-        <v-spacer />
-        <TimerComponent
-          :end-time="endTime"
-          @timeUp="postAttempt()"
-        />
-      </v-row>
-    </v-container>
-    <v-dialog
-      v-model="pendingSubmission"
-      max-width="500px"
+  <div>
+    <div
+      v-if="quizRunning"
     >
-      <v-card>
-        <v-container>
-          You have attempted <b>{{ attemptedNumber }}</b> questions.
-          Do you want to submit this quiz? You cannot change your answer once it's submitted.
-        </v-container>
-        <v-divider />
-        <v-card-actions>
+      <v-container>
+        <v-card>
+          <v-container>
+            <div class="text-h5 font-weight-medium">
+              Problem #{{ questionIndex }}
+            </div>
+            <div class="text-subtitle-2 font-weight-regular">
+              Points: {{ questions[questionIndex-1].points }}
+            </div>
+            <div class="text-subtitle-2 font-weight-regular">
+              Type: {{ questions[questionIndex-1].type }}
+            </div>
+          </v-container>
+          <v-divider />
+
+          <v-container
+            v-if="questions[questionIndex-1].type!=='fill in the blanks'"
+          >
+            <div class="text-body-1 font-weight-medium text-center ma-4">
+              {{ questions[questionIndex-1].context }}
+            </div>
+          </v-container>
+
+          <v-container>
+            <div v-if="questions[questionIndex-1].type==='single choice'">
+              <v-radio-group
+                v-model="responses[questionIndex-1]"
+                row
+              >
+                <v-col
+                  v-for="option in questions[questionIndex-1].options"
+                  :key="option"
+                  md="3"
+                  cols="6"
+                >
+                  <v-radio
+                    :label="option"
+                    :value="option"
+                  />
+                </v-col>
+              </v-radio-group>
+            </div>
+
+            <div v-if="questions[questionIndex-1].type==='short response'">
+              <v-text-field
+                v-model="responses[questionIndex-1]"
+                name="Your response"
+              />
+            </div>
+
+            <div v-if="questions[questionIndex-1].type==='multiple choice'">
+              <v-row wrap>
+                <v-col
+                  v-for="option in questions[questionIndex-1].options"
+                  :key="option"
+                  md="3"
+                  cols="6"
+                >
+                  <v-checkbox
+                    v-model="responses[questionIndex-1]"
+                    :label="option"
+                    :value="option"
+                  />
+                </v-col>
+              </v-row>
+            </div>
+
+            <div v-if="questions[questionIndex-1].type==='matching'">
+              <v-row
+                v-for="(left,index) in questions[questionIndex-1].leftcol"
+                :key="'qz'+questions[questionIndex-1].questionId+left"
+              >
+                <v-col md="8">
+                  <v-container>
+                    {{ left }}
+                  </v-container>
+                </v-col>
+                <v-col md="4">
+                  <v-select
+                    v-model="responses[questionIndex-1][index]"
+                    :items="questions[questionIndex-1].rightcol"
+                    dense
+                    @input="updateRightCol(index)"
+                  />
+                </v-col>
+              </v-row>
+            </div>
+
+            <div v-if="questions[questionIndex-1].type==='fill in the blanks'">
+              <v-container>
+                <span
+                  v-for="(context, index) in questions[questionIndex-1].context"
+                  :key="'qz'+questions[questionIndex-1].questionId+context"
+                >
+                  {{ context }}
+                  <v-select
+                    v-if="questions[questionIndex-1].options[index]"
+                    v-model="responses[questionIndex-1][index]"
+                    class="d-inline-flex"
+                    :items="questions[questionIndex-1].options[index]"
+                    dense
+                  />
+                </span>
+              </v-container>
+            </div>
+          </v-container>
+        </v-card>
+      </v-container>
+      <v-container>
+        <v-row>
           <v-spacer />
           <v-btn
-            text
-            :disabled="actionDisabled"
-            @click="pendingSubmission=false"
+            v-if="questionIndex!==1"
+            class="ma-1"
+            @click="questionIndex-=1"
           >
-            Cancel
+            Back
           </v-btn>
           <v-btn
-            text
-            :disabled="actionDisabled"
-            @click="postAttempt"
+            v-if="questionIndex < questions.length"
+            class="ma-1"
+            @click="questionIndex+=1;"
+          >
+            Next
+          </v-btn>
+          <v-btn
+            v-if="questionIndex === questions.length"
+            class="ma-1"
+            @click="pendingSubmission=true"
           >
             Submit
           </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog
-      v-model="needReload"
-      max-width="500px"
-      persistent
-    >
-      <v-card>
-        <v-container>
-          A newer version of your quiz progress detected on cloud.
-          Please click this button to reload.
-        </v-container>
-        <v-divider />
-        <v-card-actions>
+        </v-row>
+      </v-container>
+      <v-container>
+        <v-pagination
+          v-model="questionIndex"
+          :length="questions.length"
+        />
+      </v-container>
+      <v-container class="text--secondary">
+        <v-row>
+          <div v-if="needSave">
+            Saving...
+          </div>
+          <div v-else>
+            Progress Saved
+          </div>
           <v-spacer />
-          <v-btn
-            text
-            @click="loadQuiz()"
-          >
-            Reload
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+          <TimerComponent
+            :end-time="endTime"
+            @timeUp="postAttempt()"
+          />
+        </v-row>
+      </v-container>
+      <v-dialog
+        v-model="pendingSubmission"
+        max-width="500px"
+      >
+        <v-card>
+          <v-container>
+            You have attempted <b>{{ attemptedNumber }}</b> questions.
+            Do you want to submit this quiz? You cannot change your answer once it's submitted.
+          </v-container>
+          <v-divider />
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              text
+              :disabled="actionDisabled"
+              @click="pendingSubmission=false"
+            >
+              Cancel
+            </v-btn>
+            <v-btn
+              text
+              :disabled="actionDisabled"
+              @click="postAttempt"
+            >
+              Submit
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog
+        v-model="needReload"
+        max-width="500px"
+        persistent
+      >
+        <v-card>
+          <v-container>
+            A newer version of your quiz progress detected on cloud.
+            Please click this button to reload.
+          </v-container>
+          <v-divider />
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              text
+              @click="loadQuiz()"
+            >
+              Reload
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
+    <v-progress-linear
+      v-else
+      indeterminate
+    />
   </div>
 </template>
 
