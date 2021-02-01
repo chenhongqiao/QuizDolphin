@@ -84,18 +84,6 @@ export default {
     hasError: false,
     errorMessage: '',
   }),
-  async mounted() {
-    try {
-      const userInformation = (await UserService.getSessionInfo());
-      this.$store.commit('login', userInformation);
-    } catch (err) {
-      if (err.response.status === 401) {
-        if (this.$route.path !== '/login') {
-          this.$router.push('/login');
-        }
-      }
-    }
-  },
   errorCaptured(err) {
     this.errorMessage = err;
     this.hasError = true;
@@ -105,28 +93,22 @@ export default {
       try {
         await UserService.deleteSession();
         this.$store.commit('logout');
-        this.$router.push('/login');
+        if (this.$route.path !== '/login') {
+          this.$router.push({ name: 'Login' });
+        }
       } catch (err) {
         if (this.$route.path !== '/login') {
-          this.$router.push('/login');
+          this.$router.push({ name: 'Login' });
         }
       }
     },
-    refresh() {
-      window.location.reload();
-    },
     goDashboard() {
-      if (this.$route.path !== '/home' && this.$route.path !== '/') {
-        this.$router.push('/');
+      if (this.$route.path !== '/home') {
+        this.$router.push('/home');
       }
     },
     getLoginStatus() {
       return this.$store.state.loggedIn;
-    },
-    toQuizPage() {
-      if (this.$route.path !== '/quiz') {
-        this.$router.push('/quiz');
-      }
     },
     getInitial() {
       const initial = this.$store.state.name.split(' ').map((name) => name[0]).join('');

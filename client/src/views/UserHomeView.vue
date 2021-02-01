@@ -47,8 +47,17 @@ export default {
     },
   },
   async mounted() {
-    this.quizList = (await QuizService.getQuizList());
-    this.dashLoaded = true;
+    try {
+      this.quizList = (await QuizService.getQuizList());
+      this.dashLoaded = true;
+    } catch (err) {
+      if (err.response.status === 401) {
+        this.$store.commit('logout');
+        this.$router.push({ name: 'Login' });
+      } else {
+        throw err;
+      }
+    }
   },
   methods: {
     toQuiz(quizId) {

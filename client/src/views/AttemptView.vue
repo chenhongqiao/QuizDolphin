@@ -187,33 +187,33 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-dialog
-        v-model="needReload"
-        max-width="500px"
-        persistent
-      >
-        <v-card>
-          <v-container>
-            A newer version of your quiz progress detected on cloud.
-            Please click this button to reload.
-          </v-container>
-          <v-divider />
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              text
-              @click="loadQuiz()"
-            >
-              Reload
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
     </div>
     <v-progress-linear
       v-else
       indeterminate
     />
+    <v-dialog
+      v-model="needReload"
+      max-width="500px"
+      persistent
+    >
+      <v-card>
+        <v-container>
+          A newer version of your quiz progress detected on cloud.
+          Please click this button to reload.
+        </v-container>
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            text
+            @click="loadQuiz()"
+          >
+            Reload
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -294,7 +294,7 @@ export default {
       } catch (err) {
         if (err.response.status === 401) {
           this.$store.commit('logout');
-          this.$router.push({ name: 'Login' });
+          this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
         } else if (err.response.status === 404) {
         // TODO: 404 Page
         } else if (err.response.status === 410) {
@@ -318,7 +318,7 @@ export default {
         } catch (err) {
           if (err.response.status === 401) {
             this.$store.commit('logout');
-            this.$router.push({ name: 'Login' });
+            this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
           } else if (err.response.status === 404) {
             // TODO: 404 Page
           } else if (err.response.status === 409) {
@@ -344,7 +344,7 @@ export default {
       } catch (err) {
         if (err.response.status === 401) {
           this.$store.commit('logout');
-          this.$router.push({ name: 'Login' });
+          this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
         } else if (err.response.status === 404) {
         // TODO: 404 Page
         } else if (err.response.status === 410) {

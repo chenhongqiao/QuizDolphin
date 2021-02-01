@@ -49,7 +49,7 @@ router.delete('/session', (req, res, next) => {
 router.get('/session', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
-      res.status(401).send({ message: 'Not Logged In!' });
+      res.send({ data: null });
       return;
     }
     const response = await authService.getInfo(req.session.email);

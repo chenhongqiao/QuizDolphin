@@ -228,7 +228,7 @@ export default {
       } catch (err) {
         if (err.response.status === 401) {
           this.$store.commit('logout');
-          this.$router.push({ name: 'Login' });
+          this.$router.push({ path: '/login', query: { redirect: `/result/${this.attemptId}` } });
         } else if (err.response.status === 404) {
         // TODO: 404 Page
         } else {
