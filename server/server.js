@@ -39,15 +39,15 @@ async function startServer() {
   }));
 
   app.use('/api', rateLimit({
-    windowMs: 1000,
-    max: 4,
+    windowMs: 2000,
+    max: 6,
     keyGenerator: (req) => {
       if (req.session.email) {
         return req.session.email;
       }
       return req.ip;
     },
-    message: 'Request too frequent, please try again later.',
+    message: { message: 'Rate limit reached, please try again later.' },
   }));
 
   app.use('/api/question', questionAPI);
