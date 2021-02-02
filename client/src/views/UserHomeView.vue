@@ -1,9 +1,6 @@
 <template>
   <div v-if="dashLoaded">
     <v-container>
-      <h2>Welcome back, {{ getUserName }}</h2>
-    </v-container>
-    <v-container>
       <div
         v-for="quiz in quizList"
         :key="'ql'+quiz"
@@ -30,6 +27,10 @@
       </div>
     </v-container>
   </div>
+  <v-progress-linear
+    v-else
+    indeterminate
+  />
 </template>
 
 <script>

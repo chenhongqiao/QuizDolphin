@@ -14,6 +14,7 @@
           <v-alert
             v-model="hasLoginError"
             dismissible
+            outlined
             type="error"
           >
             {{ loginResponse }}
@@ -108,7 +109,7 @@ export default {
       } catch (err) {
         if (err.response.status === 401) {
           this.hasLoginError = true;
-          this.loginResponse = err.response.data;
+          this.loginResponse = 'Authenication failed, please try again.';
           this.loginInfo.password = '';
         }
       }

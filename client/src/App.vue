@@ -54,6 +54,7 @@
       <v-alert
         v-model="hasError"
         dismissible
+        outlined
         type="error"
       >
         <div>{{ errorMessage }}</div>
@@ -85,7 +86,11 @@ export default {
     errorMessage: '',
   }),
   errorCaptured(err) {
-    this.errorMessage = err;
+    if (err.response) {
+      this.errorMessage = `${err.response.status} Error: ${err.response.data.message}`;
+    } else {
+      this.errorMessage = err;
+    }
     this.hasError = true;
   },
   methods: {
