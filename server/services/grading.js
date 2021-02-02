@@ -102,7 +102,7 @@ class GradingService {
       }
     }
     const quizResult = new resultModel.QuizResult(score, questions,
-      results, totalPoints, attemptId, email, attemptData.quizId);
+      results, totalPoints, attemptId, email, attemptData.quizId, attemptData.quizName);
     if (quizResult.invalid) {
       throw Error('Error Generating Quiz Result!');
     }

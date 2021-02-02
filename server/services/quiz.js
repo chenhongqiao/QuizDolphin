@@ -48,6 +48,7 @@ class QuizService {
       quizInfo.duration,
       attemptId,
       quizId,
+      quizInfo.quizName,
     );
     if (quizData.invalid) {
       throw new Error('Failed Generating QuizData!');
