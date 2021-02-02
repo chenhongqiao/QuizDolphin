@@ -13,6 +13,14 @@ const routes = [
       if (!store.state.loggedIn) {
         next({ path: '/login', query: { redirect: to.fullPath } });
       } else {
+        store.commit('replaceNav', {
+          index: 1,
+          info: {
+            text: 'Quiz Info',
+            disabled: false,
+            to: to.fullPath,
+          },
+        });
         next();
       }
     },
@@ -25,6 +33,14 @@ const routes = [
       if (!store.state.loggedIn) {
         next({ path: '/login', query: { redirect: to.fullPath } });
       } else {
+        store.commit('replaceNav', {
+          index: 2,
+          info: {
+            text: 'Attempt',
+            disabled: false,
+            to: to.fullPath,
+          },
+        });
         next();
       }
     },
@@ -37,6 +53,14 @@ const routes = [
       if (!store.state.loggedIn) {
         next({ path: '/login', query: { redirect: to.fullPath } });
       } else {
+        store.commit('replaceNav', {
+          index: 2,
+          info: {
+            text: 'Result',
+            disabled: false,
+            to: to.fullPath,
+          },
+        });
         next();
       }
     },
@@ -54,6 +78,14 @@ const routes = [
       if (!store.state.loggedIn) {
         next({ path: '/login', query: { redirect: '/home' } });
       } else {
+        store.commit('replaceNav', {
+          index: 0,
+          info: {
+            text: 'Home',
+            disabled: false,
+            to: '/home',
+          },
+        });
         next();
       }
     },

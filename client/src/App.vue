@@ -10,9 +10,13 @@
       >
         Quiz System
       </v-toolbar-title>
+      <v-breadcrumbs
+        :items="$store.state.navigation"
+        divider="-"
+      />
       <v-spacer />
       <v-menu
-        v-if="getLoginStatus()"
+        v-if="$store.state.loggedIn"
         offset-y
         min-width="200px"
       >
@@ -25,16 +29,16 @@
               color="primary"
               size="36"
             >
-              <span class="white--text title">{{ getInitial() }}</span>
+              <span class="white--text title">{{ getInitial }}</span>
             </v-avatar>
           </v-btn>
         </template>
         <v-card>
           <v-list-item-content class="justify-center">
             <div class="mx-auto text-center">
-              <h3>{{ getName() }}</h3>
+              <h3>{{ $store.state.name }}</h3>
               <div class="caption mt-1">
-                {{ getEmail() }}
+                {{ $store.state.email }}
               </div>
               <v-divider class="my-3" />
               <v-btn
@@ -85,6 +89,12 @@ export default {
     hasError: false,
     errorMessage: '',
   }),
+  computed: {
+    getInitial() {
+      const initial = this.$store.state.name.split(' ').map((name) => name[0]).join('');
+      return initial;
+    },
+  },
   errorCaptured(err) {
     if (err.response) {
       this.errorMessage = `${err.response.status} Error: ${err.response.data.message}`;
@@ -111,19 +121,6 @@ export default {
       if (this.$route.path !== '/home') {
         this.$router.push('/home');
       }
-    },
-    getLoginStatus() {
-      return this.$store.state.loggedIn;
-    },
-    getInitial() {
-      const initial = this.$store.state.name.split(' ').map((name) => name[0]).join('');
-      return initial;
-    },
-    getName() {
-      return this.$store.state.name;
-    },
-    getEmail() {
-      return this.$store.state.email;
     },
   },
 };

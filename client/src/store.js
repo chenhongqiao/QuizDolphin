@@ -9,7 +9,8 @@ const store = new Vuex.Store({
     loggedIn: false,
     email: '',
     name: '',
-    type: '',
+    role: '',
+    navigation: [],
   },
 
   mutations: {
@@ -18,7 +19,7 @@ const store = new Vuex.Store({
       state.loggedIn = true;
       state.email = info.email;
       state.name = info.name;
-      state.type = info.type;
+      state.role = info.role;
     },
 
     // eslint-disable-next-line no-shadow
@@ -26,9 +27,15 @@ const store = new Vuex.Store({
       state.loggedIn = false;
       state.email = '';
       state.name = '';
-      state.type = '';
+      state.role = '';
     },
 
+    replaceNav(state, nav) {
+      while (state.navigation.length > nav.index) {
+        state.navigation.pop();
+      }
+      state.navigation.push(nav.info);
+    },
   },
 });
 
