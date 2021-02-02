@@ -64,7 +64,7 @@ const routes = [
       if (store.state.loggedIn) {
         next({ name: 'User Home' });
       } else {
-        next({ path: '/login', query: { redirect: '/' } });
+        next({ path: '/login' });
       }
     },
   },
