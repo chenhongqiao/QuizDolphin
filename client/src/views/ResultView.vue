@@ -2,22 +2,29 @@
   <div>
     <div v-if="resultLoaded">
       <v-container>
-        <v-row>
+        <v-row wrap>
           <v-col>
-            <div class="text-h4">
-              Quiz result
+            <div
+              class="text-h4"
+              :style="'white-space: nowrap;'"
+            >
+              {{ quizResult.quizName }} - Result
             </div>
             <div>
-              You got {{ quizResult.score.toFixed(2) }} out of {{ quizResult.totalPoints }}
+              Attempt ID: {{ quizResult.attemptId }}
             </div>
           </v-col>
           <v-spacer />
-          <v-btn
-            class="ma-4"
-            @click="generateReport"
-          >
-            Download Report
-          </v-btn>
+          <div class="text-h5 mt-6">
+            {{ quizResult.score.toFixed(2) }} / {{ quizResult.totalPoints.toFixed(2) }}
+          </div>
+          <v-progress-circular
+            class="ma-5"
+            color="green"
+            :size="40"
+            :width="5"
+            :value="(quizResult.score/quizResult.totalPoints)*100"
+          />
         </v-row>
       </v-container>
       <v-container>
@@ -196,6 +203,17 @@
             </v-container>
           </v-card>
         </div>
+      </v-container>
+      <v-container>
+        <v-row>
+          <v-spacer />
+          <v-btn
+            class="ma-2 text-right"
+            @click="generateReport"
+          >
+            Download Report
+          </v-btn>
+        </v-row>
       </v-container>
     </div>
     <v-progress-linear

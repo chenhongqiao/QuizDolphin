@@ -4,6 +4,21 @@
       v-if="quizRunning"
     >
       <v-container>
+        <v-row wrap>
+          <v-col>
+            <div
+              class="text-h4"
+              :style="'white-space: nowrap;'"
+            >
+              {{ quizName }} - Attempt
+            </div>
+            <div>
+              Attempt ID: {{ attemptId }}
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container>
         <v-card>
           <v-container>
             <div class="text-h5 font-weight-medium">
@@ -239,6 +254,7 @@ export default {
     needReload: false,
     saver: undefined,
     endTime: 0,
+    quizName: '',
   }),
   computed: {
     attemptedNumber() {
@@ -291,6 +307,7 @@ export default {
         this.version = progress.version;
         this.quizRunning = true;
         this.needReload = false;
+        this.quizName = quizData.quizName;
       } catch (err) {
         if (err.response.status === 401) {
           this.$store.commit('logout');
