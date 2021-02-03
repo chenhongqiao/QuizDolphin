@@ -13,14 +13,6 @@ const routes = [
       if (!store.state.loggedIn) {
         next({ path: '/login', query: { redirect: to.fullPath } });
       } else {
-        store.commit('replaceNav', {
-          index: 1,
-          info: {
-            text: 'Quiz Info',
-            disabled: false,
-            to: to.fullPath,
-          },
-        });
         next();
       }
     },

@@ -2,6 +2,21 @@
   <div>
     <div v-if="infoLoaded">
       <v-container>
+        <v-row wrap>
+          <v-col>
+            <div
+              class="text-h4"
+              :style="'white-space: nowrap;'"
+            >
+              {{ quizName }}
+            </div>
+            <div>
+              {{ questionCount }} Questions
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container>
         <div v-if="attemptId">
           <div class="text-h6 text-center ma-2">
             Ongoing Attempt
@@ -122,17 +137,30 @@ export default {
     actionDisabled: false,
     attemptId: '',
     infoLoaded: false,
+    quizName: '',
+    questionCount: 0,
   }),
   async mounted() {
     this.quizId = this.$route.params.id;
     try {
       this.attemptId = await QuizService.getOngoingAttempt(this.quizId);
-      const history = (await QuizService.getAttemptHistory(this.quizId));
+      const quizInfo = await QuizService.getQuizInfo(this.quizId);
+      this.quizName = quizInfo.quizName;
+      this.questionCount = quizInfo.questionCount;
+      const history = await QuizService.getAttemptHistory(this.quizId);
       history.forEach((value, index) => {
         this.historyChartData.labels.push(this.getOrdinal(index + 1));
         this.historyChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
       });
       this.quizHistory = history.reverse();
+      this.$store.commit('replaceNav', {
+        index: 1,
+        info: {
+          text: this.quizName,
+          disabled: false,
+          to: `/quiz/${this.quizId}`,
+        },
+      });
       this.infoLoaded = true;
     } catch (err) {
       if (err.response.status === 401) {

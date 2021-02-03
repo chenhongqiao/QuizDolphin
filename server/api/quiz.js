@@ -90,6 +90,32 @@ router.get('/:quizId/history', async (req, res, next) => {
   }
 });
 
+router.get('/:quizId/info', async (req, res, next) => {
+  try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send({ message: 'Not Logged In!' });
+      return;
+    }
+    const { quizId } = req.params;
+    if (!quizId) {
+      res.status(400).send({ message: 'Missing Parameter!' });
+      return;
+    }
+    const response = await quizService.getQuizInfo(quizId);
+    if (!response.success) {
+      if (response.message === 'No Matching Quiz!') {
+        res.status(404).send({ message: 'No Matching Quiz!' });
+        return;
+      }
+      throw Error('Unexpected Service Response!');
+    } else {
+      res.send({ data: response.data });
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get('/list', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {

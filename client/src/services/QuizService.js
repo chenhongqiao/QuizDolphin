@@ -32,6 +32,13 @@ class QuizService {
     });
     return response.data.data;
   }
+
+  static async getQuizInfo(quizId) {
+    const response = await axios.get(`${url}${quizId}/info`, {
+      withCredentials: true,
+    });
+    return response.data.data;
+  }
 }
 
 export default QuizService;
