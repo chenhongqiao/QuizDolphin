@@ -3,7 +3,7 @@
     <v-container>
       <div
         v-for="quiz in quizList"
-        :key="'ql'+quiz"
+        :key="'ql'+quiz.quizId"
         class="my-2"
       >
         <v-card>
@@ -11,8 +11,11 @@
             {{ quiz.quizName }}
           </v-card-title>
           <v-card-text>
-            <div>Duration: {{ quiz.duration/60 }} minutes</div>
-            <div>Question: {{ quiz.questionCount }} questions </div>
+            <div>
+              {{ Math.floor(quiz.duration/60) }} minutes
+              {{ Math.floor(quiz.duration%60) }} seconds
+            </div>
+            <div>{{ quiz.questionCount }} questions </div>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
