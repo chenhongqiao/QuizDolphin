@@ -153,7 +153,7 @@ class DataValidate {
           return false;
         }
         for (let rindex = 0; rindex < responses[index].length; rindex += 1) {
-          if (typeof responses[index][rindex] !== 'string') { return false; }
+          if (responses[index][rindex] && typeof responses[index][rindex] !== 'string') { return false; }
         }
       }
     }

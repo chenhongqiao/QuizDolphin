@@ -55,17 +55,6 @@
       </v-menu>
     </v-app-bar>
     <v-main>
-      <v-alert
-        v-model="hasError"
-        dismissible
-        outlined
-        type="error"
-      >
-        <div>{{ errorMessage }}</div>
-        <div v-if="errorMessage.response">
-          {{ errorMessage.response.data }}
-        </div>
-      </v-alert>
       <router-view />
     </v-main>
     <v-footer>
@@ -84,24 +73,11 @@ import UserService from './services/UserService';
 
 export default {
   name: 'App',
-
-  data: () => ({
-    hasError: false,
-    errorMessage: '',
-  }),
   computed: {
     getInitial() {
       const initial = this.$store.state.name.split(' ').map((name) => name[0]).join('');
       return initial;
     },
-  },
-  errorCaptured(err) {
-    if (err.response) {
-      this.errorMessage = `${err.response.status} Error: ${err.response.data.message}`;
-    } else {
-      this.errorMessage = err;
-    }
-    this.hasError = true;
   },
   methods: {
     async logout() {
