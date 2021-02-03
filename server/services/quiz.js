@@ -20,25 +20,28 @@ class QuizService {
     const { questionCount } = quizInfo;
     const selectedQuestions = [];
     const selectedAnswers = [];
-    const selectedIndexes = new Set();
-    while (selectedQuestions.length < questionCount) {
-      const index = randomUtils.integer(0, questions.length);
-      if (!selectedIndexes.has(index)) {
-        const { answer } = questions[index];
-        selectedAnswers.push(answer);
-        delete questions[index].answer;
-        selectedQuestions.push(questions[index]);
-        selectedIndexes.add(index);
-      }
+    // Fisher-Yates shuffle algorithm
+    // Time-complexity: O(n) n=total question number
+    for (let index = questions.length - 1; index >= 1; index -= 1) {
+      const pindex = randomUtils.integer(0, index + 1);
+      const temp = questions[index];
+      questions[index] = questions[pindex];
+      questions[pindex] = temp;
+    }
+    for (let index = 0; index < questions.length && index < questionCount; index += 1) {
+      const { answer } = questions[index];
+      selectedAnswers.push(answer);
+      delete questions[index].answer;
+      selectedQuestions.push(questions[index]);
     }
     const resultsCollection = await mongodb.loadCollection('results');
     const attemptsCollection = await mongodb.loadCollection('attempts');
-    let attemptId = nanoidUtils.charId();
+    let attemptId = nanoidUtils.numId();
     // eslint-disable-next-line no-await-in-loop
     while (await resultsCollection.findOne({ attemptId })
       // eslint-disable-next-line no-await-in-loop
       || await attemptsCollection.findOne({ attemptId })) {
-      attemptId = nanoidUtils.charId();
+      attemptId = nanoidUtils.numId();
     }
     const initProgress = progressUtils.getInitialProgress(selectedQuestions);
     const quizData = new quizModel.QuizData(
@@ -107,10 +110,10 @@ class QuizService {
 
   static async newQuiz(quizInfo) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    let quizId = nanoidUtils.numId;
+    let quizId = nanoidUtils.numId();
     // eslint-disable-next-line no-await-in-loop
     while (await quizCollection.findOne({ quizId })) {
-      quizId = nanoidUtils.numId;
+      quizId = nanoidUtils.numId();
     }
     const quiz = new quizModel.QuizInfo(quizInfo, quizId);
     if (quiz.invalid) {
