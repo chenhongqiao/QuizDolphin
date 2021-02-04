@@ -143,7 +143,10 @@ export default {
   async mounted() {
     this.quizId = this.$route.params.id;
     try {
-      this.attemptId = await QuizService.getOngoingAttempt(this.quizId);
+      const ongoing = await QuizService.getOngoingAttempt(this.quizId);
+      if (ongoing) {
+        this.attemptId = ongoing.attemptId;
+      }
       const quizInfo = await QuizService.getQuizInfo(this.quizId);
       this.quizName = quizInfo.quizName;
       this.questionCount = quizInfo.questionCount;
