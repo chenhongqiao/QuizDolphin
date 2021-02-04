@@ -37,7 +37,10 @@ async function startServer() {
     },
     store: new RedisStore({ client: redis.client }),
   }));
-
+  app.use('/api', (req, res, next) => {
+    res.set('Cache-control', 'no-cache');
+    next();
+  });
   app.use('/api', rateLimit({
     windowMs: 2000,
     max: 6,
