@@ -1,4 +1,3 @@
-const { DateTime } = require('luxon');
 const validateUtils = require('../utils/validate');
 
 function QuizResult(score, questions, results, totalPoints, attemptId, email, quizId, quizName) {
@@ -6,7 +5,7 @@ function QuizResult(score, questions, results, totalPoints, attemptId, email, qu
     totalPoints, attemptId, email, quizId, quizName)) {
     this.score = score;
     this.totalPoints = totalPoints;
-    this.timeStamp = DateTime.local().toUTC().toISO();
+    this.timeStamp = (new Date()).toISOString();
     this.questions = questions;
     this.results = results;
     this.attemptId = attemptId;

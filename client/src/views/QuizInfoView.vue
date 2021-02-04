@@ -112,7 +112,6 @@
 </template>
 
 <script>
-import { DateTime } from 'luxon';
 import QuizService from '../services/QuizService';
 import LineChartComponent from '../components/LineChartComponent.vue';
 
@@ -227,7 +226,7 @@ export default {
       }
     },
     toLocalTime(record) {
-      return DateTime.fromISO(record.timeStamp).setZone('America/Los_Angeles').toLocaleString(DateTime.DATETIME_MED);
+      return (new Date(record.timeStamp)).toLocaleString();
     },
   },
 };
