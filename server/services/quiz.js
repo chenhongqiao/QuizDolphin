@@ -6,9 +6,9 @@ const progressUtils = require('../utils/progress');
 const quizModel = require('../models/quiz');
 
 class QuizService {
-  static async newAttempt(quizId, email) {
+  static async newAttempt(quizId, email, userName) {
     const questionsCollection = await mongodb.loadCollection('questions');
-    if ((await this.getOngoingId(email, quizId)).data) {
+    if ((await this.getOngoingId(email, quizId, false)).data.length) {
       return { success: false, message: 'No Simultaneous Attempts Allowed!' };
     }
     const quizInfoRes = await this.getQuizInfo(quizId);
@@ -52,6 +52,7 @@ class QuizService {
       attemptId,
       quizId,
       quizInfo.quizName,
+      userName,
     );
     if (quizData.invalid) {
       throw new Error('Failed Generating QuizData!');
@@ -67,79 +68,52 @@ class QuizService {
 
   static async getOngoingId(email, quizId, viewAll) {
     const attemptsCollection = await mongodb.loadCollection('attempts');
-    let attemptId;
+    const query = {};
     if (quizId) {
       if (!(await this.getQuizInfo(quizId)).success) {
         return { success: false, message: 'No Matching Quiz!' };
       }
-      const query = {};
-      if (viewAll) {
-        query.quizId = quizId;
-      } else {
-        query.quizId = quizId;
-        query.email = email;
-      }
-      [attemptId] = await attemptsCollection
-        .find(query)
-        .project({ attemptId: 1, _id: 0 })
-        .toArray();
-    } else if (!quizId) {
-      const query = {};
-      if (!viewAll) {
-        query.email = email;
-      }
-      if (viewAll) {
-        attemptId = await attemptsCollection
-          .find(query)
-          .project({
-            attemptId: 1, quizId: 1, quizName: 1, _id: 0,
-          })
-          .toArray();
-      } else {
-        attemptId = await attemptsCollection
-          .find(query)
-          .project({
-            attemptId: 1, quizId: 1, quizName: 1, _id: 0,
-          })
-          .toArray();
-      }
+      query.quizId = quizId;
     }
-    return { success: true, data: attemptId };
+    if (!viewAll) {
+      query.email = email;
+    }
+    const ongoing = await attemptsCollection
+      .find(query)
+      .project({
+        attemptId: 1, quizId: 1, quizName: 1, email: 1, userName: 1, _id: 0,
+      })
+      .toArray();
+    return { success: true, data: ongoing };
   }
 
   static async getHistoryId(email, quizId, viewAll) {
     const resultsCollection = await mongodb.loadCollection('results');
-    let results;
+    const query = {};
     if (quizId) {
       if (!(await this.getQuizInfo(quizId)).success) {
         return { success: false, message: 'No Matching Quiz!' };
       }
-      const query = {};
-      if (viewAll) {
-        query.quizId = quizId;
-      } else {
-        query.quizId = quizId;
-        query.email = email;
-      }
-      results = await resultsCollection.find({
-        $query: query,
-        $orderby: { timeStamp: 1 },
-      }).project({
-        attemptId: 1, timeStamp: 1, score: 1, totalPoints: 1, _id: 0,
-      }).toArray();
-    } else if (!quizId) {
-      const query = {};
-      if (!viewAll) {
-        query.email = email;
-      }
-      results = await resultsCollection.find({
-        $query: query,
-        $orderby: { timeStamp: 1 },
-      }).project({
-        attemptId: 1, timeStamp: 1, score: 1, totalPoints: 1, quizId: 1, quizName: 1, _id: 0,
-      }).toArray();
+      query.quizId = quizId;
     }
-    return { success: true, data: results };
+    if (!viewAll) {
+      query.email = email;
+    }
+    const history = await resultsCollection.find({
+      $query: query,
+      $orderby: { timeStamp: 1 },
+    }).project({
+      attemptId: 1,
+      timeStamp: 1,
+      score: 1,
+      totalPoints: 1,
+      quizId: 1,
+      quizName: 1,
+      email: 1,
+      userName: 1,
+      _id: 0,
+    }).toArray();
+    return { success: true, data: history };
   }
 
   static async getQuizList() {

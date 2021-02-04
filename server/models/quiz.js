@@ -11,9 +11,9 @@ function QuizInfo(quizInfo, quizId) {
   }
 }
 
-function QuizData(email, questions, answers, duration, attemptId, quizId, quizName) {
+function QuizData(email, questions, answers, duration, attemptId, quizId, quizName, userName) {
   // eslint-disable-next-line max-len
-  if (validateUtils.validateQuizData(email, questions, answers, duration, attemptId, quizId, quizName)) {
+  if (validateUtils.validateQuizData(email, questions, answers, duration, attemptId, quizId, quizName, userName)) {
     this.email = email;
     this.endTime = new Date(Date.now() + duration * 1000);
     this.questions = questions;
@@ -21,6 +21,7 @@ function QuizData(email, questions, answers, duration, attemptId, quizId, quizNa
     this.attemptId = attemptId;
     this.quizId = quizId;
     this.quizName = quizName;
+    this.userName = userName;
   } else {
     this.invalid = true;
   }

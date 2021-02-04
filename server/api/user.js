@@ -24,6 +24,7 @@ router.post('/session', async (req, res, next) => {
       res.status(401).send({ message: 'Invalid Login Information!' });
     } else {
       req.session.email = response.data.email;
+      req.session.name = response.data.name;
       req.session.role = response.data.role;
       req.session.loggedin = true;
       res.send({ data: 'Success!' });

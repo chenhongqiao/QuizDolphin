@@ -44,7 +44,7 @@ router.get('/:quizId/attempt', async (req, res, next) => {
       res.status(400).send({ message: 'Missing Parameter!' });
       return;
     }
-    const response = await quizService.newAttempt(quizId, req.session.email);
+    const response = await quizService.newAttempt(quizId, req.session.email, req.session.name);
     if (!response.success) {
       if (response.message === 'No Simultaneous Attempts Allowed!') {
         res.status(409).send({ message: 'No Simultaneous Attempts Allowed!' });
