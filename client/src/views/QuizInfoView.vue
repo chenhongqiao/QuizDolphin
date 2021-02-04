@@ -144,8 +144,8 @@ export default {
     this.quizId = this.$route.params.id;
     try {
       const ongoing = await QuizService.getOngoingAttempt(this.quizId);
-      if (ongoing) {
-        this.attemptId = ongoing.attemptId;
+      if (ongoing.length) {
+        this.attemptId = ongoing[0].attemptId;
       }
       const quizInfo = await QuizService.getQuizInfo(this.quizId);
       this.quizName = quizInfo.quizName;
