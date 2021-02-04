@@ -65,32 +65,80 @@ class QuizService {
     return { success: true, data: { attemptId, email, endTime: quizData.endTime } };
   }
 
-  static async getOngoingId(email, quizId) {
+  static async getOngoingId(email, quizId, viewAll) {
     const attemptsCollection = await mongodb.loadCollection('attempts');
-    if (!(await this.getQuizInfo(quizId)).success) {
-      return { success: false, message: 'No Matching Quiz!' };
+    let attemptId;
+    if (quizId) {
+      if (!(await this.getQuizInfo(quizId)).success) {
+        return { success: false, message: 'No Matching Quiz!' };
+      }
+      const query = {};
+      if (viewAll) {
+        query.quizId = quizId;
+      } else {
+        query.quizId = quizId;
+        query.email = email;
+      }
+      [attemptId] = await attemptsCollection
+        .find(query)
+        .project({ attemptId: 1, _id: 0 })
+        .toArray();
+    } else if (!quizId) {
+      const query = {};
+      if (!viewAll) {
+        query.email = email;
+      }
+      if (viewAll) {
+        attemptId = await attemptsCollection
+          .find(query)
+          .project({
+            attemptId: 1, quizId: 1, quizName: 1, _id: 0,
+          })
+          .toArray();
+      } else {
+        attemptId = await attemptsCollection
+          .find(query)
+          .project({
+            attemptId: 1, quizId: 1, quizName: 1, _id: 0,
+          })
+          .toArray();
+      }
     }
-    const attemptId = (await attemptsCollection
-      .find({ email, quizId })
-      .project({ attemptId: 1, _id: 0 })
-      .toArray())[0];
-    if (!attemptId) {
-      return { success: true, data: null };
-    }
-    return { success: true, data: attemptId.attemptId };
+    return { success: true, data: attemptId };
   }
 
-  static async getHistoryId(email, quizId) {
+  static async getHistoryId(email, quizId, viewAll) {
     const resultsCollection = await mongodb.loadCollection('results');
-    if (!(await this.getQuizInfo(quizId)).success) {
-      return { success: false, message: 'No Matching Quiz!' };
+    let results;
+    if (quizId) {
+      if (!(await this.getQuizInfo(quizId)).success) {
+        return { success: false, message: 'No Matching Quiz!' };
+      }
+      const query = {};
+      if (viewAll) {
+        query.quizId = quizId;
+      } else {
+        query.quizId = quizId;
+        query.email = email;
+      }
+      results = await resultsCollection.find({
+        $query: query,
+        $orderby: { timeStamp: 1 },
+      }).project({
+        attemptId: 1, timeStamp: 1, score: 1, totalPoints: 1, _id: 0,
+      }).toArray();
+    } else if (!quizId) {
+      const query = {};
+      if (!viewAll) {
+        query.email = email;
+      }
+      results = await resultsCollection.find({
+        $query: query,
+        $orderby: { timeStamp: 1 },
+      }).project({
+        attemptId: 1, timeStamp: 1, score: 1, totalPoints: 1, quizId: 1, quizName: 1, _id: 0,
+      }).toArray();
     }
-    const results = await resultsCollection.find({
-      $query: { email, quizId },
-      $orderby: { timeStamp: 1 },
-    }).project({
-      attemptId: 1, timeStamp: 1, score: 1, totalPoints: 1, _id: 0,
-    }).toArray();
     return { success: true, data: results };
   }
 
