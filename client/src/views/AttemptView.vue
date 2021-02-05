@@ -105,23 +105,41 @@
                 </v-col>
               </v-row>
             </div>
-
-            <div v-if="questions[questionIndex-1].type==='fill in the blanks'">
-              <v-container>
-                <span
+            <div
+              v-if="questions[questionIndex-1].type==='fill in the blanks'"
+              class="pa-4"
+            >
+              <v-row>
+                <div
                   v-for="(context, index) in questions[questionIndex-1].context"
                   :key="'qz'+questions[questionIndex-1].questionId+context"
                 >
-                  {{ context }}
-                  <v-select
-                    v-if="questions[questionIndex-1].options[index]"
-                    v-model="responses[questionIndex-1][index]"
-                    class="d-inline-flex"
-                    :items="questions[questionIndex-1].options[index]"
-                    dense
-                  />
-                </span>
-              </v-container>
+                  <v-col>
+                    <v-row>
+                      <v-col
+                        cols="auto"
+                        class="px-0"
+                      >
+                        <span>
+                          {{ context }}
+                        </span>
+                      </v-col>
+                      <v-col
+                        cols="auto"
+                        class="px-1 pt-1"
+                      >
+                        <v-select
+                          v-if="questions[questionIndex-1].options[index]"
+                          v-model="responses[questionIndex-1][index]"
+                          :style="'width: min-content;'"
+                          :items="questions[questionIndex-1].options[index]"
+                          dense
+                        />
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                </div>
+              </v-row>
             </div>
           </v-container>
         </v-card>
@@ -385,3 +403,6 @@ export default {
   },
 };
 </script>
+<style>
+.v-text-field .v-select__slot .v-select__selection--comma { min-width: min-content}
+</style>

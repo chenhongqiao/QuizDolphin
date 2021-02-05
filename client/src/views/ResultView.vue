@@ -69,7 +69,6 @@
                       :input-value="isChosen(option ,quizResult.results[currentQuestion-1].
                         response)"
                       readonly
-                      class="red-text"
                     >
                       <template #label>
                         <span
@@ -122,7 +121,6 @@
                       :input-value="isChosen(option ,quizResult.results[currentQuestion-1].
                         response)"
                       readonly
-                      class="red-text"
                     >
                       <template #label>
                         <span
@@ -175,30 +173,54 @@
                 </v-row>
               </div>
 
-              <div v-if="quizResult.questions[currentQuestion-1].type==='fill in the blanks'">
-                <span
-
-                  v-for="(context, index) in quizResult.questions[currentQuestion-1].context"
-                  :key="'qz'+quizResult.questions[currentQuestion-1].questionId+context"
-                >
-                  {{ context }}
-                  <v-select
-                    v-if="quizResult.questions[currentQuestion-1].options[index]"
-                    :value="quizResult.results[currentQuestion-1].response[index]"
-                    disabled
-                    class="d-inline-flex"
-                    :background-color="quizResult.results[currentQuestion-1].response[index]===
-                      quizResult.results[currentQuestion-1].answer[index]?'green':'red'"
-                    :items="quizResult.questions[currentQuestion-1].options[index]"
-                    dense
-                  />
-                  <span
-                    v-if="quizResult.results[currentQuestion-1].response[index]!==
-                      quizResult.results[currentQuestion-1].answer[index]"
-                    style="color: green"
-                  ><em>{{ quizResult.results[currentQuestion-1]
-                    .answer[index] }}</em></span>
-                </span>
+              <div
+                v-if="quizResult.questions[currentQuestion-1].type==='fill in the blanks'"
+                class="pa-4"
+              >
+                <v-row>
+                  <div
+                    v-for="(context, index) in quizResult.questions[currentQuestion-1].context"
+                    :key="'qz'+quizResult.questions[currentQuestion-1].questionId+context"
+                  >
+                    <v-col>
+                      <v-row>
+                        <v-col
+                          cols="auto"
+                          class="px-0"
+                        >
+                          <span>
+                            {{ context }}
+                          </span>
+                        </v-col>
+                        <v-col
+                          v-if="quizResult.questions[currentQuestion-1].options[index]"
+                          cols="auto"
+                          class="px-1 pt-1"
+                        >
+                          <v-select
+                            :style="'width: min-content;'"
+                            :value="quizResult.results[currentQuestion-1].response[index]"
+                            disabled
+                            :background-color="quizResult.results[currentQuestion-1].response[index]
+                              ===quizResult.results[currentQuestion-1].answer[index]?'green':'red'"
+                            :items="quizResult.questions[currentQuestion-1].options[index]"
+                            dense
+                          />
+                        </v-col>
+                        <v-col
+                          v-if="quizResult.results[currentQuestion-1].response[index]!==
+                            quizResult.results[currentQuestion-1].answer[index]"
+                          cols="auto"
+                          class="px-0"
+                        >
+                          <span style="color:green">
+                            {{ quizResult.results[currentQuestion-1].answer[index] }}
+                          </span>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                  </div>
+                </v-row>
               </div>
             </v-container>
           </v-card>
@@ -274,3 +296,6 @@ export default {
   },
 };
 </script>
+<style>
+.v-text-field .v-select__slot .v-select__selection--comma { min-width: min-content}
+</style>
