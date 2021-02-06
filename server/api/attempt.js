@@ -9,23 +9,23 @@ const jobsService = require('../jobs/agenda');
 router.get('/:attemptId/progress', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
-      res.status(401).send({ message: 'Not Logged In!' });
+      res.status(401).send('Not Logged In!');
       return;
     }
     const { attemptId } = req.params;
     if (!attemptId) {
-      res.status(400).send({ message: 'Missing Parameter!' });
+      res.status(400).send('Missing Parameter!');
       return;
     }
     const response = await attemptService.getProgress(attemptId, req.session.email);
     if (!response.success) {
       if (response.message === 'No Matching Progress!') {
-        res.status(404).send({ message: 'No Matching Progress!' });
+        res.status(404).send('No Matching Progress!');
         return;
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send({ data: response.data });
+      res.send(response.data);
     }
   } catch (err) {
     next(err);
@@ -35,34 +35,34 @@ router.get('/:attemptId/progress', async (req, res, next) => {
 router.put('/:attemptId/progress', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
-      res.status(401).send({ message: 'Not Logged In!' });
+      res.status(401).send('Not Logged In!');
       return;
     }
     const { attemptId } = req.params;
     if (!attemptId) {
-      res.status(400).send({ message: 'Missing Parameter!' });
+      res.status(400).send('Missing Parameter!');
       return;
     }
     if (!req.body.data) {
-      res.status(400).send({ message: 'Missing Body Data!' });
+      res.status(400).send('Missing Body Data!');
       return;
     }
     const response = await attemptService.putProgress(attemptId, req.body.data, req.session.email);
     if (!response.success) {
       if (response.message === 'Invalid Progress Syntax!') {
-        res.status(400).send({ message: 'Invalid Progress Syntax!' });
+        res.status(400).send('Invalid Progress Syntax!');
         return;
       }
       if (response.message === 'No Matching Progress!') {
-        res.status(404).send({ message: 'No Matching Progress!' });
+        res.status(404).send('No Matching Progress!');
         return;
       }
       if (response.message === 'Refuse To Overwrite!') {
-        res.status(409).send({ message: 'Refuse To Overwrite!' });
+        res.status(409).send('Refuse To Overwrite!');
         return;
       }
       if (response.message === 'Quiz Ended!') {
-        res.status(410).send({ message: 'Quiz Ended!' });
+        res.status(410).send('Quiz Ended!');
         return;
       }
       throw Error('Unexpected Service Response!');
@@ -77,27 +77,27 @@ router.put('/:attemptId/progress', async (req, res, next) => {
 router.get('/:attemptId', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
-      res.status(401).send({ message: 'Not Logged In!' });
+      res.status(401).send('Not Logged In!');
       return;
     }
     const { attemptId } = req.params;
     if (!attemptId) {
-      res.status(400).send({ message: 'Missing Parameter!' });
+      res.status(400).send('Missing Parameter!');
       return;
     }
     const response = await attemptService.getAttemptData(attemptId, req.session.email);
     if (!response.success) {
       if (response.message === 'No Matching Attempt!') {
-        res.status(404).send({ message: 'No Matching Attempt!' });
+        res.status(404).send('No Matching Attempt!');
         return;
       }
       if (response.message === 'Quiz Ended!') {
-        res.status(410).send({ message: 'Quiz Ended!' });
+        res.status(410).send('Quiz Ended!');
         return;
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send({ data: response.data });
+      res.send(response.data);
     }
   } catch (err) {
     next(err);
@@ -106,28 +106,28 @@ router.get('/:attemptId', async (req, res, next) => {
 router.post('/:attemptId', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
-      res.status(401).send({ message: 'Not Logged In!' });
+      res.status(401).send('Not Logged In!');
       return;
     }
     const { attemptId } = req.params;
     if (!attemptId) {
-      res.status(400).send({ message: 'Missing Parameter!' });
+      res.status(400).send('Missing Parameter!');
       return;
     }
     const response = await gradingService.gradeQuiz(attemptId, req.session.email);
     if (!response.success) {
       if (response.message === 'No Matching Attempt!') {
-        res.status(404).send({ message: 'No Matching Attempt!' });
+        res.status(404).send('No Matching Attempt!');
         return;
       }
       if (response.message === 'Quiz Ended!') {
-        res.status(410).send({ message: 'Quiz Ended!' });
+        res.status(410).send('Quiz Ended!');
         return;
       }
       throw Error('Unexpected Service Response!');
     } else {
       await jobsService.cancelJob(response.data, req.session.email);
-      res.send({ data: response.data });
+      res.send(response.data);
     }
   } catch (err) {
     next(err);

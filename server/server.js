@@ -64,15 +64,15 @@ async function startServer() {
   app.use('/api/result', resultAPI);
 
   app.use('/api', (req, res) => {
-    res.status(404).send({ message: 'Invalid API Endpoint' });
+    res.status(404).send('Invalid API Endpoint');
   });
 
   // eslint-disable-next-line no-unused-vars
   app.use('/api', (err, req, res, next) => {
     if (err.status) {
-      res.status(err.status).send({ message: err.message });
+      res.status(err.status).send(err.message);
     } else {
-      res.status(500).send({ message: 'Internal Error!' });
+      res.status(500).send('Internal Error!');
       // eslint-disable-next-line no-console
       console.error(err);
     }

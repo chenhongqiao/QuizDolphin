@@ -10,24 +10,24 @@ const randomUtil = require('../utils/random');
 router.post('/session', async (req, res, next) => {
   try {
     if (!req.body.data) {
-      res.status(400).send({ message: 'Missing Body Data!' });
+      res.status(400).send('Missing Body Data!');
       return;
     }
     if (typeof req.body.data.email !== 'string' || typeof req.body.data.password !== 'string') {
-      res.status(400).send({ message: 'Invalid Login Information Syntax!' });
+      res.status(400).send('Invalid Login Information Syntax!');
       return;
     }
     const response = await authService.login(req.body.data.email, req.body.data.password);
     // Sleep for 100~300ms to prevent brute force and disguise auth behavior
     await new Promise((resolve) => setTimeout(resolve, randomUtil.integer(100, 300)));
     if (!response.success) {
-      res.status(401).send({ message: 'Invalid Login Information!' });
+      res.status(401).send('Invalid Login Information!');
     } else {
       req.session.email = response.data.email;
       req.session.name = response.data.name;
       req.session.role = response.data.role;
       req.session.loggedin = true;
-      res.send({ data: 'Success!' });
+      res.send('Success!');
     }
   } catch (err) {
     next(err);
@@ -37,11 +37,11 @@ router.post('/session', async (req, res, next) => {
 router.delete('/session', (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
-      res.status(401).send({ message: 'Not Logged In!' });
+      res.status(401).send('Not Logged In!');
       return;
     }
     req.session.destroy();
-    res.send({ data: 'Success!' });
+    res.send('Success!');
   } catch (err) {
     next(err);
   }
@@ -50,19 +50,19 @@ router.delete('/session', (req, res, next) => {
 router.get('/session', async (req, res, next) => {
   try {
     if (!req.session.loggedin || !req.session.email) {
-      res.send({ data: null });
+      res.send(null);
       return;
     }
     const response = await authService.getInfo(req.session.email);
     if (!response.success) {
       if (response.message === 'No Matching User!') {
         req.session.destroy();
-        res.status(404).send({ message: 'No Matching User!' });
+        res.status(404).send('No Matching User!');
         return;
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send({ data: response.data });
+      res.send(response.data);
     }
   } catch (err) {
     next(err);
@@ -72,26 +72,26 @@ router.get('/session', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send({ message: 'Need Admin Privileges!' });
+      res.status(403).send('Need Admin Privileges!');
       return;
     }
     if (!req.body.data) {
-      res.status(400).send({ message: 'Missing Body Data!' });
+      res.status(400).send('Missing Body Data!');
       return;
     }
     const response = await userService.newUser(req.body.data);
     if (!response.success) {
       if (response.message === 'Invalid User Syntax!') {
-        res.status(400).send({ message: 'Invalid User Syntax!' });
+        res.status(400).send('Invalid User Syntax!');
         return;
       }
       if (response.message === 'Email Already Exists!') {
-        res.status(409).send({ message: 'Email Already Exists!' });
+        res.status(409).send('Email Already Exists!');
         return;
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send({ data: response.data });
+      res.send(response.data);
     }
   } catch (err) {
     next(err);
@@ -100,28 +100,28 @@ router.post('/', async (req, res, next) => {
 
 router.delete('/:email', async (req, res, next) => {
   if (!req.session.loggedin || req.session.role !== 'admin') {
-    res.status(403).send({ message: 'Need Admin Privileges!' });
+    res.status(403).send('Need Admin Privileges!');
     return;
   }
   try {
     const { email } = req.params;
     if (!email) {
-      res.status(400).send({ message: 'Missing Parameter!' });
+      res.status(400).send('Missing Parameter!');
       return;
     }
     if (email === req.session.email) {
-      res.status(400).send({ message: 'Can Not Delete Yourself!' });
+      res.status(400).send('Can Not Delete Yourself!');
       return;
     }
     const response = await userService.deleteUser(email);
     if (!response.success) {
       if (response.message === 'No Matching User!') {
-        res.status(404).send({ message: 'No Matching User!' });
+        res.status(404).send('No Matching User!');
         return;
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send({ data: 'Success!' });
+      res.send('Success!');
     }
   } catch (err) {
     next(err);
@@ -130,32 +130,32 @@ router.delete('/:email', async (req, res, next) => {
 
 router.put('/:email', async (req, res, next) => {
   if (!req.session.loggedin || req.session.role !== 'admin') {
-    res.status(403).send({ message: 'Need Admin Privileges!' });
+    res.status(403).send('Need Admin Privileges!');
     return;
   }
   try {
     const { email } = req.params;
     if (!email) {
-      res.status(400).send({ message: 'Missing Parameter!' });
+      res.status(400).send('Missing Parameter!');
       return;
     }
     if (!req.body.data) {
-      res.status(400).send({ message: 'Missing Body Data!' });
+      res.status(400).send('Missing Body Data!');
       return;
     }
     const response = await userService.updateUser(email, req.body.data);
     if (!response.success) {
       if (response.message === 'No Matching User!') {
-        res.status(404).send({ message: 'No Matching User!' });
+        res.status(404).send('No Matching User!');
         return;
       }
       if (response.message === 'Invalid User Syntax!') {
-        res.status(400).send({ message: 'Invalid User Syntax!' });
+        res.status(400).send('Invalid User Syntax!');
         return;
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send({ data: response.data });
+      res.send(response.data);
     }
   } catch (err) {
     next(err);
