@@ -9,14 +9,14 @@ class AttemptService {
     const response = await axios.get(`${url}${attemptId}`, {
       withCredentials: true,
     });
-    return response.data.data;
+    return response.data;
   }
 
   static async getAttemptProgress(attemptId) {
     const response = await axios.get(`${url}${attemptId}/progress`, {
       withCredentials: true,
     });
-    return response.data.data;
+    return response.data;
   }
 
   static async putAttemptProgress(attemptId, progress) {

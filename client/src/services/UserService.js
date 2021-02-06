@@ -9,7 +9,7 @@ class UserService {
     const response = await axios.get(`${url}session`, {
       withCredentials: true,
     });
-    return response.data.data;
+    return response.data;
   }
 
   static async postSession(loginInfo) {
@@ -17,14 +17,14 @@ class UserService {
       withCredentials: true,
       data: loginInfo,
     });
-    return response.data.data;
+    return response.data;
   }
 
   static async deleteSession() {
     const response = await axios.delete(`${url}session`, {
       withCredentials: true,
     });
-    return response.data.data;
+    return response.data;
   }
 }
 

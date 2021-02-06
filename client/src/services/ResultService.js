@@ -9,7 +9,7 @@ class ResultService {
     const response = await axios.get(`${url}${attemptId}`, {
       withCredentials: true,
     });
-    return response.data.data;
+    return response.data;
   }
 }
 

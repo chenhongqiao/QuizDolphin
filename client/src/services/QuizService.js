@@ -9,35 +9,42 @@ class QuizService {
     const response = await axios.get(`${url}${quizId}/attempt`, {
       withCredentials: true,
     });
-    return response.data.data;
+    return response.data;
   }
 
   static async getOngoingAttempt(quizId) {
     const response = await axios.get(`${url}${quizId}/ongoing`, {
       withCredentials: true,
     });
-    return response.data.data;
+    return response.data;
   }
 
   static async getAttemptHistory(quizId) {
-    const response = await axios.get(`${url}${quizId}/history`, {
-      withCredentials: true,
-    });
-    return response.data.data;
+    let response;
+    if (quizId) {
+      response = await axios.get(`${url}${quizId}/history`, {
+        withCredentials: true,
+      });
+    } else {
+      response = await axios.get(`${url}/history`, {
+        withCredentials: true,
+      });
+    }
+    return response.data;
   }
 
   static async getQuizList() {
     const response = await axios.get(`${url}list`, {
       withCredentials: true,
     });
-    return response.data.data;
+    return response.data;
   }
 
   static async getQuizInfo(quizId) {
     const response = await axios.get(`${url}${quizId}/info`, {
       withCredentials: true,
     });
-    return response.data.data;
+    return response.data;
   }
 }
 
