@@ -25,14 +25,6 @@ const routes = [
       if (!store.state.loggedIn) {
         next({ path: '/login', query: { redirect: to.fullPath } });
       } else {
-        store.commit('replaceNav', {
-          index: 2,
-          info: {
-            text: 'Attempt',
-            disabled: false,
-            to: to.fullPath,
-          },
-        });
         next();
       }
     },
@@ -45,14 +37,6 @@ const routes = [
       if (!store.state.loggedIn) {
         next({ path: '/login', query: { redirect: to.fullPath } });
       } else {
-        store.commit('replaceNav', {
-          index: 2,
-          info: {
-            text: 'Result',
-            disabled: false,
-            to: to.fullPath,
-          },
-        });
         next();
       }
     },

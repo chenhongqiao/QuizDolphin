@@ -273,6 +273,7 @@ export default {
     saver: undefined,
     endTime: 0,
     quizName: '',
+    quizId: '',
   }),
   computed: {
     attemptedNumber() {
@@ -311,6 +312,34 @@ export default {
   async mounted() {
     this.attemptId = this.$route.params.id;
     await this.loadQuiz();
+    if (!this.$store.state.navigation[0]) {
+      this.$store.commit('replaceNav', {
+        index: 0,
+        info: {
+          text: 'Home',
+          disabled: false,
+          to: '/home',
+        },
+      });
+    }
+    if (!this.$store.state.navigation[1]) {
+      this.$store.commit('replaceNav', {
+        index: 1,
+        info: {
+          text: this.quizName,
+          disabled: false,
+          to: `/quiz/${this.quizId}`,
+        },
+      });
+    }
+    this.$store.commit('replaceNav', {
+      index: 2,
+      info: {
+        text: 'Attempt',
+        disabled: false,
+        to: `/attempt/${this.attemptId}`,
+      },
+    });
     this.saver = setInterval(() => { this.putProgress(); }, 1000);
   },
   methods: {
@@ -326,6 +355,7 @@ export default {
         this.quizRunning = true;
         this.needReload = false;
         this.quizName = quizData.quizName;
+        this.quizId = quizData.quizId;
       } catch (err) {
         if (err.response.status === 401) {
           this.$store.commit('logout');

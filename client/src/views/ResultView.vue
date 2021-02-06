@@ -203,7 +203,6 @@
                             disabled
                             :background-color="quizResult.results[currentQuestion-1].response[index]
                               ===quizResult.results[currentQuestion-1].answer[index]?'green':'red'"
-                            :items="quizResult.questions[currentQuestion-1].options[index]"
                             dense
                           />
                         </v-col>
@@ -259,6 +258,34 @@ export default {
   async mounted() {
     this.attemptId = this.$route.params.id;
     await this.loadResult();
+    if (!this.$store.state.navigation[0]) {
+      this.$store.commit('replaceNav', {
+        index: 0,
+        info: {
+          text: 'Home',
+          disabled: false,
+          to: '/home',
+        },
+      });
+    }
+    if (!this.$store.state.navigation[1]) {
+      this.$store.commit('replaceNav', {
+        index: 1,
+        info: {
+          text: this.quizResult.quizName,
+          disabled: false,
+          to: `/quiz/${this.quizResult.quizId}`,
+        },
+      });
+    }
+    this.$store.commit('replaceNav', {
+      index: 2,
+      info: {
+        text: 'Result',
+        disabled: false,
+        to: `/result/${this.attemptId}`,
+      },
+    });
     this.resultLoaded = true;
   },
   methods: {
