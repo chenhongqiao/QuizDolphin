@@ -67,6 +67,26 @@ const routes = [
     },
   },
   {
+    path: '/history',
+    name: 'History',
+    component: () => import('../views/HistoryView.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!store.state.loggedIn) {
+        next({ path: '/login', query: { redirect: '/history' } });
+      } else {
+        store.commit('replaceNav', {
+          index: 0,
+          info: {
+            text: 'History',
+            disabled: false,
+            to: '/history',
+          },
+        });
+        next();
+      }
+    },
+  },
+  {
     path: '/',
     beforeEnter: (to, from, next) => {
       if (store.state.loggedIn) {
