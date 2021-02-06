@@ -12,7 +12,7 @@
             >
               {{ quizName }} - Attempt
             </div>
-            <div>
+            <div class="text--secondary">
               Attempt ID: {{ attemptId }}
             </div>
           </v-col>
@@ -107,7 +107,7 @@
             </div>
             <div
               v-if="questions[questionIndex-1].type==='fill in the blanks'"
-              class="pa-4"
+              class="ma-4"
             >
               <v-row>
                 <div
@@ -125,11 +125,11 @@
                         </span>
                       </v-col>
                       <v-col
+                        v-if="questions[questionIndex-1].options[index]"
                         cols="auto"
                         class="px-1 pt-1"
                       >
                         <v-select
-                          v-if="questions[questionIndex-1].options[index]"
                           v-model="responses[questionIndex-1][index]"
                           :style="'width: min-content;'"
                           :items="questions[questionIndex-1].options[index]"
@@ -145,7 +145,7 @@
         </v-card>
       </v-container>
       <v-container>
-        <v-row>
+        <v-row class="px-2">
           <v-spacer />
           <v-btn
             v-if="questionIndex!==1"
@@ -177,7 +177,7 @@
         />
       </v-container>
       <v-container class="text--secondary">
-        <v-row>
+        <v-row class="mx-2">
           <div v-if="needSave">
             Saving...
           </div>
@@ -251,7 +251,6 @@
 </template>
 
 <script>
-import AxiosError from 'axios';
 import AttemptService from '../services/AttemptService';
 import TimerComponent from '../components/TimerComponent.vue';
 
@@ -358,7 +357,7 @@ export default {
         this.quizName = quizData.quizName;
         this.quizId = quizData.quizId;
       } catch (err) {
-        if (err instanceof AxiosError && err.response) {
+        if (err.response) {
           if (err.response.status === 401) {
             this.$store.commit('logout');
             this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
@@ -386,7 +385,7 @@ export default {
           });
           this.needSave = false;
         } catch (err) {
-          if (err instanceof AxiosError && err.response) {
+          if (err.response) {
             if (err.response.status === 401) {
               this.$store.commit('logout');
               this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
@@ -416,7 +415,7 @@ export default {
         await AttemptService.postAttempt(this.attemptId);
         this.$router.push({ name: 'Result', params: { id: this.attemptId } });
       } catch (err) {
-        if (err instanceof AxiosError && err.response) {
+        if (err.response) {
           if (err.response.status === 401) {
             this.$store.commit('logout');
             this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });

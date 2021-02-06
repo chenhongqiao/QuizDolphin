@@ -1,9 +1,37 @@
 <template>
   <v-app>
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+    >
+      <v-list
+        dense
+        nav
+      >
+        <v-list-item to="/home">
+          <v-list-item-icon>
+            <v-icon> mdi-home </v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title> Home </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/history">
+          <v-list-item-icon>
+            <v-icon> mdi-history </v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title> History </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
     <v-app-bar
       app
       dense
     >
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
+
       <v-toolbar-title
         style="cursor: pointer"
         @click="goDashboard()"
@@ -73,6 +101,9 @@ import UserService from './services/UserService';
 
 export default {
   name: 'App',
+  data: () => ({
+    drawer: false,
+  }),
   computed: {
     getInitial() {
       const initial = this.$store.state.name.split(' ').map((name) => name[0]).join('');

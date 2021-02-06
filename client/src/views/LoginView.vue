@@ -61,7 +61,6 @@
 </template>
 
 <script>
-import AxiosError from 'axios';
 import UserService from '../services/UserService';
 
 export default {
@@ -108,7 +107,7 @@ export default {
           this.$router.push('/home');
         }
       } catch (err) {
-        if (err instanceof AxiosError && err.response) {
+        if (err.response) {
           if (err.response && err.response.status === 401) {
             this.hasLoginError = true;
             this.loginResponse = 'Authenication failed, please try again.';

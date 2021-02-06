@@ -10,7 +10,7 @@
             >
               {{ quizResult.quizName }} - Result
             </div>
-            <div>
+            <div class="text--secondary">
               Attempt ID: {{ quizResult.attemptId }}
             </div>
           </v-col>
@@ -152,7 +152,6 @@
                     </v-container>
                   </v-col>
                   <v-col
-
                     md="4"
                   >
                     <v-select
@@ -175,7 +174,7 @@
 
               <div
                 v-if="quizResult.questions[currentQuestion-1].type==='fill in the blanks'"
-                class="pa-4"
+                class="ma-4"
               >
                 <v-row>
                   <div
@@ -201,6 +200,7 @@
                             :style="'width: min-content;'"
                             :value="quizResult.results[currentQuestion-1].response[index]"
                             disabled
+                            :items="quizResult.questions[currentQuestion-1].options[index]"
                             :background-color="quizResult.results[currentQuestion-1].response[index]
                               ===quizResult.results[currentQuestion-1].answer[index]?'green':'red'"
                             dense
@@ -226,10 +226,16 @@
         </div>
       </v-container>
       <v-container>
-        <v-row>
+        <v-row class="px-2 mb-2">
           <v-spacer />
           <v-btn
-            class="ma-2 text-right"
+            class="ma-1 text-right"
+            @click="toQuizInfo"
+          >
+            Back To Info
+          </v-btn>
+          <v-btn
+            class="ma-1 text-right"
             @click="generateReport"
           >
             Download Report
@@ -245,7 +251,6 @@
 </template>
 
 <script>
-import AxiosError from 'axios';
 import PDFReport from '../services/PDFReport';
 import ResultService from '../services/ResultService';
 
@@ -294,7 +299,7 @@ export default {
       try {
         this.quizResult = await ResultService.getResult(this.attemptId);
       } catch (err) {
-        if (err instanceof AxiosError && err.response) {
+        if (err.response) {
           if (err.response.status === 401) {
             this.$store.commit('logout');
             this.$router.push({ path: '/login', query: { redirect: `/result/${this.attemptId}` } });
@@ -324,6 +329,9 @@ export default {
     },
     generateReport() {
       PDFReport.newReport(this.quizResult);
+    },
+    toQuizInfo() {
+      this.$router.push({ name: 'QuizInfo', params: { id: this.quizResult.quizId } });
     },
   },
 };

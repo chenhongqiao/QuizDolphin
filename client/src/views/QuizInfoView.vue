@@ -112,7 +112,6 @@
 </template>
 
 <script>
-import AxiosError from 'axios';
 import QuizService from '../services/QuizService';
 import LineChartComponent from '../components/LineChartComponent.vue';
 
@@ -166,7 +165,7 @@ export default {
       });
       this.infoLoaded = true;
     } catch (err) {
-      if (err instanceof AxiosError && err.response) {
+      if (err.response) {
         if (err.response.status === 401) {
           this.$store.commit('logout');
           this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
@@ -192,7 +191,7 @@ export default {
       try {
         this.attemptId = await QuizService.getQuizAttempt(this.quizId);
       } catch (err) {
-        if (err instanceof AxiosError && err.response) {
+        if (err.response) {
           if (err.response.status === 401) {
             this.$store.commit('logout');
             this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
@@ -228,7 +227,7 @@ export default {
         });
         this.quizHistory = history.reverse();
       } catch (err) {
-        if (err instanceof AxiosError && err.response) {
+        if (err.response) {
           if (err.response.status === 401) {
             this.$store.commit('logout');
             this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
