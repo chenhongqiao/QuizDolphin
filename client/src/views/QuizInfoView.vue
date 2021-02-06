@@ -112,6 +112,7 @@
 </template>
 
 <script>
+import AxiosError from 'axios';
 import QuizService from '../services/QuizService';
 import LineChartComponent from '../components/LineChartComponent.vue';
 
@@ -165,11 +166,15 @@ export default {
       });
       this.infoLoaded = true;
     } catch (err) {
-      if (err.response.status === 401) {
-        this.$store.commit('logout');
-        this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
-      } else if (err.response.status === 404) {
+      if (err instanceof AxiosError && err.response) {
+        if (err.response.status === 401) {
+          this.$store.commit('logout');
+          this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
+        } else if (err.response.status === 404) {
         // TODO: 404 Page
+        } else {
+          throw err;
+        }
       } else {
         throw err;
       }
@@ -187,11 +192,15 @@ export default {
       try {
         this.attemptId = await QuizService.getQuizAttempt(this.quizId);
       } catch (err) {
-        if (err.response.status === 401) {
-          this.$store.commit('logout');
-          this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
-        } else if (err.response.status === 404) {
-        // TODO: 404 Page
+        if (err instanceof AxiosError && err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('logout');
+            this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
+          } else if (err.response.status === 404) {
+            // TODO: 404 Page
+          } else {
+            throw err;
+          }
         } else {
           throw err;
         }
@@ -219,9 +228,13 @@ export default {
         });
         this.quizHistory = history.reverse();
       } catch (err) {
-        if (err.response.status === 401) {
-          this.$store.commit('logout');
-          this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
+        if (err instanceof AxiosError && err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('logout');
+            this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
+          }
+        } else {
+          throw err;
         }
       }
     },

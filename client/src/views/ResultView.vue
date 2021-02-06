@@ -245,6 +245,7 @@
 </template>
 
 <script>
+import AxiosError from 'axios';
 import PDFReport from '../services/PDFReport';
 import ResultService from '../services/ResultService';
 
@@ -293,11 +294,15 @@ export default {
       try {
         this.quizResult = await ResultService.getResult(this.attemptId);
       } catch (err) {
-        if (err.response.status === 401) {
-          this.$store.commit('logout');
-          this.$router.push({ path: '/login', query: { redirect: `/result/${this.attemptId}` } });
-        } else if (err.response.status === 404) {
-        // TODO: 404 Page
+        if (err instanceof AxiosError && err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('logout');
+            this.$router.push({ path: '/login', query: { redirect: `/result/${this.attemptId}` } });
+          } else if (err.response.status === 404) {
+            // TODO: 404 Page
+          } else {
+            throw err;
+          }
         } else {
           throw err;
         }

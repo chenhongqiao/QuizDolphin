@@ -251,6 +251,7 @@
 </template>
 
 <script>
+import AxiosError from 'axios';
 import AttemptService from '../services/AttemptService';
 import TimerComponent from '../components/TimerComponent.vue';
 
@@ -357,13 +358,17 @@ export default {
         this.quizName = quizData.quizName;
         this.quizId = quizData.quizId;
       } catch (err) {
-        if (err.response.status === 401) {
-          this.$store.commit('logout');
-          this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
-        } else if (err.response.status === 404) {
-        // TODO: 404 Page
-        } else if (err.response.status === 410) {
-          this.$router.push({ name: 'Result', params: { id: this.attemptId } });
+        if (err instanceof AxiosError && err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('logout');
+            this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
+          } else if (err.response.status === 404) {
+            // TODO: 404 Page
+          } else if (err.response.status === 410) {
+            this.$router.push({ name: 'Result', params: { id: this.attemptId } });
+          } else {
+            throw err;
+          }
         } else {
           throw err;
         }
@@ -381,17 +386,21 @@ export default {
           });
           this.needSave = false;
         } catch (err) {
-          if (err.response.status === 401) {
-            this.$store.commit('logout');
-            this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
-          } else if (err.response.status === 404) {
+          if (err instanceof AxiosError && err.response) {
+            if (err.response.status === 401) {
+              this.$store.commit('logout');
+              this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
+            } else if (err.response.status === 404) {
             // TODO: 404 Page
-          } else if (err.response.status === 409) {
-            this.needReload = true;
-            this.quizRunning = false;
-          } else if (err.response.status === 410) {
-            if (this.quizRunning) {
-              this.postAttempt();
+            } else if (err.response.status === 409) {
+              this.needReload = true;
+              this.quizRunning = false;
+            } else if (err.response.status === 410) {
+              if (this.quizRunning) {
+                this.postAttempt();
+              }
+            } else {
+              throw err;
             }
           } else {
             throw err;
@@ -407,13 +416,17 @@ export default {
         await AttemptService.postAttempt(this.attemptId);
         this.$router.push({ name: 'Result', params: { id: this.attemptId } });
       } catch (err) {
-        if (err.response.status === 401) {
-          this.$store.commit('logout');
-          this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
-        } else if (err.response.status === 404) {
-        // TODO: 404 Page
-        } else if (err.response.status === 410) {
-          this.$router.push({ name: 'Result', params: { id: this.attemptId } });
+        if (err instanceof AxiosError && err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('logout');
+            this.$router.push({ path: '/login', query: { redirect: `/attempt/${this.attemptId}` } });
+          } else if (err.response.status === 404) {
+            // TODO: 404 Page
+          } else if (err.response.status === 410) {
+            this.$router.push({ name: 'Result', params: { id: this.attemptId } });
+          } else {
+            throw err;
+          }
         } else {
           throw err;
         }

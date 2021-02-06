@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import AxiosError from 'axios';
 import QuizService from '../services/QuizService';
 
 export default {
@@ -55,9 +56,13 @@ export default {
       this.quizList = (await QuizService.getQuizList());
       this.dashLoaded = true;
     } catch (err) {
-      if (err.response.status === 401) {
-        this.$store.commit('logout');
-        this.$router.push({ name: 'Login' });
+      if (err instanceof AxiosError) {
+        if (err.response.status === 401) {
+          this.$store.commit('logout');
+          this.$router.push({ name: 'Login' });
+        } else {
+          throw err;
+        }
       } else {
         throw err;
       }
