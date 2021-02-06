@@ -108,7 +108,7 @@ export default {
         }
       } catch (err) {
         if (err.response) {
-          if (err.response && err.response.status === 401) {
+          if (err.response.status === 401) {
             this.hasLoginError = true;
             this.loginResponse = 'Authenication failed, please try again.';
             this.loginInfo.password = '';
