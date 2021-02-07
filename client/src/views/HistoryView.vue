@@ -9,17 +9,17 @@
           show-group-by
           multi-sort
         >
-          <!-- eslint-disable-next-line vue/valid-v-slot !-->
+          <!-- eslint-disable-next-line vue/valid-v-slot -->
           <template #item.timeStamp="{ item }">
             {{ (new Date(item.timeStamp)).toLocaleString() }}
           </template>
-          <!-- eslint-disable-next-line vue/valid-v-slot !-->
+          <!-- eslint-disable-next-line vue/valid-v-slot -->
           <template #item.attemptId="{ item }">
             <a @click="toResult(item.attemptId)">
               View
             </a>
           </template>
-          <!-- eslint-disable-next-line vue/valid-v-slot !-->
+          <!-- eslint-disable-next-line vue/valid-v-slot -->
           <template #item.quizName="{ item }">
             <a @click="toQuiz(item.quizId)">
               {{ item.quizName }}
