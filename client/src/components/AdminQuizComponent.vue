@@ -20,18 +20,51 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-container>
+        <v-tabs>
+          <v-tab> Questions </v-tab>
+          <v-tab-item>
+            <v-data-table
+              show-group-by
+              :headers="headers"
+              :items="questions"
+            >
+              <!-- eslint-disable-next-line vue/valid-v-slot -->
+              <template #item.actions="{ item }">
+                <v-icon
+                  small
+                  class="mr-2"
+                  @click="editQuestion(item)"
+                >
+                  mdi-pencil
+                </v-icon>
+              </template>
+            </v-data-table>
+          </v-tab-item>
+        </v-tabs>
+      </v-container>
     </div>
     <v-progress-linear
       v-else
       indeterminate
     />
+    <div v-if="editing">
+      <EditQuestionComponent
+        :old-question="questions[editIndex]"
+        @cancel="editing=false"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import QuizService from '../services/QuizService';
+import EditQuestionComponent from './EditQuestionComponent.vue';
 
 export default {
+  components: {
+    EditQuestionComponent,
+  },
   props: {
     quizId: { type: String, default: '' },
   },
@@ -40,10 +73,43 @@ export default {
     questionCount: 0,
     infoLoaded: false,
     duration: 0,
+    questions: [],
+    editIndex: -1,
+    editing: false,
+    headers: [{
+      text: 'Index',
+      value: 'index',
+      groupable: false,
+      sortable: false,
+    },
+    {
+      text: 'Question Type ',
+      value: 'type',
+      sortable: false,
+    },
+    {
+      text: 'Points ',
+      value: 'points',
+      sortable: false,
+    },
+    {
+      text: 'ID',
+      value: 'questionId',
+      sortable: false,
+      groupable: false,
+    },
+    {
+      text: 'Actions',
+      value: 'actions',
+      sortable: false,
+      align: 'end',
+      groupable: false,
+    }],
   }),
   async mounted() {
     try {
       await this.loadQuizInfo();
+      await this.loadQuestions();
       this.infoLoaded = true;
       if (!this.$store.state.navigation[0]) {
         this.$store.commit('replaceNav', {
@@ -85,6 +151,16 @@ export default {
       this.questionCount = quizInfo.questionCount;
       this.duration = quizInfo.duration;
       this.infoLoaded = true;
+    },
+    async loadQuestions() {
+      this.questions = await QuizService.getQuizQuestions(this.quizId);
+      for (let index = 0; index < this.questions.length; index += 1) {
+        this.questions[index].index = index + 1;
+      }
+    },
+    editQuestion(question) {
+      this.editIndex = question.index - 1;
+      this.editing = true;
     },
   },
 };
