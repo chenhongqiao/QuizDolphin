@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/quiz/:id',
     name: 'QuizInfo',
-    component: () => import('../views/QuizInfoView.vue'),
+    component: () => import('../views/QuizView.vue'),
     beforeEnter: (to, from, next) => {
       if (!store.state.loggedIn) {
         next({ path: '/login', query: { redirect: to.fullPath } });

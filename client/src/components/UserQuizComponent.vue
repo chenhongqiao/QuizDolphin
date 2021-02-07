@@ -11,7 +11,11 @@
               {{ quizName }}
             </div>
             <div>
-              {{ questionCount }} Questions
+              {{ questionCount }} questions
+            </div>
+            <div>
+              {{ Math.floor(duration/60) }} minutes
+              {{ Math.floor(duration%60) }} seconds
             </div>
           </v-col>
         </v-row>
@@ -113,16 +117,19 @@
 
 <script>
 import QuizService from '../services/QuizService';
-import LineChartComponent from '../components/LineChartComponent.vue';
+import LineChartComponent from './LineChartComponent.vue';
 
 export default {
-  name: 'QuizDashView',
+  name: 'UserQuizComponent',
   components: {
     LineChartComponent,
   },
+  props: {
+    quizId: { type: String, default: '' },
+  },
   data: () => ({
     quizHistory: [],
-    quizId: '',
+    duration: 0,
     historyChartData: {
       labels: [],
       datasets: [
@@ -140,7 +147,6 @@ export default {
     questionCount: 0,
   }),
   async mounted() {
-    this.quizId = this.$route.params.id;
     try {
       const ongoing = await QuizService.getOngoingAttempt(this.quizId);
       if (ongoing.length) {
@@ -149,12 +155,23 @@ export default {
       const quizInfo = await QuizService.getQuizInfo(this.quizId);
       this.quizName = quizInfo.quizName;
       this.questionCount = quizInfo.questionCount;
+      this.duration = quizInfo.duration;
       const history = await QuizService.getAttemptHistory(this.quizId);
       history.forEach((value, index) => {
         this.historyChartData.labels.push(this.getOrdinal(index + 1));
         this.historyChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
       });
       this.quizHistory = history.reverse();
+      if (!this.$store.state.navigation[0]) {
+        this.$store.commit('replaceNav', {
+          index: 0,
+          info: {
+            text: 'Home',
+            disabled: false,
+            to: '/home',
+          },
+        });
+      }
       this.$store.commit('replaceNav', {
         index: 1,
         info: {

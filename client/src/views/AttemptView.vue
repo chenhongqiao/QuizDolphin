@@ -413,7 +413,7 @@ export default {
         clearInterval(this.saver);
         await this.putProgress();
         await AttemptService.postAttempt(this.attemptId);
-        this.$router.push({ name: 'Result', params: { id: this.attemptId } });
+        this.$router.replace({ name: 'Result', params: { id: this.attemptId } });
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {
@@ -422,7 +422,7 @@ export default {
           } else if (err.response.status === 404) {
             // TODO: 404 Page
           } else if (err.response.status === 410) {
-            this.$router.push({ name: 'Result', params: { id: this.attemptId } });
+            this.$router.replace({ name: 'Result', params: { id: this.attemptId } });
           } else {
             throw err;
           }
