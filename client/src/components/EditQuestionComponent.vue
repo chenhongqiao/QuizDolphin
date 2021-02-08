@@ -55,7 +55,11 @@
               <v-btn
                 text
                 class="mt-6 mx-2"
+<<<<<<< HEAD
                 @click="deleteOption(index)"
+=======
+                @click="question.options.splice(index,1)"
+>>>>>>> main
               >
                 <v-icon>
                   mdi-delete
@@ -66,7 +70,11 @@
           <div class="text-right">
             <v-btn
               text
+<<<<<<< HEAD
               @click="question.options.push('')"
+=======
+              @click="question.options.push(null)"
+>>>>>>> main
             >
               New Option
             </v-btn>
@@ -87,6 +95,7 @@
               >
                 <v-radio
                   :label="option"
+<<<<<<< HEAD
                   :value="index"
                 />
               </v-col>
@@ -94,6 +103,12 @@
             <div v-if="question.answer===null">
               Please Select At Least One Answer
             </div>
+=======
+                  :value="option"
+                />
+              </v-col>
+            </v-radio-group>
+>>>>>>> main
           </div>
           <div v-if="question.type==='multiple choice'">
             <div class="text-h6 mt-4">
@@ -107,9 +122,15 @@
                 cols="6"
               >
                 <v-checkbox
+<<<<<<< HEAD
                   v-model.lazy="question.answer"
                   :label="option"
                   :value="index"
+=======
+                  v-model="question.answer"
+                  :label="option"
+                  :value="option"
+>>>>>>> main
                 />
               </v-col>
             </v-row>
@@ -132,7 +153,11 @@
 <script>
 export default {
   props: {
+<<<<<<< HEAD
     oldQuestion: { type: Object, default: undefined },
+=======
+    oldQuestion: { type: Object, default: Object },
+>>>>>>> main
   },
   data: () => ({
     question: {},
@@ -148,6 +173,7 @@ export default {
     ],
   }),
   mounted() {
+<<<<<<< HEAD
     this.question = JSON.parse(JSON.stringify(this.oldQuestion));
     if (this.question.type === 'multiple choice') {
       // eslint-disable-next-line max-len
@@ -169,6 +195,11 @@ export default {
       }
       this.question.options.splice(index, 1);
     },
+=======
+    this.question = { ...this.oldQuestion };
+  },
+  methods: {
+>>>>>>> main
     cancel() {
       this.$emit('cancel');
     },
