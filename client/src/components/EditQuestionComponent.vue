@@ -55,7 +55,7 @@
               <v-btn
                 text
                 class="mt-6 mx-2"
-                @click="question.options.splice(index,1)"
+                @click="deleteOption(index)"
               >
                 <v-icon>
                   mdi-delete
@@ -66,7 +66,7 @@
           <div class="text-right">
             <v-btn
               text
-              @click="question.options.push(null)"
+              @click="question.options.push('')"
             >
               New Option
             </v-btn>
@@ -87,10 +87,13 @@
               >
                 <v-radio
                   :label="option"
-                  :value="option"
+                  :value="index"
                 />
               </v-col>
             </v-radio-group>
+            <div v-if="question.answer===null">
+              Please Select At Least One Answer
+            </div>
           </div>
           <div v-if="question.type==='multiple choice'">
             <div class="text-h6 mt-4">
@@ -104,9 +107,9 @@
                 cols="6"
               >
                 <v-checkbox
-                  v-model="question.answer"
+                  v-model.lazy="question.answer"
                   :label="option"
-                  :value="option"
+                  :value="index"
                 />
               </v-col>
             </v-row>
@@ -129,7 +132,7 @@
 <script>
 export default {
   props: {
-    oldQuestion: { type: Object, default: Object },
+    oldQuestion: { type: Object, default: undefined },
   },
   data: () => ({
     question: {},
@@ -145,9 +148,27 @@ export default {
     ],
   }),
   mounted() {
-    this.question = { ...this.oldQuestion };
+    this.question = JSON.parse(JSON.stringify(this.oldQuestion));
+    if (this.question.type === 'multiple choice') {
+      // eslint-disable-next-line max-len
+      this.question.answer = this.question.answer.map((value) => this.question.options.indexOf(value));
+    } else if (this.question.type === 'single choice') {
+      this.question.answer = this.question.options.indexOf(this.question.answer);
+    }
   },
   methods: {
+    deleteOption(index) {
+      if (this.question.type === 'single choice') {
+        if (this.question.answer === index) {
+          this.question.answer = null;
+        }
+      } else if (this.question.type === 'multiple choice') {
+        this.question.answer.splice(
+          this.question.answer.indexOf(index), 1,
+        );
+      }
+      this.question.options.splice(index, 1);
+    },
     cancel() {
       this.$emit('cancel');
     },
