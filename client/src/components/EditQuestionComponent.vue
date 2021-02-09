@@ -2,10 +2,11 @@
   <v-dialog
     :value="true"
     persistent
-    max-width="1000px"
   >
     <v-card>
-      <v-container>
+      <v-card-title>Edit Question</v-card-title>
+      <v-divider />
+      <v-card-text>
         <v-row>
           <v-col>
             <div class="text-h6">
@@ -118,10 +119,98 @@
             </div>
           </div>
         </div>
-      </v-container>
+        <div v-if="question.type==='short response'">
+          <div class="text-h6">
+            Context
+          </div>
+          <v-textarea
+            v-model="question.context"
+            required
+            :rules="requiredField"
+          />
+          <div class="text-h6 mt-4">
+            Answer
+          </div>
+          <v-text-field
+            v-model.trim="question.answer"
+            required
+            :rules="requiredField"
+          />
+        </div>
+        <div v-if="question.type==='matching'">
+          <div class="text-h6">
+            Context
+          </div>
+          <v-textarea
+            v-model="question.context"
+            required
+            :rules="requiredField"
+          />
+          <v-row>
+            <v-col md="6">
+              <div class="text-h6">
+                Left Col
+              </div>
+              <div
+                v-for="(left,index) in question.leftcol"
+                :key="'leftcol'+index"
+              >
+                <v-row>
+                  <v-col>
+                    <v-text-field
+                      v-model="question.leftcol[index]"
+                      required
+                      :rules="requiredField"
+                    />
+                  </v-col>
+                </v-row>
+              </div>
+            </v-col>
+            <v-col md="6">
+              <div class="text-h6">
+                Right Col
+              </div>
+              <div
+                v-for="(answer,index) in question.answer"
+                :key="'answer'+index"
+              >
+                <v-row>
+                  <v-col>
+                    <v-text-field
+                      v-model="question.answer[index]"
+                      required
+                      :rules="requiredField"
+                    />
+                  </v-col>
+                  <v-btn
+                    class="mt-6"
+                    text
+                    @click="deleteRow(index)"
+                  >
+                    <v-icon>
+                      mdi-delete
+                    </v-icon>
+                  </v-btn>
+                </v-row>
+              </div>
+            </v-col>
+          </v-row>
+          <div class="text-right">
+            <v-btn
+              text
+              @click="newRow()"
+            >
+              New Row
+            </v-btn>
+          </div>
+        </div>
+      </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn @click="cancel()">
+        <v-btn
+          text
+          @click="cancel()"
+        >
           Cancel
         </v-btn>
       </v-card-actions>
@@ -168,6 +257,14 @@ export default {
         );
       }
       this.question.options.splice(index, 1);
+    },
+    deleteRow(index) {
+      this.question.leftcol.splice(index, 1);
+      this.question.answer.splice(index, 1);
+    },
+    newRow() {
+      this.question.leftcol.push('');
+      this.question.answer.push('');
     },
     cancel() {
       this.$emit('cancel');
