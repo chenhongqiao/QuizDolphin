@@ -160,7 +160,7 @@ class QuizService {
     if (quiz.invalid) {
       return { success: false, message: 'Invalid Quiz Syntax!' };
     }
-    const status = await quizCollection.updateOne({ quizId }, quiz);
+    const status = await quizCollection.replaceOne({ quizId }, quiz);
     if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }

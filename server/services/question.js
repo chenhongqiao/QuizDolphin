@@ -33,7 +33,7 @@ class QuestionService {
     if (questionData.invalid) {
       return { success: false, message: 'Invalid Question Syntax!' };
     }
-    const status = await questionsCollection.updateOne({ questionId }, questionData);
+    const status = await questionsCollection.replaceOne({ questionId }, questionData);
     if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching Question!' };
     }
@@ -46,7 +46,7 @@ class QuestionService {
     if (await questionCursor.count() === 0) {
       return { success: false, message: 'No Matching Question!' };
     }
-    return { success: true, data: await questionCursor.toArray() };
+    return { success: true, data: (await questionCursor.toArray())[0] };
   }
 }
 module.exports = QuestionService;
