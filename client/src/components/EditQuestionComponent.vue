@@ -204,6 +204,69 @@
             </v-btn>
           </div>
         </div>
+        <div v-if="question.type==='fill in the blanks'">
+          <div class="text-h6">
+            Context
+          </div>
+          <v-textarea
+            v-model="fillBlanksContext"
+            required
+            :rules="requiredField"
+          />
+          <div
+            v-for="(blank,index) in question.context"
+            :key="'blank'+index"
+          >
+            <div v-if="index!==question.context.length-1">
+              <div class="text-h6">
+                Blank {{ index+1 }}
+              </div>
+              <div class="text-h7">
+                Options
+              </div>
+              <v-row wrap>
+                <v-col
+                  v-for="(option,oindex) in question.options[index]"
+                  :key="index+'option'+oindex"
+                  class="auto"
+                >
+                  <v-text-field
+                    v-model="question.options[index][oindex]"
+                    required
+                    :rules="requiredField"
+                  />
+                  <a @click="deleteOption(oindex,index)">delete</a>
+                </v-col>
+                <v-btn
+                  text
+                  class="mt-6"
+                  @click="question.options[index].push('')"
+                >
+                  New Option
+                </v-btn>
+              </v-row>
+              <div class="text-h7">
+                Answer
+              </div>
+              <v-radio-group
+                v-model="question.answer[index]"
+                row
+              >
+                <v-col
+                  v-for="(option,aindex) in question.options[index]"
+                  :key="'choosing answer'+aindex"
+                  md="3"
+                  cols="6"
+                >
+                  <v-radio
+                    :label="option"
+                    :value="aindex"
+                  />
+                </v-col>
+              </v-radio-group>
+            </div>
+          </div>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -235,7 +298,15 @@ export default {
       'short response',
       'matching',
     ],
+    fillBlanksContext: '',
   }),
+  watch: {
+    fillBlanksContext: {
+      handler() {
+        this.question.context = this.fillBlanksContext.split('[?]');
+      },
+    },
+  },
   mounted() {
     this.question = JSON.parse(JSON.stringify(this.oldQuestion));
     if (this.question.type === 'multiple choice') {
@@ -243,20 +314,48 @@ export default {
       this.question.answer = this.question.answer.map((value) => this.question.options.indexOf(value));
     } else if (this.question.type === 'single choice') {
       this.question.answer = this.question.options.indexOf(this.question.answer);
+    } else if (this.question.type === 'fill in the blanks') {
+      const oldContext = this.question.context;
+      // eslint-disable-next-line max-len
+      this.question.answer = this.question.answer.map((value, index) => this.question.options[index].indexOf(value));
+      for (let index = 0; index < oldContext.length; index += 1) {
+        this.fillBlanksContext += oldContext[index];
+        if (index !== oldContext.length - 1) {
+          this.fillBlanksContext += '[?]';
+        }
+      }
     }
   },
   methods: {
-    deleteOption(index) {
+    deleteOption(index, bindex) {
       if (this.question.type === 'single choice') {
         if (this.question.answer === index) {
           this.question.answer = null;
+        } else if (this.question.answer > index) {
+          this.question.answer -= 1;
         }
+        this.question.options.splice(index, 1);
       } else if (this.question.type === 'multiple choice') {
-        this.question.answer.splice(
-          this.question.answer.indexOf(index), 1,
-        );
+        if (this.question.answer.indexOf(index) !== -1) {
+          this.question.answer.splice(
+            this.question.answer.indexOf(index), 1,
+          );
+        }
+        this.question.answer = this.question.answer.map((value) => {
+          if (value > index) {
+            return value - 1;
+          }
+          return value;
+        });
+        this.question.options.splice(index, 1);
+      } else if (this.question.type === 'fill in the blanks') {
+        if (this.question.answer[bindex] === index) {
+          this.question.answer[bindex] = null;
+        } else if (this.question.answer[bindex] > index) {
+          this.question.answer[bindex] -= 1;
+        }
+        this.question.options[bindex].splice(index, 1);
       }
-      this.question.options.splice(index, 1);
     },
     deleteRow(index) {
       this.question.leftcol.splice(index, 1);
