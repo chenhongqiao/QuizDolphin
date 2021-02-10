@@ -39,5 +39,14 @@ class QuestionService {
     }
     return { success: true, data: questionId };
   }
+
+  static async getQuestion(questionId) {
+    const questionsCollection = await mongodb.loadCollection('questions');
+    const questionCursor = await questionsCollection.find({ questionId }).project({ _id: 0 });
+    if (await questionCursor.count() === 0) {
+      return { success: false, message: 'No Matching Question!' };
+    }
+    return { success: true, data: await questionCursor.toArray() };
+  }
 }
 module.exports = QuestionService;
