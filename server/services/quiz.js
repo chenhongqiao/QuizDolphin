@@ -174,7 +174,10 @@ class QuizService {
     }
     return {
       success: true,
-      data: await questionsCollection.find({ quizId }).project({ _id: 0 }).toArray(),
+      data: await questionsCollection.find({ quizId })
+        .project({
+          questionId: 1, type: 1, points: 1, _id: 0,
+        }).sort({ id: 1 }).toArray(),
     };
   }
 }
