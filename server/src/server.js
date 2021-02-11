@@ -43,7 +43,7 @@ async function startServer() {
   });
   app.use('/api', rateLimit({
     windowMs: 2000,
-    max: 6,
+    max: process.env.RATELIMIT,
     keyGenerator: (req) => {
       if (req.session.email) {
         return req.session.email;
@@ -79,7 +79,7 @@ async function startServer() {
   });
 
   app.use(history());
-  app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.static(path.join(__dirname, '../dist')));
 
   const port = process.env.PORT || 5000;
   // eslint-disable-next-line no-console

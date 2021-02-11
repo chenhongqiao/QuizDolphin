@@ -4,8 +4,8 @@
   "description": "FBLA 2021 Coding and Programming Project",
   "main": "server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "dev": "nodemon server/server.js"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
   },
   "repository": "git@github.com:chenhongqiao/FBLA21CP.git",
   "author": "Harry Chen <harrychen0314@gmail.com>",
@@ -29,6 +29,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.12.13",
     "@babel/eslint-parser": "^7.12.13",
     "eslint": "^7.16.0",
     "eslint-config-airbnb-base": "^14.2.1",

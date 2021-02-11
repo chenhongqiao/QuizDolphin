@@ -54,7 +54,7 @@
             v-on="on"
           >
             <v-avatar
-              :color="$store.state.role==='admin'?'blue-grey':'blue'"
+              :color="$store.state.role==='admin'?'red':'blue'"
               size="36"
             >
               <span class="white--text title">{{ getInitial }}</span>

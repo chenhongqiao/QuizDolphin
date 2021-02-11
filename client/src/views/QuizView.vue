@@ -1,36 +1,32 @@
 <template>
   <div>
     <div v-if="$store.state.role==='admin'">
-      <v-alert
+      <v-banner
         v-if="view==='admin'"
-        type="info"
       >
-        <v-row>
-          <v-col class="grow">
-            You are viewing as admin, you can preview from user perspective by clicking this button.
-          </v-col>
-          <v-col class="shrink">
-            <v-btn @click="view='user'">
-              Preview
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-alert>
-      <v-alert
+        You are viewing as admin, you can preview from user perspective by clicking this button.
+        <template #actions>
+          <v-btn
+            text
+            @click="view='user'"
+          >
+            Preview
+          </v-btn>
+        </template>
+      </v-banner>
+      <v-banner
         v-else-if="view==='user'"
-        type="info"
       >
-        <v-row>
-          <v-col class="grow">
-            You are previewing as user, you can switch to admin view by clicking this button.
-          </v-col>
-          <v-col class="shrink">
-            <v-btn @click="view='admin'">
-              Admin View
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-alert>
+        You are previewing as user, you can switch to admin view by clicking this button.
+        <template #actions>
+          <v-btn
+            text
+            @click="view='admin'"
+          >
+            Admin View
+          </v-btn>
+        </template>
+      </v-banner>
     </div>
     <UserQuizComponent
       v-if="view==='user'"
