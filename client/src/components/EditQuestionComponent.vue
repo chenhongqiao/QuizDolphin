@@ -1,306 +1,335 @@
 <template>
-  <v-dialog
-    :value="true"
-    persistent
-  >
-    <v-card>
-      <v-card-title>Edit Question</v-card-title>
-      <v-divider />
-      <div v-if="loaded">
-        <v-card-text>
-          <v-form v-model="questionValid">
-            <v-row>
-              <v-col>
-                <div class="text-h6">
-                  Question Type
-                </div>
-                <v-select
-                  v-model="question.type"
-                  :items="questionTypes"
-                  @change="changeQuestionType"
-                />
-              </v-col>
-              <v-col>
-                <div class="text-h6">
-                  Points
-                </div>
-                <v-text-field
-                  v-model.number="question.points"
-                  required
-                  :rules="[...requiredField,...pointsRange]"
-                  type="number"
-                />
-              </v-col>
-            </v-row>
-            <div v-if="question.type==='single choice'||question.type==='multiple choice'">
-              <div class="text-h6">
-                Context
-              </div>
-              <v-textarea
-                v-model="question.context"
-                required
-                :rules="requiredField"
-              />
-              <div class="text-h6">
-                Options
-              </div>
-              <div
-                v-for="(option,index) in question.options"
-                :key="'editing option'+index"
-              >
-                <v-row>
-                  <v-col>
-                    <v-text-field
-                      v-model="question.options[index]"
-                      required
-                      :rules="requiredField"
-                    />
-                  </v-col>
-                  <v-btn
-                    text
-                    class="mt-6 mx-2"
-                    @click="deleteOption(index)"
-                  >
-                    <v-icon>
-                      mdi-delete
-                    </v-icon>
-                  </v-btn>
-                </v-row>
-              </div>
-              <div class="text-right">
-                <v-btn
-                  text
-                  @click="question.options.push('')"
-                >
-                  New Option
-                </v-btn>
-              </div>
-              <div v-if="question.type==='single choice'">
-                <div class="text-h6 mt-4">
-                  Answer
-                </div>
-                <v-radio-group
-                  v-model="question.answer"
-                  row
-                >
-                  <v-col
-                    v-for="(option,index) in question.options"
-                    :key="'choosing answer'+index"
-                    md="3"
-                    cols="6"
-                  >
-                    <v-radio
-                      :label="option"
-                      :value="index"
-                    />
-                  </v-col>
-                </v-radio-group>
-                <div v-if="question.answer===null">
-                  Please select an answer
-                </div>
-              </div>
-              <div v-if="question.type==='multiple choice'">
-                <div class="text-h6 mt-4">
-                  Answer
-                </div>
-                <v-row wrap>
-                  <v-col
-                    v-for="(option,index) in question.options"
-                    :key="'choosing answer'+index"
-                    md="3"
-                    cols="6"
-                  >
-                    <v-checkbox
-                      v-model="question.answer"
-                      :label="option"
-                      :value="index"
-                    />
-                  </v-col>
-                </v-row>
-                <div
-                  v-if="!question.answer.length"
-                  class="pt-2"
-                >
-                  Please select at lease one answer
-                </div>
-              </div>
-            </div>
-            <div v-if="question.type==='short response'">
-              <div class="text-h6">
-                Context
-              </div>
-              <v-textarea
-                v-model="question.context"
-                required
-                :rules="requiredField"
-              />
-              <div class="text-h6 mt-4">
-                Answer
-              </div>
-              <v-text-field
-                v-model.trim="question.answer"
-                required
-                :rules="requiredField"
-              />
-            </div>
-            <div v-if="question.type==='matching'">
-              <div class="text-h6">
-                Context
-              </div>
-              <v-textarea
-                v-model="question.context"
-                required
-                :rules="requiredField"
-              />
+  <div>
+    <v-dialog
+      :value="true"
+      persistent
+    >
+      <v-card>
+        <v-card-title>Edit Question</v-card-title>
+        <v-divider />
+        <div v-if="loaded">
+          <v-card-text>
+            <v-form v-model="questionValid">
               <v-row>
-                <v-col md="6">
+                <v-col>
                   <div class="text-h6">
-                    Left Col
+                    Question Type
                   </div>
-                  <div
-                    v-for="(left,index) in question.leftcol"
-                    :key="'leftcol'+index"
-                  >
-                    <v-row>
-                      <v-col>
-                        <v-text-field
-                          v-model="question.leftcol[index]"
-                          required
-                          :rules="requiredField"
-                        />
-                      </v-col>
-                    </v-row>
-                  </div>
+                  <v-select
+                    v-model="question.type"
+                    :items="questionTypes"
+                    @change="changeQuestionType"
+                  />
                 </v-col>
-                <v-col md="6">
+                <v-col>
                   <div class="text-h6">
-                    Right Col
+                    Points
                   </div>
-                  <div
-                    v-for="(answer,index) in question.answer"
-                    :key="'answer'+index"
-                  >
-                    <v-row>
-                      <v-col>
-                        <v-text-field
-                          v-model="question.answer[index]"
-                          required
-                          :rules="requiredField"
-                        />
-                      </v-col>
-                      <v-btn
-                        class="mt-6"
-                        text
-                        @click="deleteRow(index)"
-                      >
-                        <v-icon>
-                          mdi-delete
-                        </v-icon>
-                      </v-btn>
-                    </v-row>
-                  </div>
+                  <v-text-field
+                    v-model.number="question.points"
+                    required
+                    :rules="[...requiredField,...pointsRange]"
+                    type="number"
+                  />
                 </v-col>
               </v-row>
-              <div class="text-right">
-                <v-btn
-                  text
-                  @click="newRow()"
+              <div v-if="question.type==='single choice'||question.type==='multiple choice'">
+                <div class="text-h6">
+                  Context
+                </div>
+                <v-textarea
+                  v-model="question.context"
+                  required
+                  :rules="requiredField"
+                />
+                <div class="text-h6">
+                  Options
+                </div>
+                <div
+                  v-for="(option,index) in question.options"
+                  :key="'editing option'+index"
                 >
-                  New Row
-                </v-btn>
-              </div>
-            </div>
-            <div v-if="question.type==='fill in the blanks'">
-              <div class="text-h6">
-                Context
-              </div>
-              <v-textarea
-                v-model="fillBlanksContext"
-                required
-                :rules="requiredField"
-              />
-              <div
-                v-for="(blank,index) in question.context"
-                :key="'blank'+index"
-              >
-                <div v-if="index!==question.context.length-1">
-                  <div class="text-h6">
-                    Blank {{ index+1 }}
-                  </div>
-                  <div class="text-h7">
-                    Options
-                  </div>
-                  <v-row wrap>
-                    <v-col
-                      v-for="(option,oindex) in question.options[index]"
-                      :key="index+'option'+oindex"
-                      class="auto"
-                    >
+                  <v-row>
+                    <v-col>
                       <v-text-field
-                        v-model="question.options[index][oindex]"
+                        v-model="question.options[index]"
                         required
                         :rules="requiredField"
                       />
-                      <a @click="deleteOption(oindex,index)">delete</a>
                     </v-col>
                     <v-btn
                       text
-                      class="mt-6"
-                      @click="addBlankOption(index)"
+                      class="mt-6 mx-2"
+                      @click="deleteOption(index)"
                     >
-                      New Option
+                      <v-icon>
+                        mdi-delete
+                      </v-icon>
                     </v-btn>
                   </v-row>
-                  <div class="text-h7 pt-2">
+                </div>
+                <div class="text-right">
+                  <v-btn
+                    text
+                    @click="question.options.push('')"
+                  >
+                    New Option
+                  </v-btn>
+                </div>
+                <div v-if="question.type==='single choice'">
+                  <div class="text-h6 mt-4">
                     Answer
                   </div>
                   <v-radio-group
-                    v-model="question.answer[index]"
+                    v-model="question.answer"
                     row
                   >
                     <v-col
-                      v-for="(option,aindex) in question.options[index]"
-                      :key="'choosing answer'+aindex"
+                      v-for="(option,index) in question.options"
+                      :key="'choosing answer'+index"
                       md="3"
                       cols="6"
                     >
                       <v-radio
                         :label="option"
-                        :value="aindex"
+                        :value="index"
                       />
                     </v-col>
                   </v-radio-group>
-                  <div v-if="question.answer[index]===null">
+                  <div v-if="question.answer===null">
                     Please select an answer
                   </div>
                 </div>
+                <div v-if="question.type==='multiple choice'">
+                  <div class="text-h6 mt-4">
+                    Answer
+                  </div>
+                  <v-row wrap>
+                    <v-col
+                      v-for="(option,index) in question.options"
+                      :key="'choosing answer'+index"
+                      md="3"
+                      cols="6"
+                    >
+                      <v-checkbox
+                        v-model="question.answer"
+                        :label="option"
+                        :value="index"
+                      />
+                    </v-col>
+                  </v-row>
+                  <div
+                    v-if="!question.answer.length"
+                    class="pt-2"
+                  >
+                    Please select at lease one answer
+                  </div>
+                </div>
               </div>
-            </div>
-          </v-form>
-        </v-card-text>
-      </div>
-      <v-progress-linear
-        v-else
-        indeterminate
-      />
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          text
-          @click="cancel()"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          text
-          :disabled="!questionValid||missingAnswer||!loaded"
-          @click="updateQuestion()"
-        >
-          Upload
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+              <div v-if="question.type==='short response'">
+                <div class="text-h6">
+                  Context
+                </div>
+                <v-textarea
+                  v-model="question.context"
+                  required
+                  :rules="requiredField"
+                />
+                <div class="text-h6 mt-4">
+                  Answer
+                </div>
+                <v-text-field
+                  v-model.trim="question.answer"
+                  required
+                  :rules="requiredField"
+                />
+              </div>
+              <div v-if="question.type==='matching'">
+                <div class="text-h6">
+                  Context
+                </div>
+                <v-textarea
+                  v-model="question.context"
+                  required
+                  :rules="requiredField"
+                />
+                <v-row>
+                  <v-col md="6">
+                    <div class="text-h6">
+                      Left Col
+                    </div>
+                    <div
+                      v-for="(left,index) in question.leftcol"
+                      :key="'leftcol'+index"
+                    >
+                      <v-row>
+                        <v-col>
+                          <v-text-field
+                            v-model="question.leftcol[index]"
+                            required
+                            :rules="requiredField"
+                          />
+                        </v-col>
+                      </v-row>
+                    </div>
+                  </v-col>
+                  <v-col md="6">
+                    <div class="text-h6">
+                      Right Col
+                    </div>
+                    <div
+                      v-for="(answer,index) in question.answer"
+                      :key="'answer'+index"
+                    >
+                      <v-row>
+                        <v-col>
+                          <v-text-field
+                            v-model="question.answer[index]"
+                            required
+                            :rules="requiredField"
+                          />
+                        </v-col>
+                        <v-btn
+                          class="mt-6"
+                          text
+                          @click="deleteRow(index)"
+                        >
+                          <v-icon>
+                            mdi-delete
+                          </v-icon>
+                        </v-btn>
+                      </v-row>
+                    </div>
+                  </v-col>
+                </v-row>
+                <div class="text-right">
+                  <v-btn
+                    text
+                    @click="newRow()"
+                  >
+                    New Row
+                  </v-btn>
+                </div>
+              </div>
+              <div v-if="question.type==='fill in the blanks'">
+                <div class="text-h6">
+                  Context
+                </div>
+                <v-textarea
+                  v-model="fillBlanksContext"
+                  required
+                  :rules="requiredField"
+                />
+                <div
+                  v-for="(blank,index) in question.context"
+                  :key="'blank'+index"
+                >
+                  <div v-if="index!==question.context.length-1">
+                    <div class="text-h6">
+                      Blank {{ index+1 }}
+                    </div>
+                    <div class="text-h7">
+                      Options
+                    </div>
+                    <v-row wrap>
+                      <v-col
+                        v-for="(option,oindex) in question.options[index]"
+                        :key="index+'option'+oindex"
+                        class="auto"
+                      >
+                        <v-text-field
+                          v-model="question.options[index][oindex]"
+                          required
+                          :rules="requiredField"
+                        />
+                        <a @click="deleteOption(oindex,index)">delete</a>
+                      </v-col>
+                      <v-btn
+                        text
+                        class="mt-6"
+                        @click="addBlankOption(index)"
+                      >
+                        New Option
+                      </v-btn>
+                    </v-row>
+                    <div class="text-h7 pt-2">
+                      Answer
+                    </div>
+                    <v-radio-group
+                      v-model="question.answer[index]"
+                      row
+                    >
+                      <v-col
+                        v-for="(option,aindex) in question.options[index]"
+                        :key="'choosing answer'+aindex"
+                        md="3"
+                        cols="6"
+                      >
+                        <v-radio
+                          :label="option"
+                          :value="aindex"
+                        />
+                      </v-col>
+                    </v-radio-group>
+                    <div v-if="question.answer[index]===null">
+                      Please select an answer
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </v-form>
+          </v-card-text>
+        </div>
+        <v-progress-linear
+          v-else
+          indeterminate
+        />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            text
+            @click="pendingQuit=true"
+          >
+            Quit
+          </v-btn>
+          <v-btn
+            text
+            :disabled="!questionValid||missingAnswer||!loaded"
+            @click="updateQuestion()"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="pendingQuit"
+      max-width="500px"
+    >
+      <v-card>
+        <v-container>
+          Discard all unsaved changes and quit?
+        </v-container>
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            text
+            @click="pendingQuit=false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            class="red--text"
+            text
+            @click="quit()"
+          >
+            Discard
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
@@ -340,6 +369,7 @@ export default {
     loaded: false,
     questionValid: false,
     missingAnswer: true,
+    pendingQuit: false,
   }),
   watch: {
     fillBlanksContext: {
@@ -463,7 +493,7 @@ export default {
       this.question.leftcol.push('');
       this.question.answer.push('');
     },
-    cancel() {
+    quit() {
       this.$emit('cancel');
     },
     async updateQuestion() {
