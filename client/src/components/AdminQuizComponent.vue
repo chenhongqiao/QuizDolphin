@@ -50,7 +50,7 @@
                 <v-icon
                   small
                   class="mr-2"
-                  @click="deleteQuestion(item)"
+                  @click="pendingDeleteQuestion=item;pendingDelete=true;"
                 >
                   mdi-delete
                 </v-icon>
@@ -71,7 +71,7 @@
       v-else
       indeterminate
     />
-    <div v-if="editing&&editIndex">
+    <div v-if="editing&&editIndex!==null">
       <EditQuestionComponent
         :question-id="questions[editIndex].questionId"
         @cancel="editing=false;editIndex=null;"
@@ -85,6 +85,33 @@
         @update="editing=false;editIndex=null;loadQuestions()"
       />
     </div>
+    <v-dialog
+      v-model="pendingDelete"
+      max-width="500px"
+    >
+      <v-card>
+        <v-container>
+          Do you want to delete this question?
+        </v-container>
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            text
+            @click="pendingDelete=false;pendingDeleteQuestion=null"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            class="red--text"
+            text
+            @click="deleteQuestion();pendingDelete=false;pendingDeleteQuestion=null"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -137,6 +164,8 @@ export default {
       align: 'end',
       groupable: false,
     }],
+    pendingDelete: false,
+    pendingDeleteQuestion: null,
   }),
   async mounted() {
     try {
@@ -177,9 +206,10 @@ export default {
     }
   },
   methods: {
-    async deleteQuestion(question) {
+    async deleteQuestion() {
       try {
-        await QuestionService.deleteQuestion(this.questions[question.index - 1].questionId);
+        // eslint-disable-next-line max-len
+        await QuestionService.deleteQuestion(this.questions[this.pendingDeleteQuestion.index - 1].questionId);
         await this.loadQuestions();
       } catch (err) {
         if (err.response) {
