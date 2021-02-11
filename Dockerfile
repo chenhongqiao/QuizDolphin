@@ -15,3 +15,5 @@ WORKDIR /app
 
 COPY ./server/. .
 COPY --from=frontend-build-env /build/dist .
+
+ENTRYPOINT [ "node","./src/server.js" ]
