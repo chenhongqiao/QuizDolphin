@@ -50,8 +50,9 @@
     />
     <div v-if="editing">
       <EditQuestionComponent
-        :old-question="questions[editIndex]"
+        :question-id="questions[editIndex].questionId"
         @cancel="editing=false"
+        @update="editing=false;loadQuestions()"
       />
     </div>
   </div>
