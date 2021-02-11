@@ -98,7 +98,7 @@ class DataValidate {
         }
         let includeAnswer = false;
         for (let lindex = 0; lindex < question.options[index].length; lindex += 1) {
-          if (question.options[index][lindex] !== 'string') {
+          if (typeof question.options[index][lindex] !== 'string') {
             return false;
           }
           if (question.options[index][lindex] === question.answer[index]) {
