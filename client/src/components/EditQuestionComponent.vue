@@ -27,7 +27,7 @@
                 <v-text-field
                   v-model.number="question.points"
                   required
-                  :rules="requiredField"
+                  :rules="[...requiredField,...pointsRange]"
                   type="number"
                 />
               </v-col>
@@ -296,7 +296,7 @@
           :disabled="!questionValid||missingAnswer||!loaded"
           @click="updateQuestion()"
         >
-          Update
+          Upload
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -308,7 +308,8 @@ import QuestionService from '../services/QuestionService';
 
 export default {
   props: {
-    questionId: { type: String, default: '' },
+    questionId: { type: String, default: null },
+    quizId: { type: String, default: null },
   },
   data: () => ({
     question: {},
@@ -318,6 +319,14 @@ export default {
           return true;
         }
         return 'This field is requried';
+      },
+    ],
+    pointsRange: [
+      (v) => {
+        if (v >= 0) {
+          return true;
+        }
+        return 'Points can not be negative';
       },
     ],
     questionTypes: [
@@ -365,14 +374,20 @@ export default {
           } else {
             this.missingAnswer = true;
           }
+        } else if (this.question.type === 'short response' || this.question.type === 'matching') {
+          this.missingAnswer = false;
         }
       },
     },
   },
   async mounted() {
     try {
-      this.question = await QuestionService.getQuestion(this.questionId);
-      this.preProcess();
+      if (this.questionId) {
+        this.question = await QuestionService.getQuestion(this.questionId);
+        this.preProcess();
+      } else {
+        this.question.quizId = this.quizId;
+      }
       this.loaded = true;
     } catch (err) {
       if (err.response) {
@@ -451,7 +466,7 @@ export default {
     cancel() {
       this.$emit('cancel');
     },
-    updateQuestion() {
+    async updateQuestion() {
       this.loaded = false;
       if (this.question.type === 'multiple choice') {
       // eslint-disable-next-line max-len
@@ -471,7 +486,11 @@ export default {
         }
       }
       try {
-        QuestionService.putQuestion(this.questionId, this.question);
+        if (this.questionId) {
+          await QuestionService.putQuestion(this.questionId, this.question);
+        } else {
+          await QuestionService.postQuestion(this.question);
+        }
         this.$emit('update');
       } catch (err) {
         if (err.response) {

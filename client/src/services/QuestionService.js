@@ -18,6 +18,19 @@ class QuestionService {
       data: questionData,
     });
   }
+
+  static async postQuestion(questionData) {
+    await axios.post(`${url}`, {
+      withCredentials: true,
+      data: questionData,
+    });
+  }
+
+  static async deleteQuestion(questionId) {
+    await axios.delete(`${url}${questionId}`, {
+      withCredentials: true,
+    });
+  }
 }
 
 export default QuestionService;

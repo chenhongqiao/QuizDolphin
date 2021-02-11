@@ -29,8 +29,31 @@
               :headers="headers"
               :items="questions"
             >
+              <template #top>
+                <v-toolbar
+                  flat
+                >
+                  <v-toolbar-title>Question List</v-toolbar-title>
+                  <v-divider
+                    class="mx-4"
+                    inset
+                    vertical
+                  />
+                  <v-spacer />
+                  <v-btn @click="editing=true">
+                    New Question
+                  </v-btn>
+                </v-toolbar>
+              </template>
               <!-- eslint-disable-next-line vue/valid-v-slot -->
               <template #item.actions="{ item }">
+                <v-icon
+                  small
+                  class="mr-2"
+                  @click="deleteQuestion(item)"
+                >
+                  mdi-delete
+                </v-icon>
                 <v-icon
                   small
                   class="mr-2"
@@ -48,11 +71,18 @@
       v-else
       indeterminate
     />
-    <div v-if="editing">
+    <div v-if="editing&&editIndex">
       <EditQuestionComponent
         :question-id="questions[editIndex].questionId"
-        @cancel="editing=false"
-        @update="editing=false;loadQuestions()"
+        @cancel="editing=false;editIndex=null;"
+        @update="editing=false;editIndex=null;loadQuestions()"
+      />
+    </div>
+    <div v-else-if="editing">
+      <EditQuestionComponent
+        :quiz-id="quizId"
+        @cancel="editing=false;editIndex=null;"
+        @update="editing=false;editIndex=null;loadQuestions()"
       />
     </div>
   </div>
@@ -60,6 +90,7 @@
 
 <script>
 import QuizService from '../services/QuizService';
+import QuestionService from '../services/QuestionService';
 import EditQuestionComponent from './EditQuestionComponent.vue';
 
 export default {
@@ -75,7 +106,7 @@ export default {
     infoLoaded: false,
     duration: 0,
     questions: [],
-    editIndex: -1,
+    editIndex: null,
     editing: false,
     headers: [{
       text: 'Index',
@@ -146,6 +177,25 @@ export default {
     }
   },
   methods: {
+    async deleteQuestion(question) {
+      try {
+        await QuestionService.deleteQuestion(this.questions[question.index - 1].questionId);
+        await this.loadQuestions();
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 401 || err.response.status === 403) {
+            this.$store.commit('logout');
+            this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
+          } else if (err.response.status === 404) {
+            // TODO: 404 Page
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
+    },
     async loadQuizInfo() {
       const quizInfo = await QuizService.getQuizInfo(this.quizId);
       this.quizName = quizInfo.quizName;
