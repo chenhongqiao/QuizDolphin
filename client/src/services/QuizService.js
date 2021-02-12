@@ -53,6 +53,21 @@ class QuizService {
     });
     return response.data;
   }
+
+  static async postQuizInfo(quizInfo) {
+    const response = await axios.post(`${url}`, {
+      withCredentials: true,
+      data: quizInfo,
+    });
+    return response.data;
+  }
+
+  static async putQuizInfo(quizId, quizInfo) {
+    await axios.put(`${url}${quizId}`, {
+      withCredentials: true,
+      data: quizInfo,
+    });
+  }
 }
 
 export default QuizService;
