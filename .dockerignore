@@ -1,0 +1,5 @@
+**/node_modules
+**/.vscode
+**/dist
+**/*.log
+server/src/.env

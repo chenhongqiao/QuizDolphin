@@ -1,19 +1,21 @@
-FROM node:lts AS frontend-build-env
-ENV NODE_ENV=production
+FROM node:lts-alpine AS frontend-build-env
 
 WORKDIR /build
 
 COPY ./client/. .
 
-RUN yarn install --frozen-lockfile
-RUN yarn build
+RUN yarn install --frozen-lockfile && \ 
+    yarn build
 
-FROM node:lts
+FROM node:lts-alpine
 ENV NODE_ENV=production
 
 WORKDIR /app
 
 COPY ./server/. .
-COPY --from=frontend-build-env /build/dist .
+
+RUN yarn install --frozen-lockfile
+
+COPY --from=frontend-build-env /build/dist ./dist
 
 ENTRYPOINT [ "node","./src/server.js" ]
