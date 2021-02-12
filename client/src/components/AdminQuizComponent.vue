@@ -95,7 +95,8 @@
     <div v-if="editing==='info'">
       <EditQuizInfoComponent
         :quiz-id="quizId"
-        @cancel="editing=null;editIndex=null;"
+        @cancel="editing=null;"
+        @update="editing=null;loadQuizInfo()"
       />
     </div>
     <v-dialog

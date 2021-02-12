@@ -76,6 +76,13 @@
           >
             Quit
           </v-btn>
+          <v-btn
+            text
+            :disabled="!infoValid||!loaded"
+            @click="updateInfo()"
+          >
+            Save
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -159,8 +166,8 @@ export default {
         this.duration.seconds = Math.floor(this.quizInfo.duration % 60);
         this.duration.minutes = Math.floor((this.quizInfo.duration % 3600) / 60);
         this.duration.hours = Math.floor((this.quizInfo.duration % (3600 * 60)) / 3600);
-        this.loaded = true;
       }
+      this.loaded = true;
     } catch (err) {
       if (err.response) {
         if (err.response.status === 401 || err.response.status === 403) {
@@ -175,6 +182,33 @@ export default {
         throw err;
       }
     }
+  },
+  methods: {
+    async updateInfo() {
+      try {
+        this.loaded = false;
+        if (this.quizId) {
+          await QuizService.putQuizInfo(this.quizId, this.quizInfo);
+        } else {
+          const quizId = await QuizService.postQuizInfo(this.quizInfo);
+          this.$router.push(`/quiz/${quizId}`);
+        }
+        this.$emit('update');
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 401 || err.response.status === 403) {
+            this.$store.commit('logout');
+            this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
+          } else if (err.response.status === 404) {
+            // TODO: 404 Page
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
+    },
   },
 };
 </script>
