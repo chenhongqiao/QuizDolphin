@@ -18,6 +18,13 @@
               {{ Math.floor(duration%60) }} seconds
             </div>
           </v-col>
+          <v-spacer />
+          <div
+            class="pa-4"
+            @click="editing = 'info'"
+          >
+            <v-btn> Edit Quiz Info </v-btn>
+          </div>
         </v-row>
       </v-container>
       <v-container>
@@ -40,7 +47,7 @@
                     vertical
                   />
                   <v-spacer />
-                  <v-btn @click="editing=true">
+                  <v-btn @click="editing = 'question'">
                     New Question
                   </v-btn>
                 </v-toolbar>
@@ -71,18 +78,24 @@
       v-else
       indeterminate
     />
-    <div v-if="editing&&editIndex!==null">
+    <div v-if="editing==='question'&&editIndex!==null">
       <EditQuestionComponent
         :question-id="questions[editIndex].questionId"
-        @cancel="editing=false;editIndex=null;"
-        @update="editing=false;editIndex=null;loadQuestions()"
+        @cancel="editing=null;editIndex=null;"
+        @update="editing=null;editIndex=null;loadQuestions()"
       />
     </div>
-    <div v-else-if="editing">
+    <div v-if="editing==='question'&&editIndex===null">
       <EditQuestionComponent
         :quiz-id="quizId"
-        @cancel="editing=false;editIndex=null;"
-        @update="editing=false;editIndex=null;loadQuestions()"
+        @cancel="editing=null;editIndex=null;"
+        @update="editing=null;editIndex=null;loadQuestions()"
+      />
+    </div>
+    <div v-if="editing==='info'">
+      <EditQuizInfoComponent
+        :quiz-id="quizId"
+        @cancel="editing=null;editIndex=null;"
       />
     </div>
     <v-dialog
@@ -119,10 +132,12 @@
 import QuizService from '../services/QuizService';
 import QuestionService from '../services/QuestionService';
 import EditQuestionComponent from './EditQuestionComponent.vue';
+import EditQuizInfoComponent from './EditQuizInfoComponent.vue';
 
 export default {
   components: {
     EditQuestionComponent,
+    EditQuizInfoComponent,
   },
   props: {
     quizId: { type: String, default: '' },
@@ -134,7 +149,7 @@ export default {
     duration: 0,
     questions: [],
     editIndex: null,
-    editing: false,
+    editing: null,
     headers: [{
       text: 'Index',
       value: 'index',
@@ -241,7 +256,7 @@ export default {
     },
     editQuestion(question) {
       this.editIndex = question.index - 1;
-      this.editing = true;
+      this.editing = 'question';
     },
   },
 };

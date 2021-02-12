@@ -5,7 +5,12 @@
       persistent
     >
       <v-card>
-        <v-card-title>Edit Question</v-card-title>
+        <v-card-title v-if="questionId">
+          Edit Question
+        </v-card-title>
+        <v-card-title v-else>
+          New Question
+        </v-card-title>
         <v-divider />
         <div v-if="loaded">
           <v-card-text>
@@ -104,7 +109,10 @@
                   <div class="text-h6 mt-4">
                     Answer
                   </div>
-                  <v-row wrap>
+                  <v-row
+                    class="my-4"
+                    wrap
+                  >
                     <v-col
                       v-for="(option,index) in question.options"
                       :key="'choosing answer'+index"
@@ -308,7 +316,7 @@
     >
       <v-card>
         <v-container>
-          Discard all unsaved changes and quit?
+          Discard all changes and quit?
         </v-container>
         <v-divider />
         <v-card-actions>
@@ -386,7 +394,7 @@ export default {
           } else {
             this.missingAnswer = false;
           }
-        } else if (this.question.type === 'multiple') {
+        } else if (this.question.type === 'multiple choice') {
           if (!this.question.answer.length) {
             this.missingAnswer = true;
           } else {
