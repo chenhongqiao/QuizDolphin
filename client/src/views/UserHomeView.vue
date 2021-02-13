@@ -21,6 +21,13 @@
             <v-card-actions>
               <v-spacer />
               <v-btn
+                v-if="$store.state.role==='admin'"
+                text
+                @click="pendingDelete=true;deleteIndex=quiz.quizId;"
+              >
+                Delete Quiz
+              </v-btn>
+              <v-btn
                 text
                 @click="toQuiz(quiz.quizId)"
               >
@@ -49,6 +56,33 @@
         @update="newQuiz=false;loadQuizList();"
       />
     </div>
+    <v-dialog
+      v-model="pendingDelete"
+      max-width="500px"
+    >
+      <v-card>
+        <v-container>
+          Do you want to delete this quiz?
+        </v-container>
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            text
+            @click="pendingDelete=false;deleteIndex=null"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            class="red--text"
+            text
+            @click="deleteQuiz(deleteIndex);loadQuizList();pendingDelete=false;deleteIndex=null"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -66,6 +100,8 @@ export default {
     quizList: [],
     dashLoaded: false,
     newQuiz: false,
+    pendingDelete: false,
+    deleteIndex: null,
   }),
   computed: {
     getUserName() {
@@ -95,6 +131,9 @@ export default {
     },
     async loadQuizList() {
       this.quizList = await QuizService.getQuizList();
+    },
+    async deleteQuiz(quizId) {
+      await QuizService.deleteQuiz(quizId);
     },
   },
 };

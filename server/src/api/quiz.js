@@ -201,10 +201,6 @@ router.delete('/:quizId', async (req, res, next) => {
       res.status(400).send('Missing Parameter!');
       return;
     }
-    if (!req.body.data) {
-      res.status(400).send('Missing Body Data!');
-      return;
-    }
     const response = await quizService.deleteQuiz(quizId);
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {

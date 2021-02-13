@@ -52,6 +52,12 @@
                 />
               </v-col>
             </v-row>
+            <div
+              v-if="quizInfo.duration<=0"
+              class="red--text"
+            >
+              Duration has to be at least 1 second
+            </div>
             <div class="text-h6 text--primary">
               Question Number
             </div>
@@ -61,6 +67,12 @@
                 type="number"
                 :rules="[...requiredField,...numberRange]"
               />
+            </div>
+            <div
+              v-if="quizInfo.questionCount<=0"
+              class="red--text"
+            >
+              Question number has to be at least 1
             </div>
           </v-form>
         </v-card-text>
@@ -78,7 +90,7 @@
           </v-btn>
           <v-btn
             text
-            :disabled="!infoValid||!loaded"
+            :disabled="!infoValid||!loaded||quizInfo.duration<=0||quizInfo.questionCount<=0"
             @click="updateInfo()"
           >
             Save
@@ -145,9 +157,9 @@ export default {
       },
     ],
     duration: {
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
+      hours: null,
+      minutes: null,
+      seconds: null,
     },
   }),
   watch: {

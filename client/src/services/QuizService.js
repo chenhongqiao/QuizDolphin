@@ -68,6 +68,12 @@ class QuizService {
       data: quizInfo,
     });
   }
+
+  static async deleteQuiz(quizId) {
+    await axios.delete(`${url}${quizId}`, {
+      withCredentials: true,
+    });
+  }
 }
 
 export default QuizService;
