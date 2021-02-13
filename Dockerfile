@@ -18,4 +18,4 @@ RUN yarn install --frozen-lockfile
 
 COPY --from=frontend-build-env /build/dist ./dist
 
-ENTRYPOINT [ "node","./src/server.js" ]
+ENTRYPOINT [ "yarn","start" ]
