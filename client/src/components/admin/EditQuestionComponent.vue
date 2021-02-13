@@ -341,7 +341,7 @@
 </template>
 
 <script>
-import QuestionService from '../services/QuestionService';
+import QuestionService from '../../services/QuestionService';
 
 export default {
   props: {

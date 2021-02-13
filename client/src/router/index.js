@@ -87,6 +87,26 @@ const routes = [
     },
   },
   {
+    path: '/user',
+    name: 'UserList',
+    component: () => import('../views/UserListView.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!store.state.loggedIn || store.state.role !== 'admin') {
+        next({ path: '/login', query: { redirect: '/user' } });
+      } else {
+        store.commit('replaceNav', {
+          index: 0,
+          info: {
+            text: 'Users',
+            disabled: false,
+            to: '/user',
+          },
+        });
+        next();
+      }
+    },
+  },
+  {
     path: '/',
     beforeEnter: (to, from, next) => {
       if (store.state.loggedIn) {

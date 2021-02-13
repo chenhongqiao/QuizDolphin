@@ -90,7 +90,7 @@
 <script>
 import AxiosError from 'axios';
 import QuizService from '../services/QuizService';
-import EditQuizInfoComponent from '../components/EditQuizInfoComponent.vue';
+import EditQuizInfoComponent from '../components/admin/EditQuizInfoComponent.vue';
 
 export default {
   name: 'UserDashView',

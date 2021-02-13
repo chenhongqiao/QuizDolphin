@@ -130,8 +130,8 @@
 </template>
 
 <script>
-import QuizService from '../services/QuizService';
-import QuestionService from '../services/QuestionService';
+import QuizService from '../../services/QuizService';
+import QuestionService from '../../services/QuestionService';
 import EditQuestionComponent from './EditQuestionComponent.vue';
 import EditQuizInfoComponent from './EditQuizInfoComponent.vue';
 

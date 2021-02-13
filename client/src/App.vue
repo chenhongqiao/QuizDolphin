@@ -24,6 +24,17 @@
             <v-list-item-title> History </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item
+          v-if="$store.state.role==='admin'"
+          to="/user"
+        >
+          <v-list-item-icon>
+            <v-icon> mdi-account-multiple </v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title> Users </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-app-bar

@@ -26,6 +26,34 @@ class UserService {
     });
     return response.data;
   }
+
+  static async getUserList() {
+    const response = await axios.get(`${url}list`, {
+      withCredentials: true,
+    });
+    return response.data;
+  }
+
+  static async getUserInfo(email) {
+    const response = await axios.get(`${url}${email}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  }
+
+  static async putUserInfo(email, userInfo) {
+    await axios.put(`${url}${email}`, {
+      withCredentials: true,
+      data: userInfo,
+    });
+  }
+
+  static async postUserInfo(userInfo) {
+    await axios.post(`${url}`, {
+      withCredentials: true,
+      data: userInfo,
+    });
+  }
 }
 
 export default UserService;

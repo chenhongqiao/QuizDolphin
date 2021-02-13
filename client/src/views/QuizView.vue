@@ -40,8 +40,8 @@
 </template>
 
 <script>
-import UserQuizComponent from '../components/UserQuizComponent.vue';
-import AdminQuizComponent from '../components/AdminQuizComponent.vue';
+import UserQuizComponent from '../components/user/UserQuizComponent.vue';
+import AdminQuizComponent from '../components/admin/AdminQuizComponent.vue';
 
 export default {
   name: 'QuizView',

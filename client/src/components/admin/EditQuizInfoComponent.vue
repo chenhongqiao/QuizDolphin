@@ -129,7 +129,7 @@
 </template>
 
 <script>
-import QuizService from '../services/QuizService';
+import QuizService from '../../services/QuizService';
 
 export default {
   props: {

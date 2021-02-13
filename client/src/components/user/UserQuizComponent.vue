@@ -116,8 +116,8 @@
 </template>
 
 <script>
-import QuizService from '../services/QuizService';
-import LineChartComponent from './LineChartComponent.vue';
+import QuizService from '../../services/QuizService';
+import LineChartComponent from '../LineChartComponent.vue';
 
 export default {
   name: 'UserQuizComponent',
