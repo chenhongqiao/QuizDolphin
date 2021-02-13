@@ -36,6 +36,14 @@
               v-model.trim="userInfo.password"
               :rules="requiredField"
             />
+            <div>
+              Role
+            </div>
+            <v-select
+              v-model="userInfo.role"
+              :items="['user','admin']"
+              :rules="requiredField"
+            />
           </v-form>
         </v-card-text>
         <v-progress-linear

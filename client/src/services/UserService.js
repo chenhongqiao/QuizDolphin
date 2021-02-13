@@ -54,6 +54,12 @@ class UserService {
       data: userInfo,
     });
   }
+
+  static async deleteUser(email) {
+    await axios.delete(`${url}${email}`, {
+      withCredentials: true,
+    });
+  }
 }
 
 export default UserService;
