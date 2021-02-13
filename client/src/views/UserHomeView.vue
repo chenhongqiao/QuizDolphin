@@ -63,6 +63,7 @@
       <v-card>
         <v-container>
           Do you want to delete this quiz?
+          All questions associated with this quiz will be deleted too.
         </v-container>
         <v-divider />
         <v-card-actions>

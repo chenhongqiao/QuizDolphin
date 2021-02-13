@@ -147,10 +147,12 @@ class QuizService {
 
   static async deleteQuiz(quizId) {
     const quizCollection = await mongodb.loadCollection('quizzes');
+    const questionsCollection = await mongodb.loadCollection('questions');
     const status = await quizCollection.deleteOne({ quizId });
     if (status.deletedCount === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
+    await questionsCollection.deleteMany({ quizId });
     return { success: true };
   }
 

@@ -105,7 +105,7 @@
     >
       <v-card>
         <v-container>
-          Do you want to delete this question?
+          Do you want to delete this question? You cannot recover this question once it's deleted.
         </v-container>
         <v-divider />
         <v-card-actions>
