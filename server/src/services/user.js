@@ -37,5 +37,12 @@ class UserService {
     }
     return { success: true, data: email };
   }
+
+  static async getUserList() {
+    const usersCollection = await mongodb.loadCollection('users');
+    const userList = await usersCollection.find({})
+      .project({ _id: 0, password: 0, salt: 0 }).toArray();
+    return { success: true, data: userList };
+  }
 }
 module.exports = UserService;

@@ -99,11 +99,11 @@ router.post('/', async (req, res, next) => {
 });
 
 router.delete('/:email', async (req, res, next) => {
-  if (!req.session.loggedin || req.session.role !== 'admin') {
-    res.status(403).send('Need Admin Privileges!');
-    return;
-  }
   try {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
+      res.status(403).send('Need Admin Privileges!');
+      return;
+    }
     const { email } = req.params;
     if (!email) {
       res.status(400).send('Missing Parameter!');
@@ -129,11 +129,11 @@ router.delete('/:email', async (req, res, next) => {
 });
 
 router.put('/:email', async (req, res, next) => {
-  if (!req.session.loggedin || req.session.role !== 'admin') {
-    res.status(403).send('Need Admin Privileges!');
-    return;
-  }
   try {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
+      res.status(403).send('Need Admin Privileges!');
+      return;
+    }
     const { email } = req.params;
     if (!email) {
       res.status(400).send('Missing Parameter!');
@@ -153,6 +153,23 @@ router.put('/:email', async (req, res, next) => {
         res.status(400).send('Invalid User Syntax!');
         return;
       }
+      throw Error('Unexpected Service Response!');
+    } else {
+      res.send(response.data);
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/list', async (req, res, next) => {
+  try {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
+      res.status(403).send('Need Admin Privileges!');
+      return;
+    }
+    const response = await userService.getUserList();
+    if (!response.success) {
       throw Error('Unexpected Service Response!');
     } else {
       res.send(response.data);
