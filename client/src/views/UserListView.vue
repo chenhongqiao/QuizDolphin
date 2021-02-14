@@ -5,6 +5,8 @@
         <v-data-table
           :headers="tableHeaders"
           :items="userList"
+          show-group-by
+          :search="search"
         >
           <template #top>
             <v-toolbar
@@ -20,6 +22,14 @@
               <v-btn @click="newUser=true">
                 New User
               </v-btn>
+            </v-toolbar>
+            <v-toolbar flat>
+              <v-text-field
+                v-model="search"
+                class="mx-4"
+                :label="'Search'"
+                append-icon="mdi-magnify"
+              />
             </v-toolbar>
           </template>
           <!-- eslint-disable-next-line vue/valid-v-slot -->
@@ -96,19 +106,23 @@ export default {
   data: () => ({
     userList: [],
     pendingDelete: false,
+    search: '',
     pendingDeleteUser: {},
     tableHeaders: [
       {
         text: 'Name',
         value: 'name',
+        groupable: false,
       },
       {
         text: 'Email',
         value: 'email',
+        groupable: false,
       },
       {
         text: 'Role',
         value: 'role',
+        groupable: true,
       },
       {
         text: 'Actions',

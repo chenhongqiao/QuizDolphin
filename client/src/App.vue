@@ -75,9 +75,14 @@
         <v-card>
           <v-list-item-content class="justify-center">
             <div class="mx-auto text-center">
-              <h3>{{ $store.state.name }}</h3>
-              <div class="caption mt-1">
+              <div class="text-h6">
+                {{ $store.state.name }}
+              </div>
+              <div class="caption mt-2">
                 {{ $store.state.email }}
+              </div>
+              <div class="caption mt-1">
+                {{ $store.state.role }}
               </div>
               <v-divider class="my-3" />
               <v-btn
