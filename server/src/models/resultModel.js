@@ -1,8 +1,9 @@
 const validateUtils = require('../utils/validateUtil');
 
-function QuizResult(score, questions, results, totalPoints, attemptId, email, quizId, quizName) {
+function QuizResult(score, questions, results, totalPoints,
+  attemptId, email, quizId, quizName, userName) {
   if (validateUtils.validateQuizResult(score, questions, results,
-    totalPoints, attemptId, email, quizId, quizName)) {
+    totalPoints, attemptId, email, quizId, quizName, userName)) {
     this.score = score;
     this.totalPoints = totalPoints;
     this.timeStamp = (new Date()).toISOString();
@@ -12,6 +13,7 @@ function QuizResult(score, questions, results, totalPoints, attemptId, email, qu
     this.quizId = quizId;
     this.email = email;
     this.quizName = quizName;
+    this.userName = userName;
   } else {
     this.invalid = true;
   }

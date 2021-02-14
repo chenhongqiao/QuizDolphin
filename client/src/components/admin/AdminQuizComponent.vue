@@ -30,10 +30,11 @@
       <v-container>
         <v-tabs>
           <v-tab> Questions </v-tab>
+          <v-tab> Results </v-tab>
           <v-tab-item>
             <v-data-table
               show-group-by
-              :headers="headers"
+              :headers="questionHeader"
               :items="questions"
             >
               <template #top>
@@ -68,6 +69,60 @@
                 >
                   mdi-pencil
                 </v-icon>
+              </template>
+            </v-data-table>
+          </v-tab-item>
+          <v-tab-item>
+            <v-data-table
+              show-expand
+              multi-sort
+              :headers="resultsHeader"
+              :items="results"
+              item-key="email"
+              :single-expand="true"
+              :expanded.sync="expanded"
+            >
+              <template
+                #expanded-item="{ headers, item }"
+              >
+                <td :colspan="headers.length">
+                  <v-simple-table
+                    light
+                    :style="'box-shadow: inset 0px 4px 8px -5px rgb(50 50 50 / 75%);'"
+                  >
+                    <template #default>
+                      <thead>
+                        <tr class="auto">
+                          <th class="text-left">
+                            Time Stamp
+                          </th>
+                          <th class="text-left">
+                            Score
+                          </th>
+                          <th class="text-right">
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="(record, index) in item.records"
+                          :key="'r'+index+record"
+                        >
+                          <td>{{ toLocalTime(record) }} </td>
+                          <td class="text-left">
+                            {{ record.score.toFixed(2) }}/{{ record.totalPoints.toFixed(2) }}
+                          </td>
+                          <td class="text-right">
+                            <a @click="toResult(record.attemptId)">
+                              View
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </td>
               </template>
             </v-data-table>
           </v-tab-item>
@@ -151,7 +206,8 @@ export default {
     questions: [],
     editIndex: null,
     editing: null,
-    headers: [{
+    expanded: [],
+    questionHeader: [{
       text: 'Index',
       value: 'index',
       groupable: false,
@@ -180,13 +236,30 @@ export default {
       align: 'end',
       groupable: false,
     }],
+    resultsHeader: [{
+      text: 'Name',
+      value: 'userName',
+    },
+    {
+      text: 'Email',
+      value: 'email',
+    },
+    {
+      text: 'Best Score',
+      value: 'bestScore',
+    }, {
+      text: '',
+      value: 'data-table-expand',
+    }],
     pendingDelete: false,
     pendingDeleteQuestion: null,
+    results: [],
   }),
   async mounted() {
     try {
       await this.loadQuizInfo();
       await this.loadQuestions();
+      await this.loadResults();
       this.infoLoaded = true;
       if (!this.$store.state.navigation[0]) {
         this.$store.commit('replaceNav', {
@@ -255,10 +328,44 @@ export default {
         this.questions[index].index = index + 1;
       }
     },
+    async loadResults() {
+      const history = (await QuizService.getAttemptHistoryAll(this.quizId)).reverse();
+      const results = new Map();
+      for (let index = 0; index < history.length; index += 1) {
+        // eslint-disable-next-line max-len
+        let result = {};
+        if (!results.has(history[index].email)) {
+          result.bestScore = history[index].score;
+          result.email = history[index].email;
+          result.userName = history[index].userName;
+          result.records = [];
+        } else {
+          result = results.get(history[index].email);
+          if (history[index].score > result.bestScore) {
+            result.bestScore = history[index].score;
+          }
+        }
+        result.records.push(history[index]);
+        results.set(history[index].email, result);
+      }
+      this.results = [...results].map(([, value]) => value);
+      this.results.sort((a, b) => ((a.userName > b.userName) ? 1 : -1));
+    },
     editQuestion(question) {
       this.editIndex = question.index - 1;
       this.editing = 'question';
     },
+    toLocalTime(record) {
+      return (new Date(record.timeStamp)).toLocaleString();
+    },
+    toResult(attemptId) {
+      this.$router.push({ name: 'Result', params: { id: attemptId } });
+    },
   },
 };
 </script>
+<style>
+ .v-data-table__expanded__content {
+   box-shadow: none !important;
+ }
+</style>

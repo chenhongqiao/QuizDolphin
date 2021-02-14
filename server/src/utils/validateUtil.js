@@ -170,10 +170,10 @@ class DataValidate {
   }
 
   // eslint-disable-next-line max-len
-  static validateQuizResult(score, questions, results, totalPoints, attemptId, email, quizId, quizName) {
+  static validateQuizResult(score, questions, results, totalPoints, attemptId, email, quizId, quizName, userName) {
     if (typeof score !== 'number' || !Array.isArray(questions)
     || !Array.isArray(results) || typeof totalPoints !== 'number' || typeof attemptId !== 'string'
-    || typeof email !== 'string' || typeof quizId !== 'string' || typeof quizName !== 'string') {
+    || typeof email !== 'string' || typeof quizId !== 'string' || typeof quizName !== 'string' || typeof userName !== 'string') {
       return false;
     }
     return true;

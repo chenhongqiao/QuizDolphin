@@ -74,6 +74,20 @@ class QuizService {
       withCredentials: true,
     });
   }
+
+  static async getAttemptHistoryAll(quizId) {
+    let response;
+    if (quizId) {
+      response = await axios.get(`${url}${quizId}/history?viewAll=true`, {
+        withCredentials: true,
+      });
+    } else {
+      response = await axios.get(`${url}/history?viewAll=true`, {
+        withCredentials: true,
+      });
+    }
+    return response.data;
+  }
 }
 
 export default QuizService;
