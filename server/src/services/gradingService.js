@@ -1,7 +1,7 @@
 const mongodb = require('../databases/mongodb');
 const redis = require('../databases/redis');
 
-const resultModel = require('../models/result');
+const resultModel = require('../models/resultModel');
 
 class GradingService {
   static async gradeQuiz(attemptId, email) {

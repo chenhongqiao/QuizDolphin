@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const questionService = require('../services/question');
+const questionService = require('../services/questionService');
 
 router.post('/', async (req, res, next) => {
   try {

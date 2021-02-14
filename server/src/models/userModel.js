@@ -1,5 +1,5 @@
-const passwordUtils = require('../utils/password');
-const validateUtils = require('../utils/validate');
+const passwordUtils = require('../utils/passwordUtil');
+const validateUtils = require('../utils/validateUtil');
 
 function User(userInfo) {
   if (validateUtils.validateUserInfo(userInfo)) {

@@ -1,6 +1,6 @@
 const mongodb = require('../databases/mongodb');
-const nanoidUtils = require('../utils/nanoid');
-const questionModel = require('../models/question');
+const nanoidUtils = require('../utils/nanoidUtil');
+const questionModel = require('../models/questionModel');
 
 class QuestionService {
   static async newQuestion(question) {

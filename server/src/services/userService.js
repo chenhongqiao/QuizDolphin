@@ -1,5 +1,5 @@
 const mongodb = require('../databases/mongodb');
-const userModel = require('../models/user');
+const userModel = require('../models/userModel');
 
 class UserService {
   static async newUser(userInfo) {

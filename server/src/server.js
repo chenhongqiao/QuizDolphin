@@ -11,11 +11,11 @@ const path = require('path');
 const redis = require('./databases/redis');
 const mongodb = require('./databases/mongodb');
 const agenda = require('./jobs/agenda');
-const questionAPI = require('./api/question');
-const attemptAPI = require('./api/attempt');
-const quizAPI = require('./api/quiz');
-const userAPI = require('./api/user');
-const resultAPI = require('./api/result');
+const questionAPI = require('./api/questionAPI');
+const attemptAPI = require('./api/attemptAPI');
+const quizAPI = require('./api/quizAPI');
+const userAPI = require('./api/userAPI');
+const resultAPI = require('./api/resultAPI');
 
 async function startServer() {
   await mongodb.connect();

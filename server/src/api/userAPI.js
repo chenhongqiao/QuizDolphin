@@ -2,10 +2,10 @@ const express = require('express');
 
 const router = express.Router();
 
-const authService = require('../services/auth');
-const userService = require('../services/user');
+const authService = require('../services/authService');
+const userService = require('../services/userService');
 
-const randomUtil = require('../utils/random');
+const randomUtil = require('../utils/randomUtil');
 
 router.post('/session', async (req, res, next) => {
   try {

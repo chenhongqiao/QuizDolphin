@@ -1,5 +1,5 @@
 const mongodb = require('../databases/mongodb');
-const passwordUtils = require('../utils/password');
+const passwordUtils = require('../utils/passwordUtil');
 
 class AuthService {
   static async login(email, password) {

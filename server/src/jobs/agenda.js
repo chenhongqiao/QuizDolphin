@@ -2,7 +2,7 @@ const Agenda = require('agenda');
 const { ObjectID } = require('mongodb');
 const mongodb = require('../databases/mongodb');
 
-const gradingService = require('../services/grading');
+const gradingService = require('../services/gradingService');
 
 class JobService {
   static agenda;

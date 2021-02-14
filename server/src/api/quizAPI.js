@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const quizService = require('../services/quiz');
+const quizService = require('../services/quizService');
 const jobsService = require('../jobs/agenda');
 
 router.get('/:quizId?/ongoing', async (req, res, next) => {

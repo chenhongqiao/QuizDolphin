@@ -1,4 +1,4 @@
-const validateUtils = require('../utils/validate');
+const validateUtils = require('../utils/validateUtil');
 
 function QuizInfo(quizInfo, quizId) {
   if (validateUtils.validateQuizInfo(quizInfo)) {

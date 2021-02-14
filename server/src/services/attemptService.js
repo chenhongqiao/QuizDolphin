@@ -1,6 +1,6 @@
 const redis = require('../databases/redis');
 const mongodb = require('../databases/mongodb');
-const quizModel = require('../models/quiz');
+const quizModel = require('../models/quizModel');
 
 class AttemptService {
   static async getProgress(attemptId, email) {

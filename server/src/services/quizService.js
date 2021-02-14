@@ -1,9 +1,9 @@
 const mongodb = require('../databases/mongodb');
 const redis = require('../databases/redis');
-const randomUtils = require('../utils/random');
-const nanoidUtils = require('../utils/nanoid');
-const progressUtils = require('../utils/progress');
-const quizModel = require('../models/quiz');
+const randomUtils = require('../utils/randomUtil');
+const nanoidUtils = require('../utils/nanoidUtil');
+const progressUtils = require('../utils/progressUtil');
+const quizModel = require('../models/quizModel');
 
 class QuizService {
   static async newAttempt(quizId, email, userName) {

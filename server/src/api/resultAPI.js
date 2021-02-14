@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const resultService = require('../services/result');
+const resultService = require('../services/resultService');
 
 router.get('/:attemptId', async (req, res, next) => {
   try {

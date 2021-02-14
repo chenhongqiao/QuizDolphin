@@ -2,8 +2,8 @@ const express = require('express');
 
 const router = express.Router();
 
-const attemptService = require('../services/attempt');
-const gradingService = require('../services/grading');
+const attemptService = require('../services/attemptService');
+const gradingService = require('../services/gradingService');
 const jobsService = require('../jobs/agenda');
 
 router.get('/:attemptId/progress', async (req, res, next) => {
