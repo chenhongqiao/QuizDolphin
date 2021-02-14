@@ -19,10 +19,20 @@ class QuizService {
     return response.data;
   }
 
-  static async getAttemptHistory(quizId) {
+  static async getAttemptHistory(quizId, admin) {
     let response;
     if (quizId) {
-      response = await axios.get(`${url}${quizId}/history`, {
+      if (admin) {
+        response = await axios.get(`${url}${quizId}/history?admin=true`, {
+          withCredentials: true,
+        });
+      } else {
+        response = await axios.get(`${url}${quizId}/history`, {
+          withCredentials: true,
+        });
+      }
+    } else if (admin) {
+      response = await axios.get(`${url}/history?admin=true`, {
         withCredentials: true,
       });
     } else {
@@ -73,20 +83,6 @@ class QuizService {
     await axios.delete(`${url}${quizId}`, {
       withCredentials: true,
     });
-  }
-
-  static async getAttemptHistoryAll(quizId) {
-    let response;
-    if (quizId) {
-      response = await axios.get(`${url}${quizId}/history?viewAll=true`, {
-        withCredentials: true,
-      });
-    } else {
-      response = await axios.get(`${url}/history?viewAll=true`, {
-        withCredentials: true,
-      });
-    }
-    return response.data;
   }
 }
 

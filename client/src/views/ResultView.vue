@@ -297,7 +297,7 @@ export default {
   methods: {
     async loadResult() {
       try {
-        this.quizResult = await ResultService.getResult(this.attemptId);
+        this.quizResult = await ResultService.getResult(this.attemptId, this.$route.query.admin);
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {

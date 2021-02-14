@@ -12,9 +12,9 @@ router.get('/:quizId?/ongoing', async (req, res, next) => {
       return;
     }
     const { quizId } = req.params;
-    const { viewAll } = req.query;
+    const { admin } = req.query;
     let response;
-    if (viewAll && req.session.role === 'admin') {
+    if (admin && req.session.role === 'admin') {
       response = await quizService.getOngoingId(req.session.email, quizId, true);
     } else {
       response = await quizService.getOngoingId(req.session.email, quizId, false);
@@ -73,9 +73,9 @@ router.get('/:quizId?/history', async (req, res, next) => {
       return;
     }
     const { quizId } = req.params;
-    const { viewAll } = req.query;
+    const { admin } = req.query;
     let response;
-    if (viewAll && req.session.role === 'admin') {
+    if (admin && req.session.role === 'admin') {
       response = await quizService.getHistoryId(req.session.email, quizId, true);
     } else {
       response = await quizService.getHistoryId(req.session.email, quizId, false);

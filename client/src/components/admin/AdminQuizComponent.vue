@@ -1,4 +1,5 @@
 <template>
+  <!--eslint-disable max-len -->
   <div>
     <div v-if="infoLoaded">
       <v-container>
@@ -329,7 +330,7 @@ export default {
       }
     },
     async loadResults() {
-      const history = (await QuizService.getAttemptHistoryAll(this.quizId)).reverse();
+      const history = (await QuizService.getAttemptHistory(this.quizId, true)).reverse();
       const results = new Map();
       for (let index = 0; index < history.length; index += 1) {
         // eslint-disable-next-line max-len
@@ -359,7 +360,7 @@ export default {
       return (new Date(record.timeStamp)).toLocaleString();
     },
     toResult(attemptId) {
-      this.$router.push({ name: 'Result', params: { id: attemptId } });
+      this.$router.push({ name: 'Result', params: { id: attemptId }, query: { admin: true } });
     },
   },
 };

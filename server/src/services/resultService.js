@@ -1,9 +1,14 @@
 const mongodb = require('../databases/mongodb');
 
 class ResultService {
-  static async getResult(attemptId, email) {
+  static async getResult(attemptId, email, admin) {
     const resultsCollection = await mongodb.loadCollection('results');
-    const resultCursor = await resultsCollection.find({ attemptId, email }).project({ _id: 0 });
+    let resultCursor;
+    if (admin) {
+      resultCursor = await resultsCollection.find({ attemptId }).project({ _id: 0 });
+    } else {
+      resultCursor = await resultsCollection.find({ attemptId, email }).project({ _id: 0 });
+    }
     if (await resultCursor.count() === 0) {
       return { success: false, message: 'No Matching Result!' };
     }

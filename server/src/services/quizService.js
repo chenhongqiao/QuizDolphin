@@ -66,7 +66,7 @@ class QuizService {
     return { success: true, data: { attemptId, email, endTime: quizData.endTime } };
   }
 
-  static async getOngoingId(email, quizId, viewAll) {
+  static async getOngoingId(email, quizId, admin) {
     const attemptsCollection = await mongodb.loadCollection('attempts');
     const query = {};
     if (quizId) {
@@ -75,7 +75,7 @@ class QuizService {
       }
       query.quizId = quizId;
     }
-    if (!viewAll) {
+    if (!admin) {
       query.email = email;
     }
     const ongoing = await attemptsCollection
@@ -87,7 +87,7 @@ class QuizService {
     return { success: true, data: ongoing };
   }
 
-  static async getHistoryId(email, quizId, viewAll) {
+  static async getHistoryId(email, quizId, admin) {
     const resultsCollection = await mongodb.loadCollection('results');
     const query = {};
     if (quizId) {
@@ -96,7 +96,7 @@ class QuizService {
       }
       query.quizId = quizId;
     }
-    if (!viewAll) {
+    if (!admin) {
       query.email = email;
     }
     const history = await resultsCollection.find({
