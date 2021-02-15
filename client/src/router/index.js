@@ -16,6 +16,16 @@ const routes = [
         next();
       }
     },
+    children: [
+      {
+        path: 'view',
+        component: () => import('../views/user/ViewQuizView.vue'),
+      },
+      {
+        path: 'manage',
+        component: () => import('../views/admin/ManageQuizView.vue'),
+      },
+    ],
   },
   {
     path: '/attempt/:id',

@@ -11,6 +11,7 @@ const store = new Vuex.Store({
     name: '',
     role: '',
     navigation: [],
+    expandedResult: [],
   },
 
   mutations: {

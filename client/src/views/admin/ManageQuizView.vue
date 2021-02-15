@@ -81,7 +81,7 @@
               :items="results"
               item-key="email"
               :single-expand="true"
-              :expanded.sync="expanded"
+              :expanded.sync="$store.state.expandedResult"
             >
               <template
                 #expanded-item="{ headers, item }"
@@ -188,18 +188,16 @@
 <script>
 import QuizService from '../../services/QuizService';
 import QuestionService from '../../services/QuestionService';
-import EditQuestionComponent from './EditQuestionComponent.vue';
-import EditQuizInfoComponent from './EditQuizInfoComponent.vue';
+import EditQuestionComponent from '../../components/admin/EditQuestionComponent.vue';
+import EditQuizInfoComponent from '../../components/admin/EditQuizInfoComponent.vue';
 
 export default {
   components: {
     EditQuestionComponent,
     EditQuizInfoComponent,
   },
-  props: {
-    quizId: { type: String, default: '' },
-  },
   data: () => ({
+    quizId: '',
     quizName: '',
     questionCount: 0,
     infoLoaded: false,
@@ -257,6 +255,7 @@ export default {
     results: [],
   }),
   async mounted() {
+    this.quizId = this.$route.params.id;
     try {
       await this.loadQuizInfo();
       await this.loadQuestions();
@@ -277,14 +276,14 @@ export default {
         info: {
           text: this.quizName,
           disabled: false,
-          to: `/quiz/${this.quizId}`,
+          to: `/quiz/${this.quizId}/manage`,
         },
       });
     } catch (err) {
       if (err.response) {
         if (err.response.status === 401 || err.response.status === 403) {
           this.$store.commit('logout');
-          this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
+          this.$router.push({ path: '/login', query: { redirect: this.$route.path } });
         } else if (err.response.status === 404) {
         // TODO: 404 Page
         } else {

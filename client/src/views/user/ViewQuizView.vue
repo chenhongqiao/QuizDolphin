@@ -117,17 +117,15 @@
 
 <script>
 import QuizService from '../../services/QuizService';
-import LineChartComponent from '../LineChartComponent.vue';
+import LineChartComponent from '../../components/LineChartComponent.vue';
 
 export default {
   name: 'UserQuizComponent',
   components: {
     LineChartComponent,
   },
-  props: {
-    quizId: { type: String, default: '' },
-  },
   data: () => ({
+    quizId: '',
     quizHistory: [],
     duration: 0,
     historyChartData: {
@@ -147,6 +145,7 @@ export default {
     questionCount: 0,
   }),
   async mounted() {
+    this.quizId = this.$route.params.id;
     try {
       const ongoing = await QuizService.getOngoingAttempt(this.quizId);
       if (ongoing.length) {
@@ -177,7 +176,7 @@ export default {
         info: {
           text: this.quizName,
           disabled: false,
-          to: `/quiz/${this.quizId}`,
+          to: `/quiz/${this.quizId}/view`,
         },
       });
       this.infoLoaded = true;
@@ -185,7 +184,7 @@ export default {
       if (err.response) {
         if (err.response.status === 401) {
           this.$store.commit('logout');
-          this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
+          this.$router.push({ path: '/login', query: { redirect: this.$route.path } });
         } else if (err.response.status === 404) {
         // TODO: 404 Page
         } else {
