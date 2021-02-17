@@ -5,10 +5,10 @@ axios.defaults.withCredentials = true;
 const url = `${window.location.origin}/api/result/`;
 
 class ResultService {
-  static async getResult(attemptId, admin) {
+  static async getResult(attemptId, viewAll) {
     let response;
-    if (admin) {
-      response = await axios.get(`${url}${attemptId}?admin=true`, {
+    if (viewAll) {
+      response = await axios.get(`${url}${attemptId}?viewAll=true`, {
         withCredentials: true,
       });
     } else {

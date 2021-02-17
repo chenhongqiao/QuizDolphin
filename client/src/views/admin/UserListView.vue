@@ -19,7 +19,10 @@
                 vertical
               />
               <v-spacer />
-              <v-btn @click="newUser=true">
+              <v-btn
+                text
+                @click="newUser=true"
+              >
                 New User
               </v-btn>
             </v-toolbar>
@@ -96,8 +99,8 @@
 </template>
 
 <script>
-import UserService from '../services/UserService';
-import EditUserComponent from '../components/admin/EditUserComponent.vue';
+import UserService from '../../services/UserService';
+import EditUserComponent from '../../components/admin/EditUserComponent.vue';
 
 export default {
   components: {

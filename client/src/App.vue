@@ -81,7 +81,10 @@
               <div class="caption mt-2">
                 {{ $store.state.user.email }}
               </div>
-              <div class="caption mt-1">
+              <div
+                v-if="$store.state.user.role==='admin'"
+                class="caption mt-1"
+              >
                 {{ $store.state.user.role }}
               </div>
               <v-divider class="my-3" />

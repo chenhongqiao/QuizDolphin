@@ -9,13 +9,31 @@
           show-group-by
           multi-sort
         >
+          <template #top>
+            <v-toolbar
+              flat
+            >
+              <v-toolbar-title>Attempt History</v-toolbar-title>
+            </v-toolbar>
+            <v-toolbar flat>
+              <v-text-field
+                v-model="search"
+                class="mx-4"
+                :label="'Search'"
+                append-icon="mdi-magnify"
+              />
+            </v-toolbar>
+          </template>
           <!-- eslint-disable-next-line vue/valid-v-slot -->
           <template #item.timeStamp="{ item }">
             {{ (new Date(item.timeStamp)).toLocaleString() }}
           </template>
           <!-- eslint-disable-next-line vue/valid-v-slot -->
           <template #item.attemptId="{ item }">
-            <router-link :to="{ name: 'Result', params: { id: item.attemptId } }">
+            <router-link
+              :to="{ name: 'Result', params: { id: item.attemptId }}"
+              :title="`Attempt ID: ${item.attemptId}`"
+            >
               View
             </router-link>
           </template>
@@ -52,6 +70,7 @@ export default {
       {
         text: 'Time Stamp',
         value: 'timeStamp',
+        filterable: false,
         groupable: false,
       },
       {
@@ -71,6 +90,11 @@ export default {
         align: 'end',
         groupable: false,
         sortable: false,
+      },
+      {
+        text: 'localTime',
+        value: 'localTime',
+        align: ' d-none',
       },
     ],
   }),
@@ -93,6 +117,8 @@ export default {
           this.quizHistory[index].percent = ((this.quizHistory[index].score
           / this.quizHistory[index].totalPoints) * 100).toFixed(2);
           this.quizHistory[index].score = `${this.quizHistory[index].score.toFixed(2)}/${this.quizHistory[index].totalPoints.toFixed(2)}`;
+          this.quizHistory[index].localTime = (new Date(this.quizHistory[index].timeStamp))
+            .toLocaleString();
         }
         this.historyLoaded = true;
       } catch (err) {

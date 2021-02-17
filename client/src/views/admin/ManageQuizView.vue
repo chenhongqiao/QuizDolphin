@@ -283,7 +283,7 @@ export default {
       if (err.response) {
         if (err.response.status === 401 || err.response.status === 403) {
           this.$store.commit('user/logout');
-          this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
+          this.$router.replace({ path: '/login', query: { redirect: this.$route.fullPath } });
         } else if (err.response.status === 404) {
         // TODO: 404 Page
         } else {
@@ -304,7 +304,7 @@ export default {
         if (err.response) {
           if (err.response.status === 401 || err.response.status === 403) {
             this.$store.commit('user/logout');
-            this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
+            this.$router.replace({ path: '/login', query: { redirect: this.$route.fullPath } });
           } else if (err.response.status === 404) {
             // TODO: 404 Page
           } else {
