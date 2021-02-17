@@ -25,7 +25,7 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item
-          v-if="$store.state.role==='admin'"
+          v-if="$store.state.user.role==='admin'"
           to="/user"
         >
           <v-list-item-icon>
@@ -50,12 +50,12 @@
         Quiz System
       </v-toolbar-title>
       <v-breadcrumbs
-        :items="$store.state.navigation"
+        :items="$store.state.navigation.navigation"
         divider="-"
       />
       <v-spacer />
       <v-menu
-        v-if="$store.state.loggedIn"
+        v-if="$store.getters['user/status']"
         offset-y
         min-width="200px"
       >
@@ -65,7 +65,7 @@
             v-on="on"
           >
             <v-avatar
-              :color="$store.state.role==='admin'?'blue-grey':'blue'"
+              :color="$store.state.user.role==='admin'?'blue-grey':'blue'"
               size="36"
             >
               <span class="white--text title">{{ getInitial }}</span>
@@ -76,13 +76,13 @@
           <v-list-item-content class="justify-center">
             <div class="mx-auto text-center">
               <div class="text-h6">
-                {{ $store.state.name }}
+                {{ $store.state.user.name }}
               </div>
               <div class="caption mt-2">
-                {{ $store.state.email }}
+                {{ $store.state.user.email }}
               </div>
               <div class="caption mt-1">
-                {{ $store.state.role }}
+                {{ $store.state.user.role }}
               </div>
               <v-divider class="my-3" />
               <v-btn
@@ -122,7 +122,7 @@ export default {
   }),
   computed: {
     getInitial() {
-      const initial = this.$store.state.name.split(' ').map((name) => name[0]).join('');
+      const initial = this.$store.state.user.name.split(' ').map((name) => name[0]).join('');
       return initial;
     },
   },
@@ -130,7 +130,7 @@ export default {
     async logout() {
       try {
         await UserService.deleteSession();
-        this.$store.commit('logout');
+        this.$store.commit('user/logout');
         if (this.$route.path !== '/login') {
           this.$router.push({ name: 'Login' });
         }

@@ -29,7 +29,7 @@
         </v-row>
       </v-container>
       <v-container>
-        <v-tabs>
+        <v-tabs v-model="$store.state.quizView.adminTab">
           <v-tab> Questions </v-tab>
           <v-tab> Results </v-tab>
           <v-tab-item>
@@ -81,7 +81,6 @@
               :items="results"
               item-key="email"
               :single-expand="true"
-              :expanded.sync="$store.state.expandedResult"
             >
               <template
                 #expanded-item="{ headers, item }"
@@ -196,8 +195,10 @@ export default {
     EditQuestionComponent,
     EditQuizInfoComponent,
   },
+  props: {
+    quizId: { type: String, default: null },
+  },
   data: () => ({
-    quizId: '',
     quizName: '',
     questionCount: 0,
     infoLoaded: false,
@@ -255,14 +256,13 @@ export default {
     results: [],
   }),
   async mounted() {
-    this.quizId = this.$route.params.id;
     try {
       await this.loadQuizInfo();
       await this.loadQuestions();
       await this.loadResults();
       this.infoLoaded = true;
-      if (!this.$store.state.navigation[0]) {
-        this.$store.commit('replaceNav', {
+      if (!this.$store.state.navigation.navigation[0]) {
+        this.$store.commit('navigation/replace', {
           index: 0,
           info: {
             text: 'Home',
@@ -271,18 +271,18 @@ export default {
           },
         });
       }
-      this.$store.commit('replaceNav', {
+      this.$store.commit('navigation/replace', {
         index: 1,
         info: {
           text: this.quizName,
           disabled: false,
-          to: `/quiz/${this.quizId}/manage`,
+          to: `/quiz/${this.quizId}`,
         },
       });
     } catch (err) {
       if (err.response) {
         if (err.response.status === 401 || err.response.status === 403) {
-          this.$store.commit('logout');
+          this.$store.commit('user/logout');
           this.$router.push({ path: '/login', query: { redirect: this.$route.path } });
         } else if (err.response.status === 404) {
         // TODO: 404 Page
@@ -303,7 +303,7 @@ export default {
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401 || err.response.status === 403) {
-            this.$store.commit('logout');
+            this.$store.commit('user/logout');
             this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
           } else if (err.response.status === 404) {
             // TODO: 404 Page

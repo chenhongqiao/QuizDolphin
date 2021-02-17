@@ -21,7 +21,7 @@
             <v-card-actions>
               <v-spacer />
               <v-btn
-                v-if="$store.state.role==='admin'"
+                v-if="$store.state.user.role==='admin'"
                 text
                 @click="pendingDelete=true;deleteIndex=quiz.quizId;"
               >
@@ -37,7 +37,7 @@
           </v-card>
         </div>
         <div
-          v-if="$store.state.role==='admin'"
+          v-if="$store.state.user.role==='admin'"
           class="text-right"
         >
           <v-btn @click="newQuiz=true">
@@ -106,7 +106,7 @@ export default {
   }),
   computed: {
     getUserName() {
-      return this.$store.state.name;
+      return this.$store.state.user.name;
     },
   },
   async mounted() {
@@ -116,7 +116,7 @@ export default {
     } catch (err) {
       if (err instanceof AxiosError) {
         if (err.response.status === 401) {
-          this.$store.commit('logout');
+          this.$store.commit('user/logout');
           this.$router.push({ name: 'Login' });
         } else {
           throw err;

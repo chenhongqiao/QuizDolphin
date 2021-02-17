@@ -84,11 +84,11 @@ export default {
   async mounted() {
     const userInformation = (await UserService.getSessionInfo());
     if (userInformation) {
-      this.$store.commit('login', userInformation);
+      this.$store.commit('user/login', userInformation);
       if (this.$route.query.redirect) {
-        this.$router.push(this.$route.query.redirect);
+        this.$router.replace(this.$route.query.redirect);
       } else {
-        this.$router.push('/home');
+        this.$router.replace('/home');
       }
     } else {
       this.needAuth = true;
@@ -100,11 +100,11 @@ export default {
       try {
         await UserService.postSession(this.loginInfo);
         const userInformation = (await UserService.getSessionInfo());
-        this.$store.commit('login', userInformation);
+        this.$store.commit('user/login', userInformation);
         if (this.$route.query.redirect) {
-          this.$router.push(this.$route.query.redirect);
+          this.$router.replace(this.$route.query.redirect);
         } else {
-          this.$router.push('/home');
+          this.$router.replace('/home');
         }
       } catch (err) {
         if (err.response) {

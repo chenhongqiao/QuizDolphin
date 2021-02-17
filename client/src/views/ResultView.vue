@@ -264,8 +264,8 @@ export default {
   async mounted() {
     this.attemptId = this.$route.params.id;
     await this.loadResult();
-    if (!this.$store.state.navigation[0]) {
-      this.$store.commit('replaceNav', {
+    if (!this.$store.state.navigation.navigation[0]) {
+      this.$store.commit('navigation/replace', {
         index: 0,
         info: {
           text: 'Home',
@@ -274,8 +274,8 @@ export default {
         },
       });
     }
-    if (!this.$store.state.navigation[1]) {
-      this.$store.commit('replaceNav', {
+    if (!this.$store.state.navigation.navigation[1]) {
+      this.$store.commit('navigation/replace', {
         index: 1,
         info: {
           text: this.quizResult.quizName,
@@ -284,7 +284,7 @@ export default {
         },
       });
     }
-    this.$store.commit('replaceNav', {
+    this.$store.commit('navigation/replace', {
       index: 2,
       info: {
         text: 'Result',
@@ -301,7 +301,7 @@ export default {
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {
-            this.$store.commit('logout');
+            this.$store.commit('user/logout');
             this.$router.push({ path: '/login', query: { redirect: `/result/${this.attemptId}` } });
           } else if (err.response.status === 404) {
             // TODO: 404 Page

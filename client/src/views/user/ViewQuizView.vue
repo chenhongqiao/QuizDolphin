@@ -53,7 +53,7 @@
         </div>
       </v-container>
       <v-container>
-        <v-tabs>
+        <v-tabs v-model="$store.state.quizView.userTab">
           <v-tab> Records </v-tab>
           <v-tab> Graphs </v-tab>
           <v-tab-item>
@@ -124,8 +124,10 @@ export default {
   components: {
     LineChartComponent,
   },
+  props: {
+    quizId: { type: String, default: null },
+  },
   data: () => ({
-    quizId: '',
     quizHistory: [],
     duration: 0,
     historyChartData: {
@@ -145,7 +147,6 @@ export default {
     questionCount: 0,
   }),
   async mounted() {
-    this.quizId = this.$route.params.id;
     try {
       const ongoing = await QuizService.getOngoingAttempt(this.quizId);
       if (ongoing.length) {
@@ -161,8 +162,8 @@ export default {
         this.historyChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
       });
       this.quizHistory = history.reverse();
-      if (!this.$store.state.navigation[0]) {
-        this.$store.commit('replaceNav', {
+      if (!this.$store.state.navigation.navigation[0]) {
+        this.$store.commit('navigation/replace', {
           index: 0,
           info: {
             text: 'Home',
@@ -171,19 +172,19 @@ export default {
           },
         });
       }
-      this.$store.commit('replaceNav', {
+      this.$store.commit('navigation/replace', {
         index: 1,
         info: {
           text: this.quizName,
           disabled: false,
-          to: `/quiz/${this.quizId}/view`,
+          to: `/quiz/${this.quizId}`,
         },
       });
       this.infoLoaded = true;
     } catch (err) {
       if (err.response) {
         if (err.response.status === 401) {
-          this.$store.commit('logout');
+          this.$store.commit('user/logout');
           this.$router.push({ path: '/login', query: { redirect: this.$route.path } });
         } else if (err.response.status === 404) {
         // TODO: 404 Page
@@ -209,7 +210,7 @@ export default {
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {
-            this.$store.commit('logout');
+            this.$store.commit('user/logout');
             this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
           } else if (err.response.status === 404) {
             // TODO: 404 Page
@@ -245,7 +246,7 @@ export default {
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {
-            this.$store.commit('logout');
+            this.$store.commit('user/logout');
             this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
           }
         } else {
