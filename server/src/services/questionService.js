@@ -5,10 +5,10 @@ const questionModel = require('../models/questionModel');
 class QuestionService {
   static async newQuestion(question) {
     const questionsCollection = await mongodb.loadCollection('questions');
-    let questionId = nanoidUtils.numId();
+    let questionId = nanoidUtils.charId();
     // eslint-disable-next-line no-await-in-loop
     while (await questionsCollection.findOne({ questionId })) {
-      questionId = nanoidUtils.numId();
+      questionId = nanoidUtils.charId();
     }
     const questionData = new questionModel.Question(question, questionId);
     if (questionData.invalid) {

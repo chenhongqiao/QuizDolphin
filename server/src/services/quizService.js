@@ -36,12 +36,12 @@ class QuizService {
     }
     const resultsCollection = await mongodb.loadCollection('results');
     const attemptsCollection = await mongodb.loadCollection('attempts');
-    let attemptId = nanoidUtils.numId();
+    let attemptId = nanoidUtils.charId();
     // eslint-disable-next-line no-await-in-loop
     while (await resultsCollection.findOne({ attemptId })
       // eslint-disable-next-line no-await-in-loop
       || await attemptsCollection.findOne({ attemptId })) {
-      attemptId = nanoidUtils.numId();
+      attemptId = nanoidUtils.charId();
     }
     const initProgress = progressUtils.getInitialProgress(selectedQuestions);
     const quizData = new quizModel.QuizData(
@@ -141,10 +141,10 @@ class QuizService {
 
   static async newQuiz(quizInfo) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    let quizId = nanoidUtils.numId();
+    let quizId = nanoidUtils.charId();
     // eslint-disable-next-line no-await-in-loop
     while (await quizCollection.findOne({ quizId })) {
-      quizId = nanoidUtils.numId();
+      quizId = nanoidUtils.charId();
     }
     const quiz = new quizModel.QuizInfo(quizInfo, quizId);
     if (quiz.invalid) {
