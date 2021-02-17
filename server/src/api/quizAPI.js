@@ -12,12 +12,12 @@ router.get('/:quizId?/ongoing', async (req, res, next) => {
       return;
     }
     const { quizId } = req.params;
-    const { admin } = req.query;
+    const { viewAll } = req.query;
     let response;
-    if (admin && req.session.role === 'admin') {
-      response = await quizService.getOngoingId(req.session.email, quizId, true);
+    if (viewAll && req.session.role === 'admin') {
+      response = await quizService.getOngoingId(req.session.email, quizId, true, req.session.role === 'admin');
     } else {
-      response = await quizService.getOngoingId(req.session.email, quizId, false);
+      response = await quizService.getOngoingId(req.session.email, quizId, false, req.session.role === 'admin');
     }
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {
@@ -73,12 +73,12 @@ router.get('/:quizId?/history', async (req, res, next) => {
       return;
     }
     const { quizId } = req.params;
-    const { admin } = req.query;
+    const { viewAll } = req.query;
     let response;
-    if (admin && req.session.role === 'admin') {
-      response = await quizService.getHistoryId(req.session.email, quizId, true);
+    if (viewAll && req.session.role === 'admin') {
+      response = await quizService.getHistoryId(req.session.email, quizId, true, req.session.role === 'admin');
     } else {
-      response = await quizService.getHistoryId(req.session.email, quizId, false);
+      response = await quizService.getHistoryId(req.session.email, quizId, false, req.session.role === 'admin');
     }
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {

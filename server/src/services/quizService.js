@@ -6,14 +6,14 @@ const progressUtils = require('../utils/progressUtil');
 const quizModel = require('../models/quizModel');
 
 class QuizService {
-  static async newAttempt(quizId, email, userName, admin) {
+  static async newAttempt(quizId, email, userName, preview) {
     const questionsCollection = await mongodb.loadCollection('questions');
-    if ((await this.getOngoingId(email, quizId, false)).data.length) {
-      return { success: false, message: 'No Simultaneous Attempts Allowed!' };
-    }
-    const quizInfoRes = await this.getQuizInfo(quizId, admin);
+    const quizInfoRes = await this.getQuizInfo(quizId, preview);
     if (!quizInfoRes.success) {
       return { success: false, message: 'No Matching Quiz!' };
+    }
+    if ((await this.getOngoingId(email, quizId, false, preview)).data.length) {
+      return { success: false, message: 'No Simultaneous Attempts Allowed!' };
     }
     const quizInfo = quizInfoRes.data;
     const questions = await questionsCollection.find({ quizId }).project({ _id: 0 }).toArray();
@@ -66,16 +66,16 @@ class QuizService {
     return { success: true, data: { attemptId, email, endTime: quizData.endTime } };
   }
 
-  static async getOngoingId(email, quizId, admin) {
+  static async getOngoingId(email, quizId, viewAll, preview) {
     const attemptsCollection = await mongodb.loadCollection('attempts');
     const query = {};
     if (quizId) {
-      if (!(await this.getQuizInfo(quizId, admin)).success) {
+      if (!(await this.getQuizInfo(quizId, preview)).success) {
         return { success: false, message: 'No Matching Quiz!' };
       }
       query.quizId = quizId;
     }
-    if (!admin) {
+    if (!viewAll) {
       query.email = email;
     }
     const ongoing = await attemptsCollection
@@ -87,16 +87,16 @@ class QuizService {
     return { success: true, data: ongoing };
   }
 
-  static async getHistoryId(email, quizId, admin) {
+  static async getHistoryId(email, quizId, viewAll, preview) {
     const resultsCollection = await mongodb.loadCollection('results');
     const query = {};
     if (quizId) {
-      if (!(await this.getQuizInfo(quizId, admin)).success) {
+      if (!(await this.getQuizInfo(quizId, preview)).success) {
         return { success: false, message: 'No Matching Quiz!' };
       }
       query.quizId = quizId;
     }
-    if (!admin) {
+    if (!viewAll) {
       query.email = email;
     }
     const history = await resultsCollection.find({
@@ -116,19 +116,19 @@ class QuizService {
     return { success: true, data: history };
   }
 
-  static async getQuizList(admin) {
+  static async getQuizList(preview) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    if (admin) {
+    if (preview) {
       return { success: true, data: await quizCollection.find({}).project({ _id: 0 }).toArray() };
     }
     // eslint-disable-next-line max-len
     return { success: true, data: await quizCollection.find({ enable: true }).project({ _id: 0 }).toArray() };
   }
 
-  static async getQuizInfo(quizId, admin) {
+  static async getQuizInfo(quizId, preview) {
     const quizCollection = await mongodb.loadCollection('quizzes');
     let quizInfoCursor;
-    if (admin) {
+    if (preview) {
       quizInfoCursor = await quizCollection.find({ quizId }).project({ _id: 0 });
     } else {
       quizInfoCursor = await quizCollection.find({ quizId, enable: true }).project({ _id: 0 });
