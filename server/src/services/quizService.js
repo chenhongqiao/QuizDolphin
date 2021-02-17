@@ -70,7 +70,7 @@ class QuizService {
     const attemptsCollection = await mongodb.loadCollection('attempts');
     const query = {};
     if (quizId) {
-      if (!(await this.getQuizInfo(quizId)).success) {
+      if (!(await this.getQuizInfo(quizId, admin)).success) {
         return { success: false, message: 'No Matching Quiz!' };
       }
       query.quizId = quizId;
@@ -91,7 +91,7 @@ class QuizService {
     const resultsCollection = await mongodb.loadCollection('results');
     const query = {};
     if (quizId) {
-      if (!(await this.getQuizInfo(quizId)).success) {
+      if (!(await this.getQuizInfo(quizId, admin)).success) {
         return { success: false, message: 'No Matching Quiz!' };
       }
       query.quizId = quizId;
@@ -181,7 +181,7 @@ class QuizService {
 
   static async getQuestions(quizId) {
     const questionsCollection = await mongodb.loadCollection('questions');
-    if (!(await this.getQuizInfo(quizId)).success) {
+    if (!(await this.getQuizInfo(quizId, true)).success) {
       return { success: false, message: 'No Matching Quiz!' };
     }
     return {

@@ -86,7 +86,7 @@ export default {
     if (userInformation) {
       this.$store.commit('user/login', userInformation);
       if (this.$route.query.redirect) {
-        this.$router.replace(this.$route.query.redirect);
+        this.$router.go(-1);
       } else {
         this.$router.replace('/home');
       }

@@ -126,23 +126,23 @@ export default {
       return initial;
     },
   },
+  async mounted() {
+    const userInformation = (await UserService.getSessionInfo());
+    if (userInformation) {
+      this.$store.commit('user/login', userInformation);
+    } else {
+      this.$router.replace({ name: 'Login', query: '/home' });
+    }
+  },
   methods: {
     async logout() {
-      try {
-        await UserService.deleteSession();
-        this.$store.commit('user/logout');
-        this.$store.commit('quizView/clearState');
-        if (this.$route.path !== '/login') {
-          this.$router.push({ name: 'Login' });
-        }
-      } catch (err) {
-        if (this.$route.path !== '/login') {
-          this.$router.push({ name: 'Login' });
-        }
-      }
+      this.$store.commit('user/logout');
+      this.$store.commit('quizView/clearState');
+      await UserService.deleteSession();
+      this.$router.push({ name: 'Login' });
     },
     goDashboard() {
-      if (this.$route.path !== '/home') {
+      if (this.$route.fullPath !== '/home') {
         this.$router.push('/home');
       }
     },

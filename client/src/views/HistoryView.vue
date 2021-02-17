@@ -75,6 +75,14 @@ export default {
     ],
   }),
   async mounted() {
+    this.$store.commit('navigation/replace', {
+      index: 0,
+      info: {
+        text: 'History',
+        disabled: false,
+        to: '/history',
+      },
+    });
     await this.loadHistory();
   },
   methods: {
@@ -91,7 +99,7 @@ export default {
         if (err.response) {
           if (err.response.status === 401) {
             this.$store.commit('user/logout');
-            this.$router.push({ path: '/login', query: { redirect: this.$route.path } });
+            this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
           } else {
             throw err;
           }

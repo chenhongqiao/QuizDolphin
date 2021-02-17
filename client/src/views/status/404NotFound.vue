@@ -5,7 +5,7 @@
         Sorry, we cannot find the page you are looking for.
       </div>
       <div class="text-center text-h7">
-        This might because of incorrect url or the resource has been deleted.
+        This might because of either incorrect url or the resource has been deleted.
       </div>
       <div class="text-center pa-4">
         <v-btn
