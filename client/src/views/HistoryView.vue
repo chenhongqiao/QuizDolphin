@@ -91,7 +91,7 @@ export default {
         if (err.response) {
           if (err.response.status === 401) {
             this.$store.commit('user/logout');
-            this.$router.push({ path: '/login', query: { redirect: '/history' } });
+            this.$router.push({ path: '/login', query: { redirect: this.$route.path } });
           } else {
             throw err;
           }

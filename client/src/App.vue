@@ -131,6 +131,7 @@ export default {
       try {
         await UserService.deleteSession();
         this.$store.commit('user/logout');
+        this.$store.commit('quizView/clearState');
         if (this.$route.path !== '/login') {
           this.$router.push({ name: 'Login' });
         }

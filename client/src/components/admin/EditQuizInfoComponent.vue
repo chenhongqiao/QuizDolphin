@@ -184,7 +184,7 @@ export default {
       if (err.response) {
         if (err.response.status === 401 || err.response.status === 403) {
           this.$store.commit('user/logout');
-          this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
+          this.$router.push({ path: '/login', query: { redirect: this.$route.path } });
         } else if (err.response.status === 404) {
         // TODO: 404 Page
         } else {
@@ -210,7 +210,7 @@ export default {
         if (err.response) {
           if (err.response.status === 401 || err.response.status === 403) {
             this.$store.commit('user/logout');
-            this.$router.push({ path: '/login', query: { redirect: `/quiz/${this.quizId}` } });
+            this.$router.push({ path: '/login', query: { redirect: this.$route.path } });
           } else if (err.response.status === 404) {
             // TODO: 404 Page
           } else {
