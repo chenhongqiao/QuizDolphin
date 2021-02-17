@@ -114,9 +114,9 @@
                             {{ record.score.toFixed(2) }}/{{ record.totalPoints.toFixed(2) }}
                           </td>
                           <td class="text-right">
-                            <a @click="toResult(record.attemptId)">
+                            <router-link :to="{ name: 'Result', params: { id: record.attemptId },query: { admin: true } }">
                               View
-                            </a>
+                            </router-link>
                           </td>
                         </tr>
                       </tbody>
@@ -357,9 +357,6 @@ export default {
     },
     toLocalTime(record) {
       return (new Date(record.timeStamp)).toLocaleString();
-    },
-    toResult(attemptId) {
-      this.$router.push({ name: 'Result', params: { id: attemptId }, query: { admin: true } });
     },
   },
 };

@@ -15,15 +15,15 @@
           </template>
           <!-- eslint-disable-next-line vue/valid-v-slot -->
           <template #item.attemptId="{ item }">
-            <a @click="toResult(item.attemptId)">
+            <router-link :to="{ name: 'Result', params: { id: item.attemptId } }">
               View
-            </a>
+            </router-link>
           </template>
           <!-- eslint-disable-next-line vue/valid-v-slot -->
           <template #item.quizName="{ item }">
-            <a @click="toQuiz(item.quizId)">
+            <router-link :to="{ name: 'QuizInfo', params: { id: item.quizId } }">
               {{ item.quizName }}
-            </a>
+            </router-link>
           </template>
         </v-data-table>
       </v-card>
@@ -99,12 +99,6 @@ export default {
           throw err;
         }
       }
-    },
-    toResult(attemptId) {
-      this.$router.push({ name: 'Result', params: { id: attemptId } });
-    },
-    toQuiz(quizId) {
-      this.$router.push({ name: 'QuizInfo', params: { id: quizId } });
     },
   },
 };

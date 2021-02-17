@@ -85,9 +85,9 @@
                       {{ record.score.toFixed(2) }}/{{ record.totalPoints.toFixed(2) }}
                     </td>
                     <td class="text-right">
-                      <a @click="toResult(record.attemptId)">
+                      <router-link :to="{ name: 'Result', params: { id: record.attemptId } }">
                         View
-                      </a>
+                      </router-link>
                     </td>
                   </tr>
                 </tbody>
