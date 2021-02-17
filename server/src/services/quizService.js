@@ -6,12 +6,12 @@ const progressUtils = require('../utils/progressUtil');
 const quizModel = require('../models/quizModel');
 
 class QuizService {
-  static async newAttempt(quizId, email, userName) {
+  static async newAttempt(quizId, email, userName, admin) {
     const questionsCollection = await mongodb.loadCollection('questions');
     if ((await this.getOngoingId(email, quizId, false)).data.length) {
       return { success: false, message: 'No Simultaneous Attempts Allowed!' };
     }
-    const quizInfoRes = await this.getQuizInfo(quizId);
+    const quizInfoRes = await this.getQuizInfo(quizId, admin);
     if (!quizInfoRes.success) {
       return { success: false, message: 'No Matching Quiz!' };
     }
@@ -116,14 +116,23 @@ class QuizService {
     return { success: true, data: history };
   }
 
-  static async getQuizList() {
+  static async getQuizList(admin) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    return { success: true, data: await quizCollection.find({}).project({ _id: 0 }).toArray() };
+    if (admin) {
+      return { success: true, data: await quizCollection.find({}).project({ _id: 0 }).toArray() };
+    }
+    // eslint-disable-next-line max-len
+    return { success: true, data: await quizCollection.find({ enable: true }).project({ _id: 0 }).toArray() };
   }
 
-  static async getQuizInfo(quizId) {
+  static async getQuizInfo(quizId, admin) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    const quizInfoCursor = await quizCollection.find({ quizId }).project({ _id: 0 });
+    let quizInfoCursor;
+    if (admin) {
+      quizInfoCursor = await quizCollection.find({ quizId }).project({ _id: 0 });
+    } else {
+      quizInfoCursor = await quizCollection.find({ quizId, enable: true }).project({ _id: 0 });
+    }
     if (await quizInfoCursor.count() === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
@@ -181,6 +190,38 @@ class QuizService {
           questionId: 1, type: 1, points: 1, _id: 0,
         }).sort({ id: 1 }).toArray(),
     };
+  }
+
+  static async enableQuiz(quizId) {
+    const quizCollection = await mongodb.loadCollection('quizzes');
+    const updateCursor = await quizCollection.update(
+      { quizId },
+      {
+        $set: {
+          enable: true,
+        },
+      },
+    );
+    if (updateCursor.matchedCount === 0) {
+      return { success: false, message: 'No Matching Quiz!' };
+    }
+    return { success: true };
+  }
+
+  static async disableQuiz(quizId) {
+    const quizCollection = await mongodb.loadCollection('quizzes');
+    const updateCursor = await quizCollection.update(
+      { quizId },
+      {
+        $set: {
+          enable: false,
+        },
+      },
+    );
+    if (updateCursor.matchedCount === 0) {
+      return { success: false, message: 'No Matching Quiz!' };
+    }
+    return { success: true };
   }
 }
 module.exports = QuizService;

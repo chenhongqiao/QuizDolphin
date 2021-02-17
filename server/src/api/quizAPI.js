@@ -44,7 +44,7 @@ router.get('/:quizId/attempt', async (req, res, next) => {
       res.status(400).send('Missing Parameter!');
       return;
     }
-    const response = await quizService.newAttempt(quizId, req.session.email, req.session.name);
+    const response = await quizService.newAttempt(quizId, req.session.email, req.session.name, req.session.role === 'admin');
     if (!response.success) {
       if (response.message === 'No Simultaneous Attempts Allowed!') {
         res.status(409).send('No Simultaneous Attempts Allowed!');
@@ -105,7 +105,7 @@ router.get('/:quizId/info', async (req, res, next) => {
       res.status(400).send('Missing Parameter!');
       return;
     }
-    const response = await quizService.getQuizInfo(quizId);
+    const response = await quizService.getQuizInfo(quizId, req.session.role === 'admin');
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {
         res.status(404).send('No Matching Quiz!');
@@ -126,7 +126,7 @@ router.get('/list', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    const response = await quizService.getQuizList(req.session.email);
+    const response = await quizService.getQuizList(req.session.role === 'admin');
     if (!response.success) {
       throw Error('Unexpected Service Response!');
     } else {
@@ -159,6 +159,58 @@ router.get('/:quizId/questions', async (req, res, next) => {
       throw Error('Unexpected Service Response!');
     } else {
       res.send(response.data);
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/:quizId/enable', async (req, res, next) => {
+  try {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
+      res.status(403).send('Need Admin Privileges!');
+      return;
+    }
+    const { quizId } = req.params;
+    if (!quizId) {
+      res.status(400).send('Missing Parameter!');
+      return;
+    }
+    const response = await quizService.enableQuiz(quizId);
+    if (!response.success) {
+      if (response.message === 'No Matching Quiz!') {
+        res.status(404).send('No Matching Quiz!');
+        return;
+      }
+      throw Error('Unexpected Service Response!');
+    } else {
+      res.send('Success!');
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/:quizId/disable', async (req, res, next) => {
+  try {
+    if (!req.session.loggedin || req.session.role !== 'admin') {
+      res.status(403).send('Need Admin Privileges!');
+      return;
+    }
+    const { quizId } = req.params;
+    if (!quizId) {
+      res.status(400).send('Missing Parameter!');
+      return;
+    }
+    const response = await quizService.disableQuiz(quizId);
+    if (!response.success) {
+      if (response.message === 'No Matching Quiz!') {
+        res.status(404).send('No Matching Quiz!');
+        return;
+      }
+      throw Error('Unexpected Service Response!');
+    } else {
+      res.send('Success!');
     }
   } catch (err) {
     next(err);
