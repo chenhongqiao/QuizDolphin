@@ -84,6 +84,18 @@ class QuizService {
       withCredentials: true,
     });
   }
+
+  static async enableQuiz(quizId) {
+    await axios.post(`${url}${quizId}/enable`, {
+      withCredentials: true,
+    });
+  }
+
+  static async disableQuiz(quizId) {
+    await axios.post(`${url}${quizId}/disable`, {
+      withCredentials: true,
+    });
+  }
 }
 
 export default QuizService;

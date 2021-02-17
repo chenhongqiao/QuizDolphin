@@ -49,7 +49,7 @@ const routes = [
   {
     path: '/home',
     name: 'User Home',
-    component: () => import('../views/UserHomeView.vue'),
+    component: () => import('../views/HomeView.vue'),
     beforeEnter: (to, from, next) => {
       if (!store.getters['user/status']) {
         next({ path: '/login', query: { redirect: '/home' } });
