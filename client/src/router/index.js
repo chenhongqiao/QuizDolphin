@@ -116,6 +116,17 @@ const routes = [
       }
     },
   },
+  {
+    path: '*',
+    beforeEnter: (to, from, next) => {
+      if (store.getters['user/status']) {
+        next();
+      } else {
+        next({ path: '/login', query: { redirect: to.fullPath } });
+      }
+    },
+    component: () => import('../views/status/404NotFound.vue'),
+  },
 ];
 
 const router = new VueRouter({
