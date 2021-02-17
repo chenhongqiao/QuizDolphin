@@ -33,7 +33,7 @@ class QuestionService {
     if (questionData.invalid) {
       return { success: false, message: 'Invalid Question Syntax!' };
     }
-    const status = await questionsCollection.replaceOne({ questionId }, questionData);
+    const status = await questionsCollection.updateOne({ questionId }, { $set: questionData });
     if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching Question!' };
     }

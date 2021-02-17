@@ -150,6 +150,7 @@ class QuizService {
     if (quiz.invalid) {
       return { success: false, message: 'Invalid Quiz Syntax!' };
     }
+    quiz.enable = false;
     quizCollection.insertOne(quiz);
     return { success: true, data: quizId };
   }
@@ -171,7 +172,7 @@ class QuizService {
     if (quiz.invalid) {
       return { success: false, message: 'Invalid Quiz Syntax!' };
     }
-    const status = await quizCollection.replaceOne({ quizId }, quiz);
+    const status = await quizCollection.updateOne({ quizId }, { $set: quiz });
     if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
@@ -194,7 +195,7 @@ class QuizService {
 
   static async enableQuiz(quizId) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    const updateCursor = await quizCollection.update(
+    const updateCursor = await quizCollection.updateOne(
       { quizId },
       {
         $set: {
@@ -210,7 +211,7 @@ class QuizService {
 
   static async disableQuiz(quizId) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    const updateCursor = await quizCollection.update(
+    const updateCursor = await quizCollection.updateOne(
       { quizId },
       {
         $set: {

@@ -33,7 +33,7 @@ class UserService {
     if (user.invalid) {
       return { success: false, message: 'Invalid User Syntax!' };
     }
-    const status = await usersCollection.replaceOne({ email }, user);
+    const status = await usersCollection.updateOne({ email }, { $set: user });
     if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching User!' };
     }
