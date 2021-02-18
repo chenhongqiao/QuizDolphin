@@ -1,4 +1,5 @@
 class DataValidate {
+  // Validate question
   static validateQuestion(question) {
     if (!question.context || typeof question.type !== 'string' || typeof question.points !== 'number'
     || !question.answer || typeof question.quizId !== 'string') {

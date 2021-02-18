@@ -18,11 +18,13 @@ const userAPI = require('./api/userAPI');
 const resultAPI = require('./api/resultAPI');
 
 async function startServer() {
+  // Initialize database and job services
   await mongodb.connect();
   await agenda.connect();
 
   const app = express();
 
+  // Add middleware to api service
   app.use(bodyParser.json());
   app.use(cookieParser());
   app.use(cors({
@@ -78,6 +80,7 @@ async function startServer() {
     }
   });
 
+  // Serve frontend statics
   app.use(history());
   app.use(express.static(path.join(__dirname, '../dist')));
 
@@ -85,4 +88,5 @@ async function startServer() {
   // eslint-disable-next-line no-console
   app.listen(port, () => console.log(`Server started on port ${port}`));
 }
+
 startServer();
