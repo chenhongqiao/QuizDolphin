@@ -9,6 +9,8 @@ class QuizService {
   static async newAttempt(quizId, email, userName, preview) {
     const questionsCollection = await mongodb.loadCollection('questions');
     const quizInfoRes = await this.getQuizInfo(quizId);
+    // Ensure that the quiz requesting exists, is enabled, and there's no
+    // attempts from the same user for this quiz going on
     if (!quizInfoRes.success) {
       return { success: false, message: 'No Matching Quiz!' };
     }
@@ -19,18 +21,19 @@ class QuizService {
     if (!quizInfo.enable && !preview) {
       return { success: false, message: 'Quiz Not Enabled!' };
     }
+    // Get questions for this quiz
     const questions = await questionsCollection.find({ quizId }).project({ _id: 0 }).toArray();
     const { questionCount } = quizInfo;
     const selectedQuestions = [];
     const selectedAnswers = [];
-    // Fisher-Yates shuffle algorithm
-    // Time-complexity: O(n) n=total question number
+    // Fisher-Yates shuffle algorithm, creates shuffle questions
     for (let index = questions.length - 1; index >= 1; index -= 1) {
       const pindex = randomUtils.integer(0, index + 1);
       const temp = questions[index];
       questions[index] = questions[pindex];
       questions[pindex] = temp;
     }
+    // Get the first several questions (defined by questionCount in quizInfo)
     for (let index = 0; index < questions.length && index < questionCount; index += 1) {
       const { answer } = questions[index];
       selectedAnswers.push(answer);
@@ -39,6 +42,7 @@ class QuizService {
     }
     const resultsCollection = await mongodb.loadCollection('results');
     const attemptsCollection = await mongodb.loadCollection('attempts');
+    // Avoid id duplication
     let attemptId = nanoidUtils.charId();
     // eslint-disable-next-line no-await-in-loop
     while (await resultsCollection.findOne({ attemptId })
@@ -46,7 +50,9 @@ class QuizService {
       || await attemptsCollection.findOne({ attemptId })) {
       attemptId = nanoidUtils.charId();
     }
+    // Construct initial progress
     const initProgress = progressUtils.getInitialProgress(selectedQuestions);
+    // COnstruct quiz data
     const quizData = new quizModel.QuizData(
       email,
       selectedQuestions,
@@ -63,6 +69,7 @@ class QuizService {
     const progress = new quizModel.QuizProgress(1,
       initProgress.responses,
       initProgress.types, attemptId, email, 1);
+    // Write attempt and progress to database
     await attemptsCollection.insertOne(quizData);
     await redis.set(`progress:${attemptId}`, JSON.stringify(progress));
     await redis.setnx(`endTime:${attemptId}`, quizData.endTime.toISOString());
@@ -76,9 +83,11 @@ class QuizService {
       if (!(await this.getQuizInfo(quizId)).success) {
         return { success: false, message: 'No Matching Quiz!' };
       }
+      // If quiz id is specified, search for ongoing attempts under this quiz
       query.quizId = quizId;
     }
     if (!viewAll) {
+      // Search under the current user unless this action specifies to view records from all users
       query.email = email;
     }
     const ongoing = await attemptsCollection
@@ -97,11 +106,14 @@ class QuizService {
       if (!(await this.getQuizInfo(quizId)).success) {
         return { success: false, message: 'No Matching Quiz!' };
       }
+      // If quiz id is specified, search for ongoing attempts under this quiz
       query.quizId = quizId;
     }
     if (!viewAll) {
+      // Search under the current user unless this action specifies to view records from all users
       query.email = email;
     }
+    // Do not project unecessary info to keep response body small
     const history = await resultsCollection.find({
       $query: query,
       $orderby: { timeStamp: 1 },
@@ -119,11 +131,8 @@ class QuizService {
     return { success: true, data: history };
   }
 
-  static async getQuizList(preview) {
+  static async getQuizList() {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    if (preview) {
-      return { success: true, data: await quizCollection.find({}).project({ _id: 0 }).toArray() };
-    }
     // eslint-disable-next-line max-len
     return { success: true, data: await quizCollection.find({}).project({ _id: 0 }).toArray() };
   }
@@ -131,6 +140,7 @@ class QuizService {
   static async getQuizInfo(quizId) {
     const quizCollection = await mongodb.loadCollection('quizzes');
     const quizInfoCursor = await quizCollection.find({ quizId }).project({ _id: 0 });
+    // Search for quiz info by id, 404 if not found
     if (await quizInfoCursor.count() === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
@@ -139,15 +149,18 @@ class QuizService {
 
   static async newQuiz(quizInfo) {
     const quizCollection = await mongodb.loadCollection('quizzes');
+    // Avoid id duplication
     let quizId = nanoidUtils.charId();
     // eslint-disable-next-line no-await-in-loop
     while (await quizCollection.findOne({ quizId })) {
       quizId = nanoidUtils.charId();
     }
+    // Construct quiz
     const quiz = new quizModel.QuizInfo(quizInfo, quizId);
     if (quiz.invalid) {
       return { success: false, message: 'Invalid Quiz Syntax!' };
     }
+    // Set default status to disabled
     quiz.enable = false;
     quizCollection.insertOne(quiz);
     return { success: true, data: quizId };
@@ -156,20 +169,25 @@ class QuizService {
   static async deleteQuiz(quizId) {
     const quizCollection = await mongodb.loadCollection('quizzes');
     const questionsCollection = await mongodb.loadCollection('questions');
+    // Delete quiz
     const status = await quizCollection.deleteOne({ quizId });
     if (status.deletedCount === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
+    // Delete questions associated to this quiz
     await questionsCollection.deleteMany({ quizId });
     return { success: true };
   }
 
   static async updateQuiz(quizId, quizInfo) {
     const quizCollection = await mongodb.loadCollection('quizzes');
+    // Construct quiz info
     const quiz = new quizModel.QuizInfo(quizInfo, quizId);
     if (quiz.invalid) {
       return { success: false, message: 'Invalid Quiz Syntax!' };
     }
+    // Atomic action, only update affected field
+    // In this case, 'enable' attribute is ignore
     const status = await quizCollection.updateOne({ quizId }, { $set: quiz });
     if (status.matchedCount === 0) {
       return { success: false, message: 'No Matching Quiz!' };
@@ -182,6 +200,9 @@ class QuizService {
     if (!(await this.getQuizInfo(quizId)).success) {
       return { success: false, message: 'No Matching Quiz!' };
     }
+    // Return all question info under this quizId
+    // Only some infos are projected to keep response body small
+    // Other details should be requested individually by question
     return {
       success: true,
       data: await questionsCollection.find({ quizId })
@@ -193,6 +214,7 @@ class QuizService {
 
   static async enableQuiz(quizId) {
     const quizCollection = await mongodb.loadCollection('quizzes');
+    // Update quiz status
     const updateCursor = await quizCollection.updateOne(
       { quizId },
       {
@@ -209,6 +231,7 @@ class QuizService {
 
   static async disableQuiz(quizId) {
     const quizCollection = await mongodb.loadCollection('quizzes');
+    // Update quiz status
     const updateCursor = await quizCollection.updateOne(
       { quizId },
       {

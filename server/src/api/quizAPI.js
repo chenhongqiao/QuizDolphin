@@ -53,6 +53,9 @@ router.get('/:quizId/attempt', async (req, res, next) => {
       if (response.message === 'No Matching Quiz!') {
         res.status(404).send('No Matching Quiz!');
         return;
+      } if (response.message === 'Quiz Not Enabled!') {
+        res.status(400).send('Quiz Not Enabled!');
+        return;
       }
       throw Error('Unexpected Service Response!');
     } else {

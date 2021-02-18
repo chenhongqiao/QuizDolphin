@@ -7,6 +7,10 @@ class GradingService {
   static async gradeQuiz(attemptId, email) {
     const attemptsCollection = await mongodb.loadCollection('attempts');
     const resultsCollection = await mongodb.loadCollection('results');
+    /*
+      If attempt is not found in attempts collection but results collection, notify client
+      quiz has ended and result page should be shown. 404 other wise.
+    */
     const attemptDataCursor = await attemptsCollection
       .find({ attemptId, email }).project({ _id: 0 });
     if (await attemptDataCursor.count() === 0) {
@@ -16,13 +20,18 @@ class GradingService {
       return { success: false, message: 'No Matching Attempt!' };
     }
     const attemptData = (await attemptDataCursor.toArray())[0];
+    // Destruct user responses, questions and answers
     const { responses } = JSON.parse(await redis.get(`progress:${attemptId}`));
     const results = [];
     const { questions } = attemptData;
     const { answers } = attemptData;
     let totalPoints = 0;
     let score = 0;
+    // Loop through questions
     for (let index = 0; index < questions.length; index += 1) {
+      /* When comparing user's response to the correct answer,
+      program ensures that they are always string.
+      */
       const question = questions[index];
       const response = responses[index];
       const answer = answers[index];
@@ -46,8 +55,8 @@ class GradingService {
       // Grade multiple choice questions
       if (question.type === 'multiple choice') {
         const answersSet = new Set(answer);
-        // Points are proportional to how many correction opions are chosen.
-        // Additionally, user get 0 for the entire question if incorrect options are chosen.
+        // Points are proportional to how many correct opions are chosen
+        // Additionally, user get 0 for the entire question if incorrect options are chosen
         const correctCount = response.reduce((count, option) => {
           if (answersSet.has(option)) {
             return count + 1;
@@ -69,6 +78,7 @@ class GradingService {
       }
 
       if (question.type === 'matching') {
+        // Points are proportional to how many correct matches are made
         const correctMatch = response.reduce((count, option, optionIndex) => {
           if (option === answer[optionIndex]) {
             return count + 1;
@@ -84,6 +94,7 @@ class GradingService {
       }
 
       if (question.type === 'fill in the blanks') {
+        // Points are proportional to how many blanks are filled correctly
         const correctMatch = response.reduce((count, option, optionIndex) => {
           if (option === answer[optionIndex]) {
             return count + 1;
@@ -101,13 +112,16 @@ class GradingService {
         throw Error('Error Generating Quiz Result!');
       }
     }
+    // Construct quiz result
     const quizResult = new resultModel.QuizResult(score, questions,
       results, totalPoints, attemptId, email, attemptData.quizId,
       attemptData.quizName, attemptData.userName);
     if (quizResult.invalid) {
       throw Error('Error Generating Quiz Result!');
     }
+    // Add quiz result to collection
     await resultsCollection.insertOne(quizResult);
+    // Clear up ongoing attempt
     await attemptsCollection.deleteOne({ attemptId });
     await redis.del(`progress:${attemptId}`);
     await redis.del(`endTime:${attemptId}`);
