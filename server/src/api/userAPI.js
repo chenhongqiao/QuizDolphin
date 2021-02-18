@@ -75,8 +75,8 @@ router.get('/list', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const response = await userService.getUserList();
@@ -96,8 +96,8 @@ router.post('/', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     if (!req.body.data) {
@@ -129,8 +129,8 @@ router.delete('/:email', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { email } = req.params;
@@ -163,8 +163,8 @@ router.put('/:email', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { email } = req.params;
@@ -201,8 +201,8 @@ router.get('/:email', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { email } = req.params;

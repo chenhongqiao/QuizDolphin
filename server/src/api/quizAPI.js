@@ -145,8 +145,8 @@ router.get('/:quizId/questions', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { quizId } = req.params;
@@ -175,8 +175,8 @@ router.post('/:quizId/enable', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { quizId } = req.params;
@@ -205,8 +205,8 @@ router.post('/:quizId/disable', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { quizId } = req.params;
@@ -235,8 +235,8 @@ router.post('/', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     if (!req.body.data) {
@@ -264,8 +264,8 @@ router.delete('/:quizId', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { quizId } = req.params;
@@ -294,8 +294,8 @@ router.put('/:quizId', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { quizId } = req.params;

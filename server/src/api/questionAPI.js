@@ -10,8 +10,8 @@ router.post('/', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     if (!req.body.data) {
@@ -39,8 +39,8 @@ router.get('/:questionId', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { questionId } = req.params;
@@ -69,8 +69,8 @@ router.delete('/:questionId', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { questionId } = req.params;
@@ -99,8 +99,8 @@ router.put('/:questionId', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    if (!req.session.loggedin || req.session.role !== 'admin') {
-      res.status(403).send('Need Admin Privileges!');
+    if (req.session.role !== 'admin') {
+      res.status(403).send('Insufficient Privilege!');
       return;
     }
     const { questionId } = req.params;
