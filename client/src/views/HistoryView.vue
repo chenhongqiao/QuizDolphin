@@ -120,11 +120,15 @@ export default {
   methods: {
     async loadHistory() {
       try {
+        // Load history
         this.quizHistory = (await QuizService.getAttemptHistory(null, this.$store.state.user.role === 'admin')).reverse();
         for (let index = 0; index < this.quizHistory.length; index += 1) {
+          // Compute percentage
           this.quizHistory[index].percent = ((this.quizHistory[index].score
           / this.quizHistory[index].totalPoints) * 100).toFixed(2);
+          // Generate score string
           this.quizHistory[index].score = `${this.quizHistory[index].score.toFixed(2)}/${this.quizHistory[index].totalPoints.toFixed(2)}`;
+          // Construct local time from UTC time stamp
           this.quizHistory[index].localTime = (new Date(this.quizHistory[index].timeStamp))
             .toLocaleString();
         }

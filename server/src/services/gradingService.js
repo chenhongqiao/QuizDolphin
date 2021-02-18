@@ -21,6 +21,7 @@ class GradingService {
     }
     const attemptData = (await attemptDataCursor.toArray())[0];
     // Destruct user responses, questions and answers
+    // Get response directly from the entry in redis, AKA progress.
     const { responses } = JSON.parse(await redis.get(`progress:${attemptId}`));
     const results = [];
     const { questions } = attemptData;

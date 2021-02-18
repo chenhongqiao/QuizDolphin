@@ -163,6 +163,7 @@ export default {
   async mounted() {
     try {
       if (this.email) {
+        // Get user info if editing
         this.userInfo = await UserService.getUserInfo(this.email);
       }
       this.loaded = true;

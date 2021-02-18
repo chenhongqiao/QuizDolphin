@@ -346,6 +346,7 @@ export default {
     },
     async loadQuizInfo() {
       try {
+        // Load quizInfo
         const quizInfo = await QuizService.getQuizInfo(this.quizId);
         this.quizName = quizInfo.quizName;
         this.questionCount = quizInfo.questionCount;
@@ -370,6 +371,7 @@ export default {
     },
     async loadQuestions() {
       try {
+        // Load questions and index
         this.questions = await QuizService.getQuizQuestions(this.quizId);
         for (let index = 0; index < this.questions.length; index += 1) {
           this.questions[index].index = index + 1;
@@ -393,8 +395,10 @@ export default {
     },
     async loadResults() {
       try {
+        // Load history and build result-by-email
         const history = (await QuizService.getAttemptHistory(this.quizId, true)).reverse();
         const results = new Map();
+        // Keeps the best score for each contestant
         for (let index = 0; index < history.length; index += 1) {
         // eslint-disable-next-line max-len
           let result = {};

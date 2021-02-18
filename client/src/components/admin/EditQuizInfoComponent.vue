@@ -216,6 +216,7 @@ export default {
     duration: {
       deep: true,
       handler() {
+        // Construct duration in second from hh-mm-ss
         this.quizInfo.duration = this.duration.hours * 3600
         + this.duration.minutes * 60 + this.duration.seconds;
       },
@@ -225,6 +226,7 @@ export default {
     try {
       if (this.quizId) {
         this.quizInfo = await QuizService.getQuizInfo(this.quizId);
+        // Build hh-mm-ss from duration in second
         this.duration.seconds = Math.floor(this.quizInfo.duration % 60);
         this.duration.minutes = Math.floor((this.quizInfo.duration % 3600) / 60);
         this.duration.hours = Math.floor((this.quizInfo.duration % (3600 * 60)) / 3600);

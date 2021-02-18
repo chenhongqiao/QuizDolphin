@@ -258,6 +258,7 @@ export default {
     },
     async loadQuizList() {
       try {
+        // Load quiz list and seperate into enabled and disabled
         const quizList = await QuizService.getQuizList();
         this.enabledQuiz = quizList.filter((quiz) => quiz.enable);
         this.disabledQuiz = quizList.filter((quiz) => !quiz.enable);

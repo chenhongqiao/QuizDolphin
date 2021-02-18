@@ -355,6 +355,7 @@ export default {
       }
     },
     isChosen(option, response) {
+      // Used in multiple choice, return if option is chosen
       if (Array.isArray(response)) {
         const answerSet = new Set(response);
         return answerSet.has(option);
@@ -362,6 +363,7 @@ export default {
       return response === option;
     },
     isCorrect(response, answer) {
+      // Used in multiple choice, return if option is correct
       if (Array.isArray(answer)) {
         const answerSet = new Set(answer);
         return answerSet.has(response);

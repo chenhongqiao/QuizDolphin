@@ -83,9 +83,11 @@ export default {
   }),
   async mounted() {
     const userInformation = (await UserService.getSessionInfo());
+    // Navigate away if user is already logged in
     if (userInformation) {
       this.$store.commit('user/login', userInformation);
       if (this.$route.query.redirect) {
+        // Go back if login request come from the system it self
         this.$router.go(-1);
       } else {
         this.$router.replace('/home');
@@ -109,6 +111,7 @@ export default {
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {
+            // If failing, display a message
             this.hasLoginError = true;
             this.loginResponse = 'Authenication failed, please try again.';
             this.loginInfo.password = '';

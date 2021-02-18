@@ -53,7 +53,7 @@
 
       <v-toolbar-title
         style="cursor: pointer"
-        @click="goDashboard()"
+        @click="goHome()"
       >
         Quiz System
       </v-toolbar-title>
@@ -133,11 +133,13 @@ export default {
   }),
   computed: {
     getInitial() {
+      // Get user initial from name
       const initial = this.$store.state.user.name.split(' ').map((name) => name[0]).join('');
       return initial;
     },
   },
   async mounted() {
+    // Check login on reach site
     const userInformation = (await UserService.getSessionInfo());
     if (userInformation) {
       this.$store.commit('user/login', userInformation);
@@ -147,12 +149,13 @@ export default {
   },
   methods: {
     async logout() {
+      // Clear up on logout
       this.$store.commit('user/logout');
       this.$store.commit('quizView/clearState');
       await UserService.deleteSession();
       this.$router.push({ name: 'Login' });
     },
-    goDashboard() {
+    goHome() {
       if (this.$route.fullPath !== '/home') {
         this.$router.push('/home');
       }

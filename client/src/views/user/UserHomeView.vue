@@ -110,6 +110,7 @@ export default {
     },
     async loadQuizList() {
       try {
+        // Load quiz list
         const quizList = await QuizService.getQuizList();
         this.enabledQuiz = quizList.filter((quiz) => quiz.enable);
         this.disabledQuiz = quizList.filter((quiz) => !quiz.enable);

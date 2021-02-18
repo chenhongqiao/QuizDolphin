@@ -428,6 +428,7 @@ export default {
     'question.answer': {
       deep: true,
       handler() {
+        // Check answer entry on update
         if (this.question.type === 'single choice') {
           if (this.question.answer === null) {
             this.missingAnswer = true;
@@ -461,9 +462,12 @@ export default {
   async mounted() {
     try {
       if (this.questionId) {
+        // If there's a questionId, treat as editing
+        // get question by id
         this.question = await QuestionService.getQuestion(this.questionId);
         this.preProcess();
       } else {
+        // If no questionId, treat as creating a new question
         this.question.quizId = this.quizId;
       }
       this.loaded = true;
@@ -486,6 +490,8 @@ export default {
   },
   methods: {
     preProcess() {
+      // Transpile server-question format to editing-question format
+      // Editing-question format use option index for answer insead of the actual answer
       if (this.question.type === 'multiple choice') {
       // eslint-disable-next-line max-len
         this.question.answer = this.question.answer.map((value) => this.question.options.indexOf(value));
@@ -506,10 +512,12 @@ export default {
       }
     },
     deleteOption(index, bindex) {
+      // When deleting an option, remove it from answer as well
       if (this.question.type === 'single choice') {
         if (this.question.answer === index) {
           this.question.answer = null;
         } else if (this.question.answer > index) {
+          // Move option index by 1 before to fill the gap
           this.question.answer -= 1;
         }
         this.question.options.splice(index, 1);
@@ -519,6 +527,7 @@ export default {
             this.question.answer.indexOf(index), 1,
           );
         }
+        // Move option index after deletion 1 before to fill the gap
         this.question.answer = this.question.answer.map((value) => {
           if (value > index) {
             return value - 1;
@@ -527,6 +536,7 @@ export default {
         });
         this.question.options.splice(index, 1);
       } else if (this.question.type === 'fill in the blanks') {
+        // Move option index after deletion 1 before to fill the gap
         if (this.question.answer[bindex] === index) {
           this.$set(this.question.answer, bindex, null);
         } else if (this.question.answer[bindex] > index) {
@@ -548,6 +558,7 @@ export default {
     },
     async updateQuestion() {
       this.loaded = false;
+      // Transpile editing-format back to server-format, replace index with the actual value
       if (this.question.type === 'multiple choice') {
       // eslint-disable-next-line max-len
         this.question.answer = this.question.answer.map((value) => this.question.options[value]);
@@ -601,6 +612,9 @@ export default {
       this.$set(this.question.answer, index, null);
     },
     changeQuestionType(type) {
+      // When changing question type, optionally save some entry
+      // So that user don't have to enter them again
+      // Answer is always cleared on change
       if (type === 'single choice') {
         this.question.answer = null;
         if (typeof this.question.context !== 'string') {

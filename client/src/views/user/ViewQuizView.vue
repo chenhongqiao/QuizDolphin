@@ -202,21 +202,25 @@ export default {
   }),
   async mounted() {
     try {
+      // Check if user has ongoing attempt, get id if has
       const ongoing = await QuizService.getOngoingAttempt(this.quizId);
       if (ongoing.length) {
         this.attemptId = ongoing[0].attemptId;
       }
+      // Load quiz info
       const quizInfo = await QuizService.getQuizInfo(this.quizId);
       this.quizName = quizInfo.quizName;
       this.questionCount = quizInfo.questionCount;
       this.duration = quizInfo.duration;
       this.quizStatus = quizInfo.enable;
       this.maxAttempts = quizInfo.maxAttempts;
+      // Load history and construct data for line chart
       const history = await QuizService.getAttemptHistory(this.quizId);
       history.forEach((value, index) => {
         this.historyChartData.labels.push(this.getOrdinal(index + 1));
         this.historyChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
       });
+      // Display from new to old
       this.quizHistory = history.reverse();
       if (!this.$store.state.navigation.navigation[0]) {
         this.$store.commit('navigation/replace', {
@@ -262,6 +266,7 @@ export default {
     async startNewQuiz() {
       this.actionDisabled = true;
       try {
+        // Request an attempt id from the server and navigate to attempt page
         const newAttemptId = await QuizService.getQuizAttempt(this.quizId);
         this.$router.push({ name: 'Attempt', params: { id: newAttemptId } });
       } catch (err) {
@@ -288,6 +293,7 @@ export default {
       }
     },
     getOrdinal(number) {
+      // Get ordinal from number
       if (number % 10 === 1 && number % 100 !== 11) {
         return `${number}st`;
       }
@@ -301,6 +307,7 @@ export default {
     },
     async getHistory() {
       try {
+        // Load quiz history
         const history = (await QuizService.getQuizHistory(this.quizId)).data;
         history.forEach((value, index) => {
           this.historyChartData.labels.push(this.getOrdinal(index + 1));

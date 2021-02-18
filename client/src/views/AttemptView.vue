@@ -100,7 +100,6 @@
                     v-model="responses[questionIndex-1][index]"
                     :items="questions[questionIndex-1].rightcol"
                     dense
-                    @input="updateRightCol(index)"
                   />
                 </v-col>
               </v-row>
@@ -294,6 +293,7 @@ export default {
   }),
   computed: {
     attemptedNumber() {
+      // Compute attempted number
       const attempted = this.responses.reduce((accumulator, current) => {
         if (Array.isArray(current)) {
           if (current.length !== 0) {
@@ -357,11 +357,13 @@ export default {
         to: `/attempt/${this.attemptId}`,
       },
     });
+    // Update progress if necessary every 1 second
     this.saver = setInterval(() => { this.putProgress(); }, 1000);
   },
   methods: {
     async loadQuiz() {
       try {
+        // Load quiz data
         const quizData = await AttemptService.getAttemptData(this.attemptId);
         const progress = await AttemptService.getAttemptProgress(this.attemptId);
         this.questions = quizData.questions;
@@ -391,9 +393,12 @@ export default {
       }
     },
     async putProgress() {
+      // Only upload if there's changes since last upload
       if (this.needSave && this.quizRunning) {
         try {
+          // version number ++
           this.version += 1;
+          // upload progress
           await AttemptService.putAttemptProgress(this.attemptId, {
             index: this.questionIndex,
             responses: this.responses,
@@ -426,9 +431,13 @@ export default {
     },
     async postAttempt() {
       try {
+        // Post attempt
         this.quizRunning = false;
+        // Stop auto uploading progress
         clearInterval(this.saver);
+        // Upload one last time to ensure the server has up to date response
         await this.putProgress();
+        // Submit for grading and navigate to result page
         await AttemptService.postAttempt(this.attemptId);
         this.$router.replace({ name: 'Result', params: { id: this.attemptId } });
       } catch (err) {
@@ -446,17 +455,6 @@ export default {
         } else {
           throw err;
         }
-      }
-    },
-    updateRightCol(index) {
-      let targetIndex = this.responses[this.questionIndex - 1]
-        .indexOf(this.responses[this.questionIndex - 1][index]);
-      if (targetIndex === index) {
-        targetIndex = this.responses[this.questionIndex - 1]
-          .indexOf(this.responses[this.questionIndex - 1][index], index + 1);
-      }
-      if (targetIndex !== -1) {
-        this.responses[this.questionIndex - 1][targetIndex] = null;
       }
     },
   },

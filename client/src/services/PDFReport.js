@@ -3,6 +3,7 @@ import 'jspdf-autotable';
 
 class PDFReport {
   static newReport(result) {
+    // Generates PDF Report
     const report = new JsPDF('l', 'mm', 'letter');
     const tableBody = [];
     for (let index = 0; index < result.questions.length; index += 1) {

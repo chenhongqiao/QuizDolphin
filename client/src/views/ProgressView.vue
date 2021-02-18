@@ -96,6 +96,7 @@ export default {
   methods: {
     async loadProgress() {
       try {
+        // Load ongoing progress from all quizzes, from all users if admin
         this.ongoingAttempts = await QuizService.getOngoingAttempt(null, this.$store.state.user.role === 'admin');
       } catch (err) {
         if (err.response) {
