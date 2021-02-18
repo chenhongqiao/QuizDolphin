@@ -203,6 +203,11 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar
+      v-model="actionFailed"
+    >
+      Action failed because of insufficient privileges.
+    </v-snackbar>
   </div>
 </template>
 
@@ -218,6 +223,8 @@ export default {
   data: () => ({
     enabledQuiz: [],
     disabledQuiz: [],
+    noPrivileges: false,
+    actionFailed: false,
     loaded: false,
     newQuiz: false,
     pendingDelete: false,
@@ -248,18 +255,82 @@ export default {
       this.$router.push(`/quiz/${quizId}`);
     },
     async loadQuizList() {
-      const quizList = await QuizService.getQuizList();
-      this.enabledQuiz = quizList.filter((quiz) => quiz.enable);
-      this.disabledQuiz = quizList.filter((quiz) => !quiz.enable);
+      try {
+        const quizList = await QuizService.getQuizList();
+        this.enabledQuiz = quizList.filter((quiz) => quiz.enable);
+        this.disabledQuiz = quizList.filter((quiz) => !quiz.enable);
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('user/logout');
+            this.$router.replace({ path: '/login', query: { redirect: this.$route.fullPath } });
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
     },
     async deleteQuiz(quizId) {
-      await QuizService.deleteQuiz(quizId);
+      try {
+        await QuizService.deleteQuiz(quizId);
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('user/logout');
+            this.$router.replace({ path: '/login', query: { redirect: this.$route.fullPath } });
+          } else if (err.response.status === 404) {
+            await this.loadQuizList();
+          } else if (err.response.status === 403) {
+            this.actionFailed = true;
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
     },
     async disableQuiz(quizId) {
-      await QuizService.disableQuiz(quizId);
+      try {
+        await QuizService.disableQuiz(quizId);
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('user/logout');
+            this.$router.replace({ path: '/login', query: { redirect: this.$route.fullPath } });
+          } else if (err.response.status === 404) {
+            await this.loadQuizList();
+          } else if (err.response.status === 403) {
+            this.actionFailed = true;
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
     },
     async enableQuiz(quizId) {
-      await QuizService.enableQuiz(quizId);
+      try {
+        await QuizService.enableQuiz(quizId);
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('user/logout');
+            this.$router.replace({ path: '/login', query: { redirect: this.$route.fullPath } });
+          } else if (err.response.status === 404) {
+            await this.loadQuizList();
+          } else if (err.response.status === 403) {
+            this.actionFailed = true;
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
     },
   },
 };

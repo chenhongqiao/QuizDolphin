@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="infoLoaded">
+    <div v-if="infoLoaded&&!notFound">
       <v-container>
         <v-row wrap>
           <v-col>
@@ -41,6 +41,7 @@
             New Attempt
           </div>
           <div
+            v-if="quizStatus"
             class="text-center ma-2"
           >
             <v-btn
@@ -49,6 +50,12 @@
             >
               Start
             </v-btn>
+          </div>
+          <div
+            v-else
+            class="text-center"
+          >
+            This quiz is not accepting submission.
           </div>
         </div>
       </v-container>
@@ -94,7 +101,6 @@
               </v-simple-table>
             </div>
           </v-tab-item>
-
           <v-tab-item>
             <div class="text-h6 text-center ma-2">
               Performance History
@@ -109,9 +115,25 @@
       </v-container>
     </div>
     <v-progress-linear
-      v-else
+      v-else-if="!notFound"
       indeterminate
     />
+    <v-alert
+      v-if="notFound"
+      type="error"
+    >
+      <v-row align="center">
+        <v-col class="grow">
+          Can not find this quiz in the database,
+          this might because of either incorrect url or the quiz has been deleted.
+        </v-col>
+        <v-col class="shrink">
+          <v-btn @click="$router.push('/home')">
+            Homepage
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-alert>
   </div>
 </template>
 
@@ -144,7 +166,9 @@ export default {
     attemptId: '',
     infoLoaded: false,
     quizName: '',
+    notFound: false,
     questionCount: 0,
+    quizStatus: false,
   }),
   async mounted() {
     try {
@@ -156,6 +180,7 @@ export default {
       this.quizName = quizInfo.quizName;
       this.questionCount = quizInfo.questionCount;
       this.duration = quizInfo.duration;
+      this.quizStatus = quizInfo.enable;
       const history = await QuizService.getAttemptHistory(this.quizId);
       history.forEach((value, index) => {
         this.historyChartData.labels.push(this.getOrdinal(index + 1));
@@ -187,7 +212,7 @@ export default {
           this.$store.commit('user/logout');
           this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
         } else if (err.response.status === 404) {
-        // TODO: 404 Page
+          this.notFound = true;
         } else {
           throw err;
         }
@@ -213,7 +238,7 @@ export default {
             this.$store.commit('user/logout');
             this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
           } else if (err.response.status === 404) {
-            // TODO: 404 Page
+            this.notFound = true;
           } else {
             throw err;
           }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container>
+    <v-container v-if="loaded&&!noPrivileges">
       <v-card>
         <v-data-table
           :headers="tableHeaders"
@@ -55,6 +55,26 @@
         </v-data-table>
       </v-card>
     </v-container>
+    <v-progress-linear
+      v-else-if="!noPrivileges"
+      indeterminate
+    />
+    <v-alert
+      v-if="noPrivileges"
+      type="error"
+    >
+      <v-row align="center">
+        <v-col class="grow">
+          Sorry, this account do not have access to this resource.
+          Please logout and log back in with an admin account.
+        </v-col>
+        <v-col class="shrink">
+          <v-btn @click="$router.push('/home')">
+            Homepage
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-alert>
     <div v-if="editing">
       <EditUserComponent
         :email="editEmail"
@@ -110,6 +130,9 @@ export default {
     userList: [],
     pendingDelete: false,
     search: '',
+    loaded: false,
+    actionFailed: false,
+    noPrivileges: false,
     pendingDeleteUser: {},
     tableHeaders: [
       {
@@ -149,6 +172,7 @@ export default {
       },
     });
     await this.loadUserList();
+    this.loaded = true;
   },
   methods: {
     editUser(user) {
@@ -156,7 +180,22 @@ export default {
       this.editEmail = user.email;
     },
     async loadUserList() {
-      this.userList = await UserService.getUserList();
+      try {
+        this.userList = await UserService.getUserList();
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('user/logout');
+            this.$router.replace({ path: '/login', query: { redirect: this.$route.fullPath } });
+          } else if (err.response.status === 403) {
+            this.noPrivileges = true;
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
     },
     async deleteUser() {
       try {
@@ -165,11 +204,13 @@ export default {
         await this.loadUserList();
       } catch (err) {
         if (err.response) {
-          if (err.response.status === 401 || err.response.status === 403) {
+          if (err.response.status === 401) {
             this.$store.commit('user/logout');
             this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
           } else if (err.response.status === 404) {
-            // TODO: 404 Page
+            await this.loadUserList();
+          } else if (err.response.status === 403) {
+            this.actionFailed = true;
           } else {
             throw err;
           }

@@ -72,7 +72,20 @@ export default {
       this.$router.push(`/quiz/${quizId}`);
     },
     async loadQuizList() {
-      this.quizList = await QuizService.getQuizList();
+      try {
+        this.quizList = await QuizService.getQuizList();
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$store.commit('user/logout');
+            this.$router.replace({ path: '/login', query: { redirect: this.$route.fullPath } });
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
     },
   },
 };

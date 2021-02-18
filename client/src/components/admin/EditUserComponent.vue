@@ -12,7 +12,7 @@
           New User
         </v-card-title>
         <v-divider />
-        <v-card-text v-if="loaded">
+        <v-card-text v-if="loaded&&!notFound&&!noPrivileges">
           <v-form v-model="infoValid">
             <div>
               Email
@@ -28,6 +28,7 @@
             <v-text-field
               v-model.trim="userInfo.name"
               :rules="requiredField"
+              :disabled="!!email"
             />
             <div>
               Password
@@ -47,9 +48,40 @@
           </v-form>
         </v-card-text>
         <v-progress-linear
-          v-else
+          v-else-if="!notFound&&!noPrivileges"
           indeterminate
         />
+        <v-alert
+          v-if="notFound"
+          type="error"
+        >
+          <v-row align="center">
+            <v-col class="grow">
+              Can not find this user in the database.
+            </v-col>
+            <v-col class="shrink">
+              <v-btn @click="$router.push('/home')">
+                Homepage
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
+        <v-alert
+          v-if="noPrivileges"
+          type="error"
+        >
+          <v-row align="center">
+            <v-col class="grow">
+              Sorry, this account do not have access to this resource.
+              Please logout and log back in with an admin account.
+            </v-col>
+            <v-col class="shrink">
+              <v-btn @click="$router.push('/home')">
+                Homepage
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -118,6 +150,8 @@ export default {
         return 'This field is requried';
       },
     ],
+    notFound: false,
+    noPrivileges: false,
   }),
   async mounted() {
     try {
@@ -127,11 +161,13 @@ export default {
       this.loaded = true;
     } catch (err) {
       if (err.response) {
-        if (err.response.status === 401 || err.response.status === 403) {
+        if (err.response.status === 401) {
           this.$store.commit('user/logout');
           this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
         } else if (err.response.status === 404) {
-        // TODO: 404 Page
+          this.notFound = true;
+        } else if (err.response.status === 403) {
+          this.noPrivileges = true;
         } else {
           throw err;
         }
@@ -152,11 +188,13 @@ export default {
         this.$emit('update');
       } catch (err) {
         if (err.response) {
-          if (err.response.status === 401 || err.response.status === 403) {
+          if (err.response.status === 401) {
             this.$store.commit('user/logout');
             this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
           } else if (err.response.status === 404) {
-            // TODO: 404 Page
+            this.notFound = true;
+          } else if (err.response.status === 403) {
+            this.noPrivileges = true;
           } else {
             throw err;
           }

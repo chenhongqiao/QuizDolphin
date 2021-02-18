@@ -5,7 +5,7 @@
       persistent
     >
       <v-card>
-        <v-card-title v-if="quizId">
+        <v-card-title v-if="quizId&&!notFound&&!noPrivileges">
           Edit Quiz Info
         </v-card-title>
         <v-card-title v-else>
@@ -77,9 +77,40 @@
           </v-form>
         </v-card-text>
         <v-progress-linear
-          v-else
+          v-else-if="!notFound&&!noPrivileges"
           indeterminate
         />
+        <v-alert
+          v-if="notFound"
+          type="error"
+        >
+          <v-row align="center">
+            <v-col class="grow">
+              Can not find this quiz in the database.
+            </v-col>
+            <v-col class="shrink">
+              <v-btn @click="$router.push('/home')">
+                Homepage
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
+        <v-alert
+          v-if="noPrivileges"
+          type="error"
+        >
+          <v-row align="center">
+            <v-col class="grow">
+              Sorry, this account do not have access to this resource.
+              Please logout and log back in with an admin account.
+            </v-col>
+            <v-col class="shrink">
+              <v-btn @click="$router.push('/home')">
+                Homepage
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -137,6 +168,8 @@ export default {
   },
   data: () => ({
     quizInfo: {},
+    noPrivileges: false,
+    notFound: false,
     loaded: false,
     infoValid: false,
     pendingQuit: false,
@@ -182,11 +215,13 @@ export default {
       this.loaded = true;
     } catch (err) {
       if (err.response) {
-        if (err.response.status === 401 || err.response.status === 403) {
+        if (err.response.status === 401) {
           this.$store.commit('user/logout');
           this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
+        } else if (err.response.status === 403) {
+          this.noPrivileges = true;
         } else if (err.response.status === 404) {
-        // TODO: 404 Page
+          this.notFound = true;
         } else {
           throw err;
         }
@@ -208,11 +243,13 @@ export default {
         this.$emit('update');
       } catch (err) {
         if (err.response) {
-          if (err.response.status === 401 || err.response.status === 403) {
+          if (err.response.status === 401) {
             this.$store.commit('user/logout');
             this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
+          } else if (err.response.status === 403) {
+            this.noPrivileges = true;
           } else if (err.response.status === 404) {
-            // TODO: 404 Page
+            this.notFound = true;
           } else {
             throw err;
           }

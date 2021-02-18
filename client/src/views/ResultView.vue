@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="resultLoaded">
+    <div v-if="resultLoaded&&!notFound">
       <v-container>
         <v-row wrap>
           <v-col>
@@ -244,9 +244,25 @@
       </v-container>
     </div>
     <v-progress-linear
-      v-else
+      v-else-if="!notFound"
       indeterminate
     />
+    <v-alert
+      v-if="notFound"
+      type="error"
+    >
+      <v-row align="center">
+        <v-col class="grow">
+          Can not find this record in the database,
+          this might because of incorrect url.
+        </v-col>
+        <v-col class="shrink">
+          <v-btn @click="$router.push('/home')">
+            Homepage
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-alert>
   </div>
 </template>
 
@@ -260,6 +276,7 @@ export default {
     attemptId: undefined,
     quizResult: {},
     resultLoaded: false,
+    notFound: false,
   }),
   async mounted() {
     this.attemptId = this.$route.params.id;
@@ -297,14 +314,14 @@ export default {
   methods: {
     async loadResult() {
       try {
-        this.quizResult = await ResultService.getResult(this.attemptId, this.$route.query.admin);
+        this.quizResult = await ResultService.getResult(this.attemptId);
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {
             this.$store.commit('user/logout');
             this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
           } else if (err.response.status === 404) {
-            // TODO: 404 Page
+            this.notFound = true;
           } else {
             throw err;
           }
