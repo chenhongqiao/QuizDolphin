@@ -27,6 +27,7 @@
           <!-- eslint-disable-next-line vue/valid-v-slot -->
           <template #item.attemptId="{ item }">
             <router-link
+              v-if="item.email===$store.state.user.email"
               :to="{ name: 'Attempt', params: { id: item.attemptId }}"
               :title="`Attempt ID: ${item.attemptId}`"
             >
