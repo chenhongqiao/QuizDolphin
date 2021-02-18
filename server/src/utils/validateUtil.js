@@ -116,7 +116,8 @@ class DataValidate {
   static validateQuizInfo(quizInfo) {
     if (typeof quizInfo.quizName !== 'string'
     || typeof quizInfo.duration !== 'number'
-    || typeof quizInfo.questionCount !== 'number') {
+    || typeof quizInfo.questionCount !== 'number'
+    || typeof quizInfo.maxAttempts !== 'number') {
       return false;
     }
     if (quizInfo.questionCount < 1 || quizInfo.duration < 1) {

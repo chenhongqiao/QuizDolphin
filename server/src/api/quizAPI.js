@@ -56,6 +56,9 @@ router.get('/:quizId/attempt', async (req, res, next) => {
       } if (response.message === 'Quiz Not Enabled!') {
         res.status(400).send('Quiz Not Enabled!');
         return;
+      } if (response.message === 'Max Attempts Reached!') {
+        res.status(400).send('Max Attempts Reached!');
+        return;
       }
       throw Error('Unexpected Service Response!');
     } else {

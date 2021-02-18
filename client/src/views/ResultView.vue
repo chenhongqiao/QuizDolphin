@@ -11,6 +11,9 @@
               {{ quizResult.quizName }} - Result
             </div>
             <div class="text--secondary">
+              {{ quizResult.userName }} &lt;{{ quizResult.email }}&gt;
+            </div>
+            <div class="text--secondary">
               Attempt ID: {{ quizResult.attemptId }}
             </div>
           </v-col>

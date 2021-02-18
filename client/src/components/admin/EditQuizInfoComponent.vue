@@ -74,6 +74,16 @@
             >
               Question number has to be at least 1
             </div>
+            <div class="text-h6 text--primary">
+              Max Attempt Number
+            </div>
+            <div>
+              <v-text-field
+                v-model.number="quizInfo.maxAttempts"
+                type="number"
+                :rules="[...requiredField,...numberRange]"
+              />
+            </div>
           </v-form>
         </v-card-text>
         <v-progress-linear

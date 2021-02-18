@@ -21,6 +21,9 @@ class QuizService {
     if (!quizInfo.enable && !preview) {
       return { success: false, message: 'Quiz Not Enabled!' };
     }
+    if ((await this.getHistoryId(email, quizId)).data.length >= quizInfo.maxAttempts && !preview) {
+      return { success: false, message: 'Max Attempts Reached!' };
+    }
     // Get questions for this quiz
     const questions = await questionsCollection.find({ quizId }).project({ _id: 0 }).toArray();
     const { questionCount } = quizInfo;

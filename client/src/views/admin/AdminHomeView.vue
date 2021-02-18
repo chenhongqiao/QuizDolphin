@@ -15,12 +15,12 @@
               {{ quiz.quizName }}
             </v-card-title>
             <v-card-text>
-              <div> Quiz running!</div>
               <div>
                 {{ Math.floor(quiz.duration/60) }} minutes
                 {{ Math.floor(quiz.duration%60) }} seconds
               </div>
               <div>{{ quiz.questionCount }} questions </div>
+              <div>{{ quiz.maxAttempts }} attempts allowed </div>
             </v-card-text>
             <v-card-actions>
               <v-btn
@@ -66,12 +66,12 @@
               {{ quiz.quizName }}
             </v-card-title>
             <v-card-text>
-              <div> Not accepting submissions </div>
               <div>
                 {{ Math.floor(quiz.duration/60) }} minutes
                 {{ Math.floor(quiz.duration%60) }} seconds
               </div>
               <div>{{ quiz.questionCount }} questions </div>
+              <div>{{ quiz.maxAttempts }} attempts allowed </div>
             </v-card-text>
             <v-card-actions>
               <v-btn

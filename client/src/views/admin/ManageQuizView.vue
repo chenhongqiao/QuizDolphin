@@ -11,12 +11,15 @@
             >
               {{ quizName }}
             </div>
-            <div>
+            <div class="text--secondary">
               {{ questionCount }} questions
             </div>
-            <div>
+            <div class="text--secondary">
               {{ Math.floor(duration/60) }} minutes
               {{ Math.floor(duration%60) }} seconds
+            </div>
+            <div class="text--secondary">
+              {{ maxAttempts }} attempts allowed
             </div>
           </v-col>
           <v-spacer />
@@ -292,6 +295,7 @@ export default {
     pendingDelete: false,
     pendingDeleteQuestion: null,
     results: [],
+    maxAttempts: 0,
   }),
   async mounted() {
     await this.loadQuizInfo();
@@ -346,6 +350,7 @@ export default {
         this.quizName = quizInfo.quizName;
         this.questionCount = quizInfo.questionCount;
         this.duration = quizInfo.duration;
+        this.maxAttempts = quizInfo.maxAttempts;
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {

@@ -6,6 +6,7 @@ function QuizInfo(quizInfo, quizId) {
     this.quizId = quizId;
     this.questionCount = quizInfo.questionCount;
     this.duration = quizInfo.duration;
+    this.maxAttempts = quizInfo.maxAttempts;
   } else {
     this.invalid = true;
   }

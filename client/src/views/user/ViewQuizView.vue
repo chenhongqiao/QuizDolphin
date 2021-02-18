@@ -10,12 +10,15 @@
             >
               {{ quizName }}
             </div>
-            <div>
+            <div class="text--secondary">
               {{ questionCount }} questions
             </div>
-            <div>
+            <div class="text--secondary">
               {{ Math.floor(duration/60) }} minutes
               {{ Math.floor(duration%60) }} seconds
+            </div>
+            <div class="text--secondary">
+              {{ maxAttempts }} attempts allowed
             </div>
           </v-col>
         </v-row>
@@ -41,7 +44,7 @@
             New Attempt
           </div>
           <div
-            v-if="quizStatus||$store.state.user.role==='admin'"
+            v-if="(quizStatus&&quizHistory.length<maxAttempts)||$store.state.user.role==='admin'"
             class="text-center ma-2"
           >
             <v-btn
@@ -52,7 +55,7 @@
             </v-btn>
           </div>
           <div
-            v-else-if="$store.state.user.role!=='admin'"
+            v-if="!quizStatus&&$store.state.user.role!=='admin'"
             class="text-center"
           >
             This quiz is currently not accepting submissions.
@@ -61,7 +64,20 @@
             v-if="!quizStatus&&$store.state.user.role==='admin'"
             class="text-center"
           >
-            This quiz is not accepting submissions, but you can preview the quiz as an admin.
+            This quiz is not accepting submissions, but you can preview it as an admin.
+          </div>
+          <div
+            v-if="quizHistory.length>=maxAttempts&&$store.state.user.role!=='admin'"
+            class="text-center"
+          >
+            Attempts limit reached, no more new attempts allowed.
+          </div>
+          <div
+            v-if="quizHistory.length>=maxAttempts&&$store.state.user.role==='admin'"
+            class="text-center"
+          >
+            There's an attempts limit of {{ maxAttempts }},
+            but you can preview this quiz unlimited times as an admin.
           </div>
         </div>
       </v-container>
@@ -140,6 +156,11 @@
         </v-col>
       </v-row>
     </v-alert>
+    <v-snackbar
+      v-model="actionFailed"
+    >
+      {{ actionMessage }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -175,6 +196,9 @@ export default {
     notFound: false,
     questionCount: 0,
     quizStatus: false,
+    maxAttempts: 0,
+    actionFailed: false,
+    actionMessage: '',
   }),
   async mounted() {
     try {
@@ -187,6 +211,7 @@ export default {
       this.questionCount = quizInfo.questionCount;
       this.duration = quizInfo.duration;
       this.quizStatus = quizInfo.enable;
+      this.maxAttempts = quizInfo.maxAttempts;
       const history = await QuizService.getAttemptHistory(this.quizId);
       history.forEach((value, index) => {
         this.historyChartData.labels.push(this.getOrdinal(index + 1));
@@ -237,7 +262,8 @@ export default {
     async startNewQuiz() {
       this.actionDisabled = true;
       try {
-        this.attemptId = await QuizService.getQuizAttempt(this.quizId);
+        const newAttemptId = await QuizService.getQuizAttempt(this.quizId);
+        this.$router.push({ name: 'Attempt', params: { id: newAttemptId } });
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {
@@ -245,6 +271,14 @@ export default {
             this.$router.replace({ name: 'Login', query: { redirect: this.$route.fullPath } });
           } else if (err.response.status === 404) {
             this.notFound = true;
+          } else if (err.response.status === 409) {
+            const ongoing = await QuizService.getOngoingAttempt(this.quizId);
+            if (ongoing.length) {
+              this.attemptId = ongoing[0].attemptId;
+            }
+          } else if (err.response.status === 400) {
+            this.actionMessage = err.response.data;
+            this.actionFailed = true;
           } else {
             throw err;
           }
@@ -252,7 +286,6 @@ export default {
           throw err;
         }
       }
-      this.$router.push({ name: 'Attempt', params: { id: this.attemptId } });
     },
     getOrdinal(number) {
       if (number % 10 === 1 && number % 100 !== 11) {
