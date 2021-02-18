@@ -6,6 +6,10 @@ const questionService = require('../services/questionService');
 
 router.post('/', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -31,6 +35,10 @@ router.post('/', async (req, res, next) => {
 
 router.get('/:questionId', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -57,6 +65,10 @@ router.get('/:questionId', async (req, res, next) => {
 
 router.delete('/:questionId', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -83,6 +95,10 @@ router.delete('/:questionId', async (req, res, next) => {
 
 router.put('/:questionId', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;

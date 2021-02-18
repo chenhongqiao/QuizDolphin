@@ -71,6 +71,10 @@ router.get('/session', async (req, res, next) => {
 
 router.get('/list', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -88,6 +92,10 @@ router.get('/list', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -117,6 +125,10 @@ router.post('/', async (req, res, next) => {
 
 router.delete('/:email', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -147,6 +159,10 @@ router.delete('/:email', async (req, res, next) => {
 
 router.put('/:email', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -181,6 +197,10 @@ router.put('/:email', async (req, res, next) => {
 
 router.get('/:email', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;

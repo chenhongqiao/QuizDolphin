@@ -11,17 +11,11 @@ router.get('/:attemptId', async (req, res, next) => {
       return;
     }
     const { attemptId } = req.params;
-    const { admin } = req.query;
     if (!attemptId) {
       res.status(400).send('Missing Parameter!');
       return;
     }
-    let response;
-    if (admin && req.session.role === 'admin') {
-      response = await resultService.getResult(attemptId, req.session.email, true);
-    } else {
-      response = await resultService.getResult(attemptId, req.session.email, false);
-    }
+    const response = await resultService.getResult(attemptId, req.session.email, req.session.role === 'admin');
     if (!response.success) {
       if (response.message === 'No Matching Result!') {
         res.status(404).send('No Matching Result!');

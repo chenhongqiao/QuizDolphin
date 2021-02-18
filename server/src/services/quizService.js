@@ -8,7 +8,7 @@ const quizModel = require('../models/quizModel');
 class QuizService {
   static async newAttempt(quizId, email, userName, preview) {
     const questionsCollection = await mongodb.loadCollection('questions');
-    const quizInfoRes = await this.getQuizInfo(quizId, preview);
+    const quizInfoRes = await this.getQuizInfo(quizId);
     if (!quizInfoRes.success) {
       return { success: false, message: 'No Matching Quiz!' };
     }
@@ -16,6 +16,9 @@ class QuizService {
       return { success: false, message: 'No Simultaneous Attempts Allowed!' };
     }
     const quizInfo = quizInfoRes.data;
+    if (!quizInfo.enable && !preview) {
+      return { success: false, message: 'Quiz Not Enabled!' };
+    }
     const questions = await questionsCollection.find({ quizId }).project({ _id: 0 }).toArray();
     const { questionCount } = quizInfo;
     const selectedQuestions = [];
@@ -66,11 +69,11 @@ class QuizService {
     return { success: true, data: { attemptId, email, endTime: quizData.endTime } };
   }
 
-  static async getOngoingId(email, quizId, viewAll, preview) {
+  static async getOngoingId(email, quizId, viewAll) {
     const attemptsCollection = await mongodb.loadCollection('attempts');
     const query = {};
     if (quizId) {
-      if (!(await this.getQuizInfo(quizId, preview)).success) {
+      if (!(await this.getQuizInfo(quizId)).success) {
         return { success: false, message: 'No Matching Quiz!' };
       }
       query.quizId = quizId;
@@ -87,11 +90,11 @@ class QuizService {
     return { success: true, data: ongoing };
   }
 
-  static async getHistoryId(email, quizId, viewAll, preview) {
+  static async getHistoryId(email, quizId, viewAll) {
     const resultsCollection = await mongodb.loadCollection('results');
     const query = {};
     if (quizId) {
-      if (!(await this.getQuizInfo(quizId, preview)).success) {
+      if (!(await this.getQuizInfo(quizId)).success) {
         return { success: false, message: 'No Matching Quiz!' };
       }
       query.quizId = quizId;
@@ -122,17 +125,12 @@ class QuizService {
       return { success: true, data: await quizCollection.find({}).project({ _id: 0 }).toArray() };
     }
     // eslint-disable-next-line max-len
-    return { success: true, data: await quizCollection.find({ enable: true }).project({ _id: 0 }).toArray() };
+    return { success: true, data: await quizCollection.find({}).project({ _id: 0 }).toArray() };
   }
 
-  static async getQuizInfo(quizId, preview) {
+  static async getQuizInfo(quizId) {
     const quizCollection = await mongodb.loadCollection('quizzes');
-    let quizInfoCursor;
-    if (preview) {
-      quizInfoCursor = await quizCollection.find({ quizId }).project({ _id: 0 });
-    } else {
-      quizInfoCursor = await quizCollection.find({ quizId, enable: true }).project({ _id: 0 });
-    }
+    const quizInfoCursor = await quizCollection.find({ quizId }).project({ _id: 0 });
     if (await quizInfoCursor.count() === 0) {
       return { success: false, message: 'No Matching Quiz!' };
     }
@@ -181,7 +179,7 @@ class QuizService {
 
   static async getQuestions(quizId) {
     const questionsCollection = await mongodb.loadCollection('questions');
-    if (!(await this.getQuizInfo(quizId, true)).success) {
+    if (!(await this.getQuizInfo(quizId)).success) {
       return { success: false, message: 'No Matching Quiz!' };
     }
     return {

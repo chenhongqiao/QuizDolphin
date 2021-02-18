@@ -15,9 +15,9 @@ router.get('/:quizId?/ongoing', async (req, res, next) => {
     const { viewAll } = req.query;
     let response;
     if (viewAll && req.session.role === 'admin') {
-      response = await quizService.getOngoingId(req.session.email, quizId, true, req.session.role === 'admin');
+      response = await quizService.getOngoingId(req.session.email, quizId, true);
     } else {
-      response = await quizService.getOngoingId(req.session.email, quizId, false, req.session.role === 'admin');
+      response = await quizService.getOngoingId(req.session.email, quizId, false);
     }
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {
@@ -76,9 +76,9 @@ router.get('/:quizId?/history', async (req, res, next) => {
     const { viewAll } = req.query;
     let response;
     if (viewAll && req.session.role === 'admin') {
-      response = await quizService.getHistoryId(req.session.email, quizId, true, req.session.role === 'admin');
+      response = await quizService.getHistoryId(req.session.email, quizId, true);
     } else {
-      response = await quizService.getHistoryId(req.session.email, quizId, false, req.session.role === 'admin');
+      response = await quizService.getHistoryId(req.session.email, quizId, false);
     }
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {
@@ -105,7 +105,7 @@ router.get('/:quizId/info', async (req, res, next) => {
       res.status(400).send('Missing Parameter!');
       return;
     }
-    const response = await quizService.getQuizInfo(quizId, req.session.role === 'admin');
+    const response = await quizService.getQuizInfo(quizId);
     if (!response.success) {
       if (response.message === 'No Matching Quiz!') {
         res.status(404).send('No Matching Quiz!');
@@ -126,7 +126,7 @@ router.get('/list', async (req, res, next) => {
       res.status(401).send('Not Logged In!');
       return;
     }
-    const response = await quizService.getQuizList(req.session.role === 'admin');
+    const response = await quizService.getQuizList();
     if (!response.success) {
       throw Error('Unexpected Service Response!');
     } else {
@@ -141,6 +141,10 @@ router.get('/list', async (req, res, next) => {
 
 router.get('/:quizId/questions', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -167,6 +171,10 @@ router.get('/:quizId/questions', async (req, res, next) => {
 
 router.post('/:quizId/enable', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -193,6 +201,10 @@ router.post('/:quizId/enable', async (req, res, next) => {
 
 router.post('/:quizId/disable', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -219,6 +231,10 @@ router.post('/:quizId/disable', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -244,6 +260,10 @@ router.post('/', async (req, res, next) => {
 
 router.delete('/:quizId', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
@@ -270,6 +290,10 @@ router.delete('/:quizId', async (req, res, next) => {
 
 router.put('/:quizId', async (req, res, next) => {
   try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
     if (!req.session.loggedin || req.session.role !== 'admin') {
       res.status(403).send('Need Admin Privileges!');
       return;
