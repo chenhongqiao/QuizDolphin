@@ -41,7 +41,7 @@
             New Attempt
           </div>
           <div
-            v-if="quizStatus"
+            v-if="quizStatus||$store.state.user.role==='admin'"
             class="text-center ma-2"
           >
             <v-btn
@@ -52,10 +52,16 @@
             </v-btn>
           </div>
           <div
-            v-else
+            v-else-if="$store.state.user.role!=='admin'"
             class="text-center"
           >
-            This quiz is not accepting submission.
+            This quiz is currently not accepting submissions.
+          </div>
+          <div
+            v-if="!quizStatus&&$store.state.user.role==='admin'"
+            class="text-center"
+          >
+            This quiz is not accepting submissions, but you can preview the quiz as an admin.
           </div>
         </div>
       </v-container>

@@ -2,8 +2,11 @@
   <div>
     <div v-if="loaded">
       <v-container>
+        <div class="text-h6 pa-2">
+          Running Quizzes
+        </div>
         <div
-          v-for="quiz in quizList"
+          v-for="quiz in enabledQuiz"
           :key="'ql'+quiz.quizId"
           class="my-2"
         >
@@ -12,6 +15,38 @@
               {{ quiz.quizName }}
             </v-card-title>
             <v-card-text>
+              <div> Quiz Running!</div>
+              <div>
+                {{ Math.floor(quiz.duration/60) }} minutes
+                {{ Math.floor(quiz.duration%60) }} seconds
+              </div>
+              <div>{{ quiz.questionCount }} questions </div>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn
+                text
+                @click="toQuiz(quiz.quizId)"
+              >
+                Access Quiz
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </div>
+        <div class="text-h6 pa-2">
+          Other Quizzes
+        </div>
+        <div
+          v-for="quiz in disabledQuiz"
+          :key="'ql'+quiz.quizId"
+          class="my-2"
+        >
+          <v-card>
+            <v-card-title>
+              {{ quiz.quizName }}
+            </v-card-title>
+            <v-card-text>
+              <div> Not Accepting Submissions </div>
               <div>
                 {{ Math.floor(quiz.duration/60) }} minutes
                 {{ Math.floor(quiz.duration%60) }} seconds
@@ -49,6 +84,8 @@ export default {
     newQuiz: false,
     pendingDelete: false,
     deleteIndex: null,
+    enabledQuiz: [],
+    disabledQuiz: [],
   }),
   async mounted() {
     try {
@@ -73,7 +110,9 @@ export default {
     },
     async loadQuizList() {
       try {
-        this.quizList = await QuizService.getQuizList();
+        const quizList = await QuizService.getQuizList();
+        this.enabledQuiz = quizList.filter((quiz) => quiz.enable);
+        this.disabledQuiz = quizList.filter((quiz) => !quiz.enable);
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {

@@ -3,7 +3,7 @@
     <div v-if="loaded">
       <v-container>
         <div class="text-h6 pa-2">
-          Enabled Quiz
+          Enabled Quizzes
         </div>
         <div
           v-for="quiz in enabledQuiz"
@@ -15,6 +15,7 @@
               {{ quiz.quizName }}
             </v-card-title>
             <v-card-text>
+              <div> Quiz running!</div>
               <div>
                 {{ Math.floor(quiz.duration/60) }} minutes
                 {{ Math.floor(quiz.duration%60) }} seconds
@@ -53,7 +54,7 @@
           </v-card>
         </div>
         <div class="text-h6 pa-2">
-          Disabled Quiz
+          Disabled Quizzes
         </div>
         <div
           v-for="quiz in disabledQuiz"
@@ -65,6 +66,7 @@
               {{ quiz.quizName }}
             </v-card-title>
             <v-card-text>
+              <div> Not accepting submissions </div>
               <div>
                 {{ Math.floor(quiz.duration/60) }} minutes
                 {{ Math.floor(quiz.duration%60) }} seconds
@@ -206,7 +208,7 @@
     <v-snackbar
       v-model="actionFailed"
     >
-      Action failed because of insufficient privileges.
+      Action failed because of insufficient privilege.
     </v-snackbar>
   </div>
 </template>

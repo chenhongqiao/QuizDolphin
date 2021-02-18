@@ -214,7 +214,7 @@
     <v-snackbar
       v-model="actionFailed"
     >
-      Action failed because of insufficient privileges.
+      Action failed because of insufficient privilege.
     </v-snackbar>
   </div>
 </template>
