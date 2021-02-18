@@ -64,14 +64,22 @@ export default {
     historyLoaded: false,
     tableHeaders: [
       {
-        text: 'Quiz Name',
-        value: 'quizName',
-      },
-      {
         text: 'Time Stamp',
         value: 'timeStamp',
         filterable: false,
         groupable: false,
+      },
+      {
+        text: 'Quiz Name',
+        value: 'quizName',
+      },
+      {
+        text: 'Name',
+        value: 'userName',
+      },
+      {
+        text: 'Email',
+        value: 'email',
       },
       {
         text: 'Score',
@@ -112,7 +120,7 @@ export default {
   methods: {
     async loadHistory() {
       try {
-        this.quizHistory = (await QuizService.getAttemptHistory()).reverse();
+        this.quizHistory = (await QuizService.getAttemptHistory(null, this.$store.state.user.role === 'admin')).reverse();
         for (let index = 0; index < this.quizHistory.length; index += 1) {
           this.quizHistory[index].percent = ((this.quizHistory[index].score
           / this.quizHistory[index].totalPoints) * 100).toFixed(2);
