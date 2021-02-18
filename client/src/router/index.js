@@ -40,6 +40,11 @@ const routes = [
     component: () => import('../views/admin/UserListView.vue'),
   },
   {
+    path: '/progress',
+    name: 'Progress',
+    component: () => import('../views/ProgressView.vue'),
+  },
+  {
     path: '/',
     redirect: '/home',
   },

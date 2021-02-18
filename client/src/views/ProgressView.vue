@@ -1,10 +1,10 @@
 <template>
   <div>
-    <v-container v-if="historyLoaded">
+    <v-container v-if="loaded">
       <v-card>
         <v-data-table
           :headers="tableHeaders"
-          :items="quizHistory"
+          :items="ongoingAttempts"
           :search="search"
           show-group-by
           multi-sort
@@ -13,7 +13,7 @@
             <v-toolbar
               flat
             >
-              <v-toolbar-title>Attempt History</v-toolbar-title>
+              <v-toolbar-title>Ongoing Progress</v-toolbar-title>
             </v-toolbar>
             <v-toolbar flat>
               <v-text-field
@@ -25,16 +25,12 @@
             </v-toolbar>
           </template>
           <!-- eslint-disable-next-line vue/valid-v-slot -->
-          <template #item.timeStamp="{ item }">
-            {{ (new Date(item.timeStamp)).toLocaleString() }}
-          </template>
-          <!-- eslint-disable-next-line vue/valid-v-slot -->
           <template #item.attemptId="{ item }">
             <router-link
-              :to="{ name: 'Result', params: { id: item.attemptId }}"
+              :to="{ name: 'Attempt', params: { id: item.attemptId }}"
               :title="`Attempt ID: ${item.attemptId}`"
             >
-              View
+              Access
             </router-link>
           </template>
           <!-- eslint-disable-next-line vue/valid-v-slot -->
@@ -57,18 +53,12 @@
 import QuizService from '../services/QuizService';
 
 export default {
-  name: 'HistoryView',
+  name: 'ProgressView',
   data: () => ({
-    quizHistory: [],
+    ongoingAttempts: [],
     search: '',
-    historyLoaded: false,
+    loaded: false,
     tableHeaders: [
-      {
-        text: 'Time Stamp',
-        value: 'timeStamp',
-        filterable: false,
-        groupable: false,
-      },
       {
         text: 'Quiz Name',
         value: 'quizName',
@@ -82,27 +72,11 @@ export default {
         value: 'email',
       },
       {
-        text: 'Score',
-        value: 'score',
-        sortable: false,
-        groupable: false,
-      },
-      {
-        text: 'Percent',
-        groupable: false,
-        value: 'percent',
-      },
-      {
         text: 'Action',
         value: 'attemptId',
         align: 'end',
         groupable: false,
         sortable: false,
-      },
-      {
-        text: 'localTime',
-        value: 'localTime',
-        align: ' d-none',
       },
     ],
   }),
@@ -110,25 +84,18 @@ export default {
     this.$store.commit('navigation/replace', {
       index: 0,
       info: {
-        text: 'History',
+        text: 'Progress',
         disabled: false,
-        to: '/history',
+        to: '/progress',
       },
     });
-    await this.loadHistory();
+    await this.loadProgress();
+    this.loaded = true;
   },
   methods: {
-    async loadHistory() {
+    async loadProgress() {
       try {
-        this.quizHistory = (await QuizService.getAttemptHistory(null, this.$store.state.user.role === 'admin')).reverse();
-        for (let index = 0; index < this.quizHistory.length; index += 1) {
-          this.quizHistory[index].percent = ((this.quizHistory[index].score
-          / this.quizHistory[index].totalPoints) * 100).toFixed(2);
-          this.quizHistory[index].score = `${this.quizHistory[index].score.toFixed(2)}/${this.quizHistory[index].totalPoints.toFixed(2)}`;
-          this.quizHistory[index].localTime = (new Date(this.quizHistory[index].timeStamp))
-            .toLocaleString();
-        }
-        this.historyLoaded = true;
+        this.ongoingAttempts = await QuizService.getOngoingAttempt(null, this.$store.state.user.role === 'admin');
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {

@@ -24,6 +24,14 @@
             <v-list-item-title> History </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item to="/progress">
+          <v-list-item-icon>
+            <v-icon> mdi-progress-check </v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title> Progress </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item
           v-if="$store.state.user.role==='admin'"
           to="/user"

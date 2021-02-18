@@ -12,10 +12,27 @@ class QuizService {
     return response.data;
   }
 
-  static async getOngoingAttempt(quizId) {
-    const response = await axios.get(`${url}${quizId}/ongoing`, {
-      withCredentials: true,
-    });
+  static async getOngoingAttempt(quizId, viewAll) {
+    let response;
+    if (quizId) {
+      if (viewAll) {
+        response = await axios.get(`${url}${quizId}/ongoing?viewAll=true`, {
+          withCredentials: true,
+        });
+      } else {
+        response = await axios.get(`${url}${quizId}/ongoing`, {
+          withCredentials: true,
+        });
+      }
+    } else if (viewAll) {
+      response = await axios.get(`${url}/ongoing?viewAll=true`, {
+        withCredentials: true,
+      });
+    } else {
+      response = await axios.get(`${url}/ongoing`, {
+        withCredentials: true,
+      });
+    }
     return response.data;
   }
 
