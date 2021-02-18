@@ -10,6 +10,12 @@
             >
               {{ quizResult.quizName }} - Result
             </div>
+            <div
+              v-if="quizResult.preview"
+              class="text--primary"
+            >
+              Admin Preview
+            </div>
             <div class="text--secondary">
               {{ quizResult.userName }} &lt;{{ quizResult.email }}&gt;
             </div>
@@ -238,12 +244,6 @@
       <v-container>
         <v-row class="px-2 mb-2">
           <v-spacer />
-          <v-btn
-            class="ma-1 text-right"
-            @click="toQuizInfo"
-          >
-            Back To Info
-          </v-btn>
           <v-btn
             class="ma-1 text-right"
             @click="generateReport"

@@ -69,6 +69,11 @@ class QuizService {
     if (quizData.invalid) {
       throw new Error('Failed Generating QuizData!');
     }
+    if (preview) {
+      quizData.preview = true;
+    } else {
+      quizData.preview = false;
+    }
     const progress = new quizModel.QuizProgress(1,
       initProgress.responses,
       initProgress.types, attemptId, email, 1);
@@ -92,6 +97,8 @@ class QuizService {
     if (!viewAll) {
       // Search under the current user unless this action specifies to view records from all users
       query.email = email;
+    } else {
+      query.preview = false;
     }
     const ongoing = await attemptsCollection
       .find(query)
@@ -115,6 +122,8 @@ class QuizService {
     if (!viewAll) {
       // Search under the current user unless this action specifies to view records from all users
       query.email = email;
+    } else {
+      query.preview = false;
     }
     // Do not project unecessary info to keep response body small
     const history = await resultsCollection.find({

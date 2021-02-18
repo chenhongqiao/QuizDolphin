@@ -26,6 +26,7 @@ class GradingService {
     const results = [];
     const { questions } = attemptData;
     const { answers } = attemptData;
+    const { preview } = attemptData;
     let totalPoints = 0;
     let score = 0;
     // Loop through questions
@@ -119,6 +120,11 @@ class GradingService {
       attemptData.quizName, attemptData.userName);
     if (quizResult.invalid) {
       throw Error('Error Generating Quiz Result!');
+    }
+    if (preview) {
+      quizResult.preview = true;
+    } else {
+      quizResult.preview = false;
     }
     // Add quiz result to collection
     await resultsCollection.insertOne(quizResult);
