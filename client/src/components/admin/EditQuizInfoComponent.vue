@@ -156,6 +156,11 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar
+      v-model="actionFailed"
+    >
+      {{ actionMessage }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -194,6 +199,8 @@ export default {
       minutes: null,
       seconds: null,
     },
+    actionFailed: false,
+    actionMessage: '',
   }),
   watch: {
     duration: {
@@ -250,6 +257,10 @@ export default {
             this.noPrivileges = true;
           } else if (err.response.status === 404) {
             this.notFound = true;
+          } else if (err.response.status === 400) {
+            this.loaded = true;
+            this.actionMessage = err.response.data;
+            this.actionFailed = true;
           } else {
             throw err;
           }

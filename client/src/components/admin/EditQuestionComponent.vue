@@ -368,6 +368,11 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar
+      v-model="actionFailed"
+    >
+      {{ actionMessage }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -411,6 +416,8 @@ export default {
     questionValid: false,
     missingAnswer: true,
     pendingQuit: false,
+    actionFailed: false,
+    actionMessage: '',
   }),
   watch: {
     fillBlanksContext: {
@@ -574,6 +581,10 @@ export default {
             this.notFound = true;
           } else if (err.response.status === 403) {
             this.noPrivileges = true;
+          } else if (err.response.status === 400) {
+            this.loaded = true;
+            this.actionMessage = err.response.data;
+            this.actionFailed = true;
           } else {
             throw err;
           }
