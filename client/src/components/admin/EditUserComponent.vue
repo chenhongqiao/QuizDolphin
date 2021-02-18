@@ -42,7 +42,9 @@
             </div>
             <v-select
               v-model="userInfo.role"
-              :items="['user','admin']"
+              :items="[{text: 'User', value: 'user'},{text:'Admin',value: 'admin'}]"
+              item-text="text"
+              item-value="value"
               :rules="requiredField"
             />
           </v-form>

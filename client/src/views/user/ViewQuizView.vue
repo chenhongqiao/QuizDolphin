@@ -84,7 +84,7 @@
       <v-container>
         <v-tabs v-model="$store.state.quizView.userTab">
           <v-tab> Records </v-tab>
-          <v-tab> Graphs </v-tab>
+          <v-tab> Statistics </v-tab>
           <v-tab-item>
             <div v-if="quizHistory">
               <div class="text-h6 text-center ma-2">
@@ -128,7 +128,7 @@
               Performance History
             </div>
             <LineChartComponent
-              :chart-data="historyChartData"
+              :chart-data="lineChartData"
               :options="{maintainAspectRatio: false}"
               :style="'height=200px;'"
             />
@@ -179,7 +179,7 @@ export default {
   data: () => ({
     quizHistory: [],
     duration: 0,
-    historyChartData: {
+    lineChartData: {
       labels: [],
       datasets: [
         {
@@ -217,8 +217,8 @@ export default {
       // Load history and construct data for line chart
       const history = await QuizService.getAttemptHistory(this.quizId);
       history.forEach((value, index) => {
-        this.historyChartData.labels.push(this.getOrdinal(index + 1));
-        this.historyChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
+        this.lineChartData.labels.push(this.getOrdinal(index + 1));
+        this.lineChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
       });
       // Display from new to old
       this.quizHistory = history.reverse();
@@ -310,8 +310,8 @@ export default {
         // Load quiz history
         const history = (await QuizService.getQuizHistory(this.quizId)).data;
         history.forEach((value, index) => {
-          this.historyChartData.labels.push(this.getOrdinal(index + 1));
-          this.historyChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
+          this.lineChartData.labels.push(this.getOrdinal(index + 1));
+          this.lineChartData.datasets[0].data.push((value.score / value.totalPoints) * 100);
         });
         this.quizHistory = history.reverse();
       } catch (err) {

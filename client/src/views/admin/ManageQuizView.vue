@@ -35,6 +35,7 @@
         <v-tabs v-model="$store.state.quizView.adminTab">
           <v-tab> Questions </v-tab>
           <v-tab> Results </v-tab>
+          <v-tab> Statistics </v-tab>
           <v-tab-item>
             <v-data-table
               show-group-by
@@ -128,6 +129,16 @@
                 </td>
               </template>
             </v-data-table>
+          </v-tab-item>
+          <v-tab-item>
+            <div class="text-h6 text-center ma-2">
+              Score Distribution
+            </div>
+            <BarChartComponent
+              :chart-data="distributeChart"
+              :options="{maintainAspectRatio: false}"
+              :style="'height=200px;'"
+            />
           </v-tab-item>
         </v-tabs>
       </v-container>
@@ -227,11 +238,13 @@ import QuizService from '../../services/QuizService';
 import QuestionService from '../../services/QuestionService';
 import EditQuestionComponent from '../../components/admin/EditQuestionComponent.vue';
 import EditQuizInfoComponent from '../../components/admin/EditQuizInfoComponent.vue';
+import BarChartComponent from '../../components/BarChartComponent.vue';
 
 export default {
   components: {
     EditQuestionComponent,
     EditQuizInfoComponent,
+    BarChartComponent,
   },
   props: {
     quizId: { type: String, default: null },
@@ -286,8 +299,8 @@ export default {
       value: 'email',
     },
     {
-      text: 'Best Score',
-      value: 'bestScore',
+      text: 'Best Score (Percent)',
+      value: 'bestPercent',
     }, {
       text: '',
       value: 'data-table-expand',
@@ -296,6 +309,16 @@ export default {
     pendingDeleteQuestion: null,
     results: [],
     maxAttempts: 0,
+    distributeChart: {
+      labels: [],
+      datasets: [
+        {
+          label: '# of people',
+          backgroundColor: '#1565c0',
+          data: [],
+        },
+      ],
+    },
   }),
   async mounted() {
     await this.loadQuizInfo();
@@ -393,6 +416,23 @@ export default {
         }
       }
     },
+    buildDistGraph() {
+      this.distributeChart.labels.push(...['A', 'B', 'C', 'D', 'F']);
+      this.distributeChart.datasets[0].data.push(...[0, 0, 0, 0, 0]);
+      for (let index = 0; index < this.results.length; index += 1) {
+        if (this.results[index].bestPercent >= 90) {
+          this.distributeChart.datasets[0].data[0] += 1;
+        } else if (this.results[index].bestPercent >= 80) {
+          this.distributeChart.datasets[0].data[1] += 1;
+        } else if (this.results[index].bestPercent >= 70) {
+          this.distributeChart.datasets[0].data[2] += 1;
+        } else if (this.results[index].bestPercent >= 60) {
+          this.distributeChart.datasets[0].data[3] += 1;
+        } else {
+          this.distributeChart.datasets[0].data[4] += 1;
+        }
+      }
+    },
     async loadResults() {
       try {
         // Load history and build result-by-email
@@ -400,17 +440,18 @@ export default {
         const results = new Map();
         // Keeps the best score for each contestant
         for (let index = 0; index < history.length; index += 1) {
-        // eslint-disable-next-line max-len
           let result = {};
+          history[index].percent = ((history[index].score / history[index].totalPoints) * 100)
+            .toFixed(2);
           if (!results.has(history[index].email)) {
-            result.bestScore = history[index].score;
+            result.bestPercent = history[index].percent;
             result.email = history[index].email;
             result.userName = history[index].userName;
             result.records = [];
           } else {
             result = results.get(history[index].email);
-            if (history[index].score > result.bestScore) {
-              result.bestScore = history[index].score;
+            if (history[index].percent > result.bestPercent) {
+              result.bestPercent = history[index].percent;
             }
           }
           result.records.push(history[index]);
@@ -418,6 +459,7 @@ export default {
         }
         this.results = [...results].map(([, value]) => value);
         this.results.sort((a, b) => ((a.userName > b.userName) ? 1 : -1));
+        this.buildDistGraph();
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {
