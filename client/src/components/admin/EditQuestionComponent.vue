@@ -23,6 +23,8 @@
                   <v-select
                     v-model="question.type"
                     :items="questionTypes"
+                    item-text="text"
+                    item-value="value"
                     @change="changeQuestionType"
                   />
                 </v-col>
@@ -405,11 +407,11 @@ export default {
       },
     ],
     questionTypes: [
-      'single choice',
-      'multiple choice',
-      'fill in the blanks',
-      'short response',
-      'matching',
+      { text: 'Single choice', value: 'single choice' },
+      { text: 'Multiple choice', value: 'multiple choice' },
+      { text: 'Fill in the blanks', value: 'fill in the blanks' },
+      { text: 'Short response', value: 'short response' },
+      { text: 'Matching', value: 'matching' },
     ],
     fillBlanksContext: '',
     loaded: false,

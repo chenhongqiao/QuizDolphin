@@ -75,7 +75,7 @@
               Question number has to be at least 1
             </div>
             <div class="text-h6 text--primary">
-              Max Attempt Number
+              Attempts Allowed
             </div>
             <div>
               <v-text-field
