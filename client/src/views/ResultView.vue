@@ -18,6 +18,13 @@
           <div class="text-h5 mt-6">
             {{ quizResult.score.toFixed(2) }} / {{ quizResult.totalPoints.toFixed(2) }}
           </div>
+          <div class="text-h5 mt-6 ml-4">
+            <span v-if="quizResult.score/quizResult.totalPoints>=0.9"> A </span>
+            <span v-else-if="quizResult.score/quizResult.totalPoints>=0.8"> B </span>
+            <span v-else-if="quizResult.score/quizResult.totalPoints>=0.7"> C </span>
+            <span v-else-if="quizResult.score/quizResult.totalPoints>=0.6"> D </span>
+            <span v-else> F </span>
+          </div>
           <v-progress-circular
             class="ma-5"
             color="green"
@@ -36,7 +43,7 @@
           <v-card>
             <v-container>
               <div class="text-h5 font-weight-medium">
-                Problem #{{ currentQuestion }}
+                Question #{{ currentQuestion }}
               </div>
               <div class="text-subtitle-2 font-weight-regular">
                 Score: {{ quizResult.results[currentQuestion-1].score.toFixed(2) }}

@@ -22,7 +22,7 @@
         <v-card>
           <v-container>
             <div class="text-h5 font-weight-medium">
-              Problem #{{ questionIndex }}
+              Question #{{ questionIndex }}
             </div>
             <div class="text-subtitle-2 font-weight-regular">
               Points: {{ questions[questionIndex-1].points }}
