@@ -167,7 +167,14 @@
                       :background-color="quizResult.results[currentQuestion-1].response[index]===
                         quizResult.results[currentQuestion-1].answer[index]?'green':'red'"
                       disabled
-                    />
+                    >
+                      <!-- eslint-disable-next-line vue/valid-v-slot -->
+                      <template #selection="{ item }">
+                        <span class="text--secondary">
+                          {{ item }}
+                        </span>
+                      </template>
+                    </v-select>
                     <div
                       v-if="quizResult.results[currentQuestion-1].response[index]!==
                         quizResult.results[currentQuestion-1].answer[index]"
@@ -211,7 +218,14 @@
                             :background-color="quizResult.results[currentQuestion-1].response[index]
                               ===quizResult.results[currentQuestion-1].answer[index]?'green':'red'"
                             dense
-                          />
+                          >
+                            <!-- eslint-disable-next-line vue/valid-v-slot -->
+                            <template #selection="{ item }">
+                              <span class="text--secondary">
+                                {{ item }}
+                              </span>
+                            </template>
+                          </v-select>
                         </v-col>
                         <v-col
                           v-if="quizResult.results[currentQuestion-1].response[index]!==
