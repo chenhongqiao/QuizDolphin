@@ -58,6 +58,7 @@
         Quiz Dolphin
       </v-toolbar-title>
       <v-breadcrumbs
+        class="d-none d-sm-flex"
         :items="$store.state.navigation.navigation"
         divider="-"
       />

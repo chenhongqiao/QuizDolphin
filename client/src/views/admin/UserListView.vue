@@ -38,6 +38,7 @@
           <!-- eslint-disable-next-line vue/valid-v-slot -->
           <template #item.actions="{ item }">
             <v-icon
+              v-if="item.email!==$store.state.user.email"
               small
               class="mr-2"
               @click="pendingDeleteUser=item;pendingDelete=true;"
