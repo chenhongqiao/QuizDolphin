@@ -1,0 +1,35 @@
+services:
+  web:
+    build: .
+    restart: always
+    environment:
+      - PORT=80
+      - REDISHOST=redis
+      - REDISPORT=6379
+      - MONGOURL=mongodb://root:CHANGEME@mongo:27017?retryWrites=true&w=majority
+      - MONGODBNAME=production
+      - COOKIESECRET=CHANGEME
+      - RATELIMIT=20
+      - USERNAME=Example Admin
+      - USEREMAIL=admin@example.com
+      - USERPASSWORD=CHANGEME
+    ports:
+      - "80:80"
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: CHANGEME
+      MONGO_INITDB_DATABASE: production
+    volumes:
+      - mongodata:/data/db
+  redis:
+    image: redis
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+volumes:
+  mongodata:
+  redisdata:
