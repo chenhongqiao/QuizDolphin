@@ -55,7 +55,7 @@
         style="cursor: pointer"
         @click="goHome()"
       >
-        Quiz System
+        Quiz Dolphin
       </v-toolbar-title>
       <v-breadcrumbs
         :items="$store.state.navigation.navigation"
@@ -117,7 +117,13 @@
         class="text-center"
         cols="12"
       >
-        {{ new Date().getFullYear() }} — <strong>Quiz System</strong>
+        {{ new Date().getFullYear() }} — <strong>Quiz Dolphin</strong>
+      </v-col>
+      <v-col
+        class="text-center text--secondary"
+        cols="12"
+      >
+        Made by Hongqiao Chen as a FBLA 2021 Project
       </v-col>
     </v-footer>
   </v-app>

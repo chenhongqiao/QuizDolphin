@@ -25,11 +25,11 @@ class QuizService {
         });
       }
     } else if (viewAll) {
-      response = await axios.get(`${url}/ongoing?viewAll=true`, {
+      response = await axios.get(`${url}ongoing?viewAll=true`, {
         withCredentials: true,
       });
     } else {
-      response = await axios.get(`${url}/ongoing`, {
+      response = await axios.get(`${url}ongoing`, {
         withCredentials: true,
       });
     }
@@ -49,11 +49,11 @@ class QuizService {
         });
       }
     } else if (viewAll) {
-      response = await axios.get(`${url}/history?viewAll=true`, {
+      response = await axios.get(`${url}history?viewAll=true`, {
         withCredentials: true,
       });
     } else {
-      response = await axios.get(`${url}/history`, {
+      response = await axios.get(`${url}history`, {
         withCredentials: true,
       });
     }

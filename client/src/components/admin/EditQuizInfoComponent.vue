@@ -127,7 +127,7 @@
             text
             @click="pendingQuit=true"
           >
-            Quit
+            Discard
           </v-btn>
           <v-btn
             text

@@ -5,7 +5,7 @@
         v-if="$store.state.quizView.role==='admin'"
       >
         <v-icon> mdi-shield-account </v-icon>
-        You are viewing as admin, you can preview from user perspective by clicking this button.
+        You are managing this quiz as an admin, click this button to preview the quiz.
         <template #actions>
           <v-btn
             text
@@ -19,13 +19,13 @@
         v-else-if="$store.state.quizView.role==='user'"
       >
         <v-icon> mdi-account </v-icon>
-        You are previewing as user, you can switch to admin view by clicking this button.
+        You are previewing this quiz, click this button to switch to the management view.
         <template #actions>
           <v-btn
             text
             @click="$store.commit('quizView/changeRole',{id:quizId, role:'admin'});"
           >
-            Admin View
+            Management
           </v-btn>
         </template>
       </v-banner>
