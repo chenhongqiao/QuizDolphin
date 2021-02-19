@@ -618,12 +618,12 @@ export default {
       // So that user don't have to enter them again
       // Answer is always cleared on change
       if (type === 'single choice') {
-        this.question.answer = null;
+        this.$set(this.question, 'answer', null);
         if (typeof this.question.context !== 'string') {
-          this.question.context = '';
+          this.$set(this.question, 'context', '');
         }
         if (!Array.isArray(this.question.options)) {
-          this.question.options = [];
+          this.$set(this.question, 'options', []);
         }
         for (let index = this.question.options.length - 1; index >= 0; index -= 1) {
           if (typeof this.question.options[index] !== 'string') {
@@ -631,12 +631,12 @@ export default {
           }
         }
       } else if (type === 'multiple choice') {
-        this.question.answer = [];
+        this.$set(this.question, 'answer', []);
         if (typeof this.question.context !== 'string') {
-          this.question.context = '';
+          this.$set(this.question, 'context', '');
         }
         if (!Array.isArray(this.question.options)) {
-          this.question.options = [];
+          this.$set(this.question, 'options', []);
         }
         for (let index = this.question.options.length - 1; index >= 0; index -= 1) {
           if (typeof this.question.options[index] !== 'string') {
@@ -644,26 +644,26 @@ export default {
           }
         }
       } else if (type === 'short response') {
-        this.question.answer = '';
+        this.$set(this.question, 'answer', '');
         if (typeof this.question.context !== 'string') {
-          this.question.context = '';
+          this.$set(this.question, 'context', '');
         }
       } else if (type === 'matching') {
-        this.question.answer = [];
-        this.question.leftcol = [];
-        this.question.rightcol = [];
+        this.$set(this.question, 'answer', []);
+        this.$set(this.question, 'leftcol', []);
+        this.$set(this.question, 'rightcol', []);
         if (typeof this.question.context !== 'string') {
-          this.question.context = '';
+          this.$set(this.question, 'context', '');
         }
       } else if (type === 'fill in the blanks') {
-        this.question.answer = [];
-        this.question.options = [];
+        this.$set(this.question, 'answer', []);
+        this.$set(this.question, 'options', []);
         if (typeof this.question.context === 'string') {
           const oldContext = this.question.context;
-          this.question.context = [];
+          this.$set(this.question, 'context', []);
           this.question.context.push(oldContext);
         } else {
-          this.question.context = [];
+          this.$set(this.question, 'context', []);
         }
       }
       this.preProcess();
