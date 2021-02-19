@@ -25,23 +25,34 @@ class QuizService {
       return { success: false, message: 'Max Attempts Reached!' };
     }
     // Get questions for this quiz
-    const questions = await questionsCollection.find({ quizId }).project({ _id: 0 }).toArray();
+    const questions = await questionsCollection.find({ quizId })
+      .project({ _id: 0 }).sort({ _id: 1 }).toArray();
     const { questionCount } = quizInfo;
     const selectedQuestions = [];
     const selectedAnswers = [];
+    if (preview) {
+      // If it's admin preview, do not shuffle
+      for (let index = 0; index < questions.length; index += 1) {
+        const { answer } = questions[index];
+        selectedAnswers.push(answer);
+        delete questions[index].answer;
+        selectedQuestions.push(questions[index]);
+      }
+    } else {
     // Fisher-Yates shuffle algorithm, creates shuffle questions
-    for (let index = questions.length - 1; index >= 1; index -= 1) {
-      const pindex = randomUtils.integer(0, index + 1);
-      const temp = questions[index];
-      questions[index] = questions[pindex];
-      questions[pindex] = temp;
-    }
-    // Get the first several questions (defined by questionCount in quizInfo)
-    for (let index = 0; index < questions.length && index < questionCount; index += 1) {
-      const { answer } = questions[index];
-      selectedAnswers.push(answer);
-      delete questions[index].answer;
-      selectedQuestions.push(questions[index]);
+      for (let index = questions.length - 1; index >= 1; index -= 1) {
+        const pindex = randomUtils.integer(0, index + 1);
+        const temp = questions[index];
+        questions[index] = questions[pindex];
+        questions[pindex] = temp;
+      }
+      // Get the first several questions (defined by questionCount in quizInfo)
+      for (let index = 0; index < questions.length && index < questionCount; index += 1) {
+        const { answer } = questions[index];
+        selectedAnswers.push(answer);
+        delete questions[index].answer;
+        selectedQuestions.push(questions[index]);
+      }
     }
     const resultsCollection = await mongodb.loadCollection('results');
     const attemptsCollection = await mongodb.loadCollection('attempts');

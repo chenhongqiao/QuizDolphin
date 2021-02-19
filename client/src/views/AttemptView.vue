@@ -12,6 +12,12 @@
             >
               {{ quizName }} - Attempt
             </div>
+            <div
+              v-if="preview"
+              class="text--primary"
+            >
+              Admin Preview
+            </div>
             <div class="text--secondary">
               Attempt ID: {{ attemptId }}
             </div>
@@ -290,6 +296,7 @@ export default {
     quizName: '',
     quizId: '',
     notFound: false,
+    preview: false,
   }),
   computed: {
     attemptedNumber() {
@@ -375,6 +382,7 @@ export default {
         this.needReload = false;
         this.quizName = quizData.quizName;
         this.quizId = quizData.quizId;
+        this.preview = quizData.preview;
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {
