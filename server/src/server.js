@@ -89,4 +89,33 @@ async function startServer() {
   app.listen(port, () => console.log(`Server started on port ${port}`));
 }
 
-startServer();
+/* eslint-disable no-console */
+const userService = require('./services/userService');
+
+mongodb.connect()
+  .then(
+    () => mongodb.loadCollection('users'),
+  ).then(
+    (collection) => collection.find().count(),
+  ).then((count) => {
+    if (count === 0) {
+      const userInfo = {
+        name: process.env.USERNAME,
+        email: process.env.USEREMAIL,
+        role: 'admin',
+        password: process.env.USERPASSWORD,
+      };
+      console.log(`Adding default user ${process.env.USEREMAIL} to database`);
+      return userService.newUser(userInfo);
+    }
+    console.log('No initialization needed!');
+    return { success: true };
+  })
+  .then((status) => {
+    if (status.success) {
+      startServer();
+    } else {
+      console.log('Error occurred during initialization!');
+      process.exit(5);
+    }
+  });

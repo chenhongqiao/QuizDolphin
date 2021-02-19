@@ -11,7 +11,7 @@ class MongoDB {
   }
 
   static async loadCollection(collectionName) {
-    return this.client.db('test').collection(collectionName);
+    return this.client.db(process.env.MONGODBNAME).collection(collectionName);
   }
 }
 
