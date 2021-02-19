@@ -1,7 +1,6 @@
 {
-  "name": "fbla21cp",
+  "name": "server",
   "version": "1.0.0",
-  "description": "FBLA 2021 Coding and Programming Project",
   "main": "server.js",
   "scripts": {
     "start": "node src/server.js",
