@@ -43,7 +43,7 @@ It's empty for now, but don't worry, we will learn how to create a quiz soon. Co
 
 First, at the top-right corner, there's a user avatar. You can click on the avatar and it will show the user's information and a logout button. If the logged in user is an admin, the avatar background will be grey-bluish color, if the logged in user is a regular user, the background will be light blue.
 
-At the top-left corner, next to the hamburger menu and 'Quiz Dolphin' text, there's a top-bar breadcrumb navigation that shows where you are in the sytem. It 'Home' for now but will change as you access different pages.'
+At the top-left corner, next to the hamburger menu and 'Quiz Dolphin' text, there's a top-bar breadcrumb navigation that shows where you are in the sytem. It's 'Home' for now but will change as you access different pages.
 
 At the top-left corner, there's a hamburger menu that helps you navigate through different pannels (refered to as 'Views' in the documentation), please click on that.
 
