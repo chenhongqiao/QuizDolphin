@@ -95,9 +95,11 @@ const userService = require('./services/userService');
 mongodb.connect()
   .then(
     () => mongodb.loadCollection('users'),
-  ).then(
+  )
+  .then(
     (collection) => collection.find().count(),
-  ).then((count) => {
+  )
+  .then((count) => {
     if (count === 0) {
       const userInfo = {
         name: process.env.USERNAME,
