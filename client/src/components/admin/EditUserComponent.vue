@@ -19,7 +19,7 @@
             </div>
             <v-text-field
               v-model="userInfo.email"
-              :rules="requiredField"
+              :rules="emailRules"
               :disabled="!!email"
             />
             <div>
@@ -156,6 +156,10 @@ export default {
         }
         return 'This field is requried';
       },
+    ],
+    emailRules: [
+      (v) => !!v || 'This field is requried',
+      (v) => /.+@.+\..+/.test(v) || 'Email must be valid',
     ],
     notFound: false,
     noPrivileges: false,

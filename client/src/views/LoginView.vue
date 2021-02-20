@@ -8,7 +8,7 @@
     >
       <v-card>
         <v-card-title>
-          Login
+          Quiz Dolphin Login
         </v-card-title>
         <v-container>
           <v-alert
@@ -27,7 +27,6 @@
               :rules="emailRules"
               label="Email"
               required
-              @change="dismissError()"
             />
             <v-text-field
               v-model="loginInfo.password"
@@ -36,7 +35,6 @@
               :type="showPassword ? 'text' : 'password'"
               :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
               required
-              @change="dismissError()"
               @click:append="showPassword = !showPassword"
             />
           </v-form>
@@ -123,9 +121,6 @@ export default {
         }
       }
       this.actionDisabled = false;
-    },
-    dismissError() {
-      this.hasLoginError = false;
     },
   },
 };
