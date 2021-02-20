@@ -51,16 +51,21 @@
         >
           <v-card>
             <v-container>
-              <div class="text-h5 font-weight-medium">
-                Question #{{ currentQuestion }}
-              </div>
-              <div class="text-subtitle-2 font-weight-regular">
-                Score: {{ quizResult.results[currentQuestion-1].score.toFixed(2) }}
-                out of {{ quizResult.results[currentQuestion-1].points }}
-              </div>
-              <div class="text-subtitle-2 font-weight-regular">
-                Type: {{ quizResult.questions[currentQuestion-1].type }}
-              </div>
+              <v-row>
+                <v-col>
+                  <div class="text-h5 font-weight-medium">
+                    Question #{{ currentQuestion }}
+                  </div>
+                  <div class="text-subtitle-2 font-weight-regular">
+                    Type: {{ quizResult.questions[currentQuestion-1].type }}
+                  </div>
+                </v-col>
+                <v-spacer />
+                <div class="text-h6 font-weight-regular py-3 px-4">
+                  {{ quizResult.results[currentQuestion-1].score.toFixed(2) }} /
+                  {{ quizResult.results[currentQuestion-1].points.toFixed(2) }}
+                </div>
+              </v-row>
             </v-container>
             <v-divider />
             <v-container v-if="quizResult.questions[currentQuestion-1].type!=='fill in the blanks'">
