@@ -6,3 +6,5 @@ A FBLA 2021 Coding and Programming Project
 `server` folder contains backend source code.
 
 This repository was made public on Feb 21. No collaboration was involved in the development process. This project is the individual effort of Hongqiao (Harry) Chen. No modification to the project was made after Feb 21.
+
+Please notice that API controllers/Vue Template/Models are not commented because they do not contain special logics or design.
