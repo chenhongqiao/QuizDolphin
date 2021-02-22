@@ -2,12 +2,11 @@
 
 ## Supported Versions
 
-As this project is still in active development, all tests are running against the main branch.
-The only supported version is the main branch.
+The only supported version is the latest release.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| main    | :white_check_mark: |
+| latest  | :white_check_mark: |
 | other   | :x:                |
 
 ## Vulnerability
