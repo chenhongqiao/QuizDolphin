@@ -1,10 +1,12 @@
 # Quiz Dolphin
 A FBLA 2021 Coding and Programming Project
 
-`docs` folder contains documentations, please refer to Get-Started.md under admin documentation to setup.
-`client` folder contains frontend source code.
-`server` folder contains backend source code.
+## Project Structure
 
-This repository was made public on Feb 21. No collaboration was involved in the development process. This project is the individual effort of Hongqiao (Harry) Chen. No modification to the project was made after Feb 21.
+- `docs` folder contains documentations.
+- `client` folder contains frontend source code.
+- `server` folder contains backend source code.
 
-Please notice that API controllers/Vue Template/Models are not commented because they do not contain special logics or design.
+## Getting Started
+
+Please refer to [Getting Started](docs/admin/Getting-Started.md) for program setup instructions.
