@@ -1,7 +1,6 @@
 [
   {
     "context": "In Tuckman Model of Team Development, which oen of the following stages comes after forming?",
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "single choice",
     "options": [
@@ -18,7 +17,6 @@
       ", and expenses",
       "."
     ],
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "fill in the blanks",
     "options": [
@@ -40,7 +38,6 @@
   },
   {
     "context": "Please match the following stages in business cycle to its name",
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "matching",
     "rightcol": [
@@ -64,7 +61,6 @@
   },
   {
     "context": "Which of the following components are used to calculate GDP? (check all that apply)",
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "multiple choice",
     "options": [
@@ -86,14 +82,12 @@
   },
   {
     "context": "What is it called when the supply of a product is lower than its demand?",
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "short response",
     "answer": "Shortage"
   },
   {
     "context": "What does the character S stands for in SMART Goeals?",
-    "quizId": "8314066799632215",
     "points": 5,
     "options": [
       "Special",
@@ -106,14 +100,12 @@
   },
   {
     "context": "What does the character R stands for in SMART Goeals?",
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "short response",
     "answer": "Relevant"
   },
   {
     "context": "Which of the following adjectives best describes the situation when someone is accepting things without trying to change them?",
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "single choice",
     "options": [
@@ -125,7 +117,6 @@
   },
   {
     "context": "Which of the following products are considered good?",
-    "quizId": "8314066799632215",
     "type": "multiple choice",
     "points": 5,
     "options": [
@@ -141,7 +132,6 @@
   },
   {
     "context": "Which of the following products are considered service?",
-    "quizId": "8314066799632215",
     "type": "multiple choice",
     "points": 5,
     "options": [
@@ -161,7 +151,6 @@
       "resources and",
       "wants."
     ],
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "fill in the blanks",
     "options": [
@@ -187,7 +176,6 @@
       "create",
       "."
     ],
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "fill in the blanks",
     "options": [
@@ -210,7 +198,6 @@
   },
   {
     "context": "Please match the folowing descriptions to its corresponding component in GDP.",
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "matching",
     "leftcol": [
@@ -234,16 +221,259 @@
   },
   {
     "context": "Which president signed the Federal Reserve Act in 1913?",
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "short response",
     "answer": "Woodrow Wilson"
   },
   {
     "context": "What does the term GDP stands for in Economics?",
-    "quizId": "8314066799632215",
     "points": 5,
     "type": "short response",
     "answer": "Gross Domestic Product"
+  },
+  {
+    "context": "Which year was FBLA-PBL established?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "1932",
+      "1940",
+      "1953",
+      "1971"
+    ],
+    "answer": "1940"
+  },
+  {
+    "context": "Which city is FBLA-PBL's headquater?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "San Francisco, CA",
+      "Atlanta, GA",
+      "Seattle, WA",
+      "Reston, VA"
+    ],
+    "answer": "Reston, VA"
+  },
+  {
+    "context": [
+      "FBLA-PBL was created by",
+      "of",
+      "."
+    ],
+    "points": 5,
+    "type": "fill in the blanks",
+    "options": [
+      [
+        "Edward D. Miller",
+        "Hamden Forkner"
+      ],
+      [
+        "Stanford University",
+        "Columbia University",
+        "UCLA"
+      ]
+    ],
+    "answer": [
+      "Hamden Forkner",
+      "Columbia University"
+    ]
+  },
+  {
+    "context": "In which year did FBLA's National Membership surpass 200K?",
+    "points": 5,
+    "type": "short response",
+    "answer": "1987"
+  },
+  {
+    "context": "FBLA-PBL is governed by?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "CEO exclusively",
+      "State educators exclusively",
+      "Board of Directors"
+    ],
+    "answer": "Board of Directors"
+  },
+  {
+    "context": "Which of the following divisions FBLA is composed of?",
+    "points": 5,
+    "type": "multiple choice",
+    "options": [
+      "FBLA",
+      "PBL",
+      "Professional Division",
+      "Junior Division",
+      "Senior Division",
+      "FBLA-Middle"
+    ],
+    "answer": [
+      "FBLA",
+      "PBL",
+      "Professional Division",
+      "FBLA-Middle"
+    ]
+  },
+  {
+    "context": "How many FBLA-PBL administrative regions are there in the United States?",
+    "points": 5,
+    "options": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "answer": "5"
+  },
+  {
+    "context": "How many national vice presidents does FBLA-PBL have?",
+    "points": 5,
+    "options": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "answer": "5"
+  },
+  {
+    "context": "Which year did FBLA open its National Center?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "1983",
+      "1991",
+      "2001",
+      "2004"
+    ],
+    "answer": "1991"
+  },
+  {
+    "context": "Which of the following divisions are NOT a part of FBLA?",
+    "points": 5,
+    "type": "multiple choice",
+    "options": [
+      "FBLA",
+      "PBL",
+      "Professional Division",
+      "Junior Division",
+      "Senior Division",
+      "FBLA-Middle"
+    ],
+    "answer": [
+      "Junior Division",
+      "Senior Division"
+    ]
+  },
+  {
+    "context": [
+      "FBLA-PBL has over",
+      "competitive events",
+      "."
+    ],
+    "points": 5,
+    "type": "fill in the blanks",
+    "options": [
+      [
+        "10",
+        "70",
+        "120",
+        "200"
+      ],
+      [
+        "Only PBL members",
+        "Only FBLA members",
+        "FBLA ans PBL members"
+      ]
+    ],
+    "answer": [
+      "70",
+      "FBLA ans PBL members"
+    ]
+  },
+  {
+    "context": "Gold Seal Chapter Award of Merit is also known as?",
+    "type": "short response",
+    "points": 5,
+    "answer": "Hollis and Kitty Guy Award"
+  },
+  {
+    "context": "NLC stands for?",
+    "type": "short response",
+    "points": 5,
+    "answer": "National Leadership Conference"
+  },
+  {
+    "context": "SLC stands for?",
+    "type": "short response",
+    "points": 5,
+    "answer": "State Leadership Conference"
+  },
+  {
+    "context": "FBLA-PBL Professional Division was founded as?",
+    "type": "short response",
+    "points": 5,
+    "answer": "Alumni Division"
+  },
+  {
+    "context": "Which year did FBLA-PBL establish its FBLA division?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "1940",
+      "1958",
+      "1979",
+      "1994"
+    ],
+    "answer": "1940"
+  },
+  {
+    "context": "Which year did FBLA-PBL establish its PBL division?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "1940",
+      "1958",
+      "1979",
+      "1994"
+    ],
+    "answer": "1958"
+  },
+  {
+    "context": "Which year did FBLA-PBL establish its Professional division?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "1940",
+      "1958",
+      "1979",
+      "1994"
+    ],
+    "answer": "1979"
+  },
+  {
+    "context": "Which year did FBLA-PBL establish its Middle-level division?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "1940",
+      "1958",
+      "1979",
+      "1994"
+    ],
+    "answer": "1994"
+  },
+  {
+    "context": "As for 2016, how many FBLA members does FBLA-PBL have?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "5,000",
+      "20,000",
+      "200,000",
+      "1,000,000"
+    ],
+    "answer": "200,000"
   }
 ]
