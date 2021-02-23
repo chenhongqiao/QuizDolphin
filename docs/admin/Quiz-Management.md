@@ -74,4 +74,14 @@ Each x-axis shows a grade mark, and the y-axis shows how many people's best atte
 
 You can click *EDIT QUIZ INFO* button to edit quiz info, the procedure and information required is similar to creating a quiz.
 
+## Preview as User
+
+Admin account can preview the quiz from the user's perspective. Just simply click on the *PREVIEW* button on the top banner. You will notice the icon on the banner changes. A shield means you are managing the quiz, while a user means you are previewing the quiz. Please notice that previewing has following differences with real user's view.
+
+1. Admin can start a preview attempt at anytime (even when quiz is disabled) and you are not limited by the max attempts number.
+
+2. During the attempt, admin will see ALL QUESTIONS in the same order as you added them. User questions number is specified by Question Number field in quiz info.
+
+3. The result of preview attempt will NOT show up in RESULTS tab, nor Score Distribution chart, nor History Panel, nor Progress Panel. The only way to access preview attempts is under RECORDS tab in preview.
+
 That's it, we've covered all important aspects about managing a quiz, please nagivate to [History View](History-View.md) for information on the history page.

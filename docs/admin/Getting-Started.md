@@ -51,6 +51,10 @@ At the top-left corner, there's a hamburger menu that helps you navigate through
 
 As you can see, there're totally 4 panels in the system. We will talk about them one by one. Now, please navigate to [Admin Home](Admin-Home.md)  to learn more about the *admin* homepage and quiz creation.
 
+## FBLA-Specific Information
+
+On the first-run of the program, a Demo Quiz will be added to the quiz list and it will contain 50 questions as specified by FBLA Event Guidlines. You can use the *PREVIEW* page (will be introduced later in this documentation) to view all 50 questions, or, you alsocan create and login to a regular user account (will be covered later in the documentation) to see the generated 5-questions quiz. Please notice that the generated 5-questions quiz may not contain all 5 types of questions, since generation is completely random.
+
 ## Environment Variable
 
 - `PORT` The port Quiz Dolphin will be running on, default to `80`.
