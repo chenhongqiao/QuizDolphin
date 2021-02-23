@@ -116,7 +116,7 @@ const questionService = require('./services/questionService');
         throw Error('Error while adding demo quiz!');
       }
       console.log('Adding questions to Demo Quiz');
-      const questions = JSON.parse(fs.readFileSync('./demo/questions1.json'));
+      const questions = JSON.parse(fs.readFileSync('./demo/questions.json'));
       const responses = [];
       for (let index = 0; index < questions.length; index += 1) {
         const question = questions[index];
