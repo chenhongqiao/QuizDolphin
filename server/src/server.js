@@ -1,4 +1,5 @@
 require('dotenv').config();
+const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -18,10 +19,6 @@ const userAPI = require('./api/userAPI');
 const resultAPI = require('./api/resultAPI');
 
 async function startServer() {
-  // Initialize database and job services
-  await mongodb.connect();
-  await agenda.connect();
-
   const app = express();
 
   // Add middleware to api service
@@ -91,33 +88,54 @@ async function startServer() {
 
 /* eslint-disable no-console */
 const userService = require('./services/userService');
+const quizService = require('./services/quizService');
+const questionService = require('./services/questionService');
 
-mongodb.connect()
-  .then(
-    () => mongodb.loadCollection('users'),
-  )
-  .then(
-    (collection) => collection.find().count(),
-  )
-  .then((count) => {
-    if (count === 0) {
-      const userInfo = {
+(async () => {
+  try {
+    await mongodb.connect();
+    await agenda.connect();
+    if (!(await userService.getUserList()).data.length) {
+      console.log(`Adding default user ${process.env.USEREMAIL} to database`);
+      if (!(await userService.newUser({
         name: process.env.USERNAME,
         email: process.env.USEREMAIL,
         role: 'admin',
         password: process.env.USERPASSWORD,
-      };
-      console.log(`Adding default user ${process.env.USEREMAIL} to database`);
-      return userService.newUser(userInfo);
-    }
-    console.log('No initialization needed!');
-    return { success: true };
-  })
-  .then((status) => {
-    if (status.success) {
-      startServer();
+      })).success) {
+        throw Error('Error while adding init user!');
+      }
+      console.log('Adding Demo Quiz to database');
+      const newId = (await quizService.newQuiz({
+        quizName: 'Demo Quiz',
+        duration: 300,
+        questionCount: 5,
+        maxAttempts: 20,
+      }));
+      if (!newId.success) {
+        throw Error('Error while adding demo quiz!');
+      }
+      console.log('Adding questions to Demo Quiz');
+      const questions = JSON.parse(fs.readFileSync('./demo/questions1.json'));
+      const responses = [];
+      for (let index = 0; index < questions.length; index += 1) {
+        const question = questions[index];
+        question.quizId = newId.data;
+        responses.push(questionService.newQuestion(question));
+      }
+      const resolvedResponses = await Promise.all(responses);
+      for (let index = 0; index < resolvedResponses.length; index += 1) {
+        if (!resolvedResponses[index].success) {
+          throw Error('Error while adding demo questions!');
+        }
+      }
+      console.log('Initialization finished!');
     } else {
-      console.log('Error occurred during initialization!');
-      process.exit(5);
+      console.log('No initialization needed!');
     }
-  });
+  } catch (err) {
+    console.error(err);
+    process.exit(5);
+  }
+  await startServer();
+})();
