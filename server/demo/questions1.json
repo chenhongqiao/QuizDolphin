@@ -317,6 +317,7 @@
   },
   {
     "context": "How many FBLA-PBL administrative regions are there in the United States?",
+    "type": "single choice",
     "points": 5,
     "options": [
       "3",
@@ -329,6 +330,7 @@
   {
     "context": "How many national vice presidents does FBLA-PBL have?",
     "points": 5,
+    "type": "single choice",
     "options": [
       "3",
       "4",
@@ -475,5 +477,146 @@
       "1,000,000"
     ],
     "answer": "200,000"
+  },
+  {
+    "context": "FBLA-PBL is a?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "cooporation",
+      "international company",
+      "non-profit organization"
+    ],
+    "answer": "non-profit organization"
+  },
+  {
+    "context": "In which state FBLA created its first chapter?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "California",
+      "Tennessee",
+      "Iowa"
+    ],
+    "answer": "Tennessee"
+  },
+  {
+    "context": "In which state PBL created its first chapter?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "California",
+      "Tennessee",
+      "Iowa"
+    ],
+    "answer": "Iowa"
+  },
+  {
+    "context": "What does PBL stands for in FBLA-PBL?",
+    "type": "short response",
+    "points": 5,
+    "answer": "Phi Beta Lambda"
+  },
+  {
+    "context": "What does FBLA stands for in FBLA-PBL?",
+    "type": "short response",
+    "points": 5,
+    "answer": "Future Business Leaders of America"
+  },
+  {
+    "context": "Does FBLA division have its own Officer Team?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answer": "True"
+  },
+  {
+    "context": "Does PBL division have its own Officer Team?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answer": "True"
+  },
+  {
+    "context": "Does PD division have its own Officer Team?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answer": "True"
+  },
+  {
+    "context": "Does FBLA-Middle division have its own Officer Team?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answer": "False"
+  },
+  {
+    "context": "How many local chapters a state must have to be chartered?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "answer": "5"
+  },
+  {
+    "context": "What is the 2020-21 FBLA Membership Theme?",
+    "points": 5,
+    "type": "short response",
+    "answer": "Aspire"
+  },
+  {
+    "context": "How many times do Tomorrow's Business Leader publish every year?",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "answer": "4"
+  },
+  {
+    "context": "IFL stands for?",
+    "type": "short response",
+    "points": 5,
+    "answer": "Institute for Leaders"
+  },
+  {
+    "context": "FBLA-PBL is the largest career student business organization in the world",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answer": "True"
+  },
+  {
+    "context": "FBLA-PBL is governed by a set of Bylaws/",
+    "points": 5,
+    "type": "single choice",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answer": "True"
   }
 ]
