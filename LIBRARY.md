@@ -1,4 +1,4 @@
-# Library
+# Libraries
 
 Major libraries used by Quiz Dolphin. Each library's dependencies are not listed here.
 
