@@ -30,6 +30,7 @@ class JobService {
     const jobsCursor = await jobsCollection
       .find({ data: { attemptId, email } }).project({ _id: 1 });
     if (await jobsCursor.count()) {
+      // Get jobID from database
       const jobId = (await jobsCursor.toArray())[0];
       // eslint-disable-next-line no-underscore-dangle
       await this.agenda.cancel({ _id: ObjectID(jobId._id) });

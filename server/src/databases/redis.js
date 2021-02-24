@@ -7,6 +7,7 @@ class Redis {
     host: process.env.REDISHOST,
   });;
 
+  // Promisfying methods
   static get = promisify(this.client.get).bind(this.client);
 
   static set = promisify(this.client.set).bind(this.client);

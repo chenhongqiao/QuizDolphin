@@ -96,6 +96,7 @@ const questionService = require('./services/questionService');
     await mongodb.connect();
     await agenda.connect();
     if (!(await userService.getUserList()).data.length) {
+      // Perform initialization only if there's no user exist in the system
       console.log(`Adding default user ${process.env.USEREMAIL} to database`);
       if (!(await userService.newUser({
         name: process.env.USERNAME,
@@ -105,6 +106,7 @@ const questionService = require('./services/questionService');
       })).success) {
         throw Error('Error while adding init user!');
       }
+      // Add demo quiz
       console.log('Adding Demo Quiz to database');
       const newId = (await quizService.newQuiz({
         quizName: 'Demo Quiz',
@@ -116,6 +118,7 @@ const questionService = require('./services/questionService');
         throw Error('Error while adding demo quiz!');
       }
       console.log('Adding questions to Demo Quiz');
+      // Read demo qeustions from file
       const questions = JSON.parse(fs.readFileSync('./demo/questions.json'));
       const responses = [];
       for (let index = 0; index < questions.length; index += 1) {
@@ -123,6 +126,7 @@ const questionService = require('./services/questionService');
         question.quizId = newId.data;
         responses.push(questionService.newQuestion(question));
       }
+      // Wait for all operations to finish
       const resolvedResponses = await Promise.all(responses);
       for (let index = 0; index < resolvedResponses.length; index += 1) {
         if (!resolvedResponses[index].success) {

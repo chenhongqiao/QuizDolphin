@@ -4,6 +4,7 @@ class MongoDB {
   static client;
 
   static async connect() {
+    // Setup indexes on connect
     this.client = await mongodb.MongoClient.connect(process.env.MONGOURL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
