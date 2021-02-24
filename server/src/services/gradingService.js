@@ -39,7 +39,7 @@ class GradingService {
       const answer = answers[index];
       totalPoints += question.points;
       // Grade single choice and short response questions
-      if (question.type === 'single choice' || question.type === 'short response') {
+      if (question.type === 'single choice') {
       // Gain full points only if user's input match exactly with correct answer
         if (answer === response) {
           results.push(new resultModel.QuestionResult(
@@ -53,7 +53,19 @@ class GradingService {
           ));
         }
       }
-
+      if (question.type === 'short response') {
+        if (answer.trim().toLowerCase() === response.trim().toLowerCase()) {
+          results.push(new resultModel.QuestionResult(
+            response, answer, question.points,
+            question.questionId, question.points,
+          ));
+          score += question.points;
+        } else {
+          results.push(new resultModel.QuestionResult(
+            response, answer, 0, question.questionId, question.points,
+          ));
+        }
+      }
       // Grade multiple choice questions
       if (question.type === 'multiple choice') {
         const answersSet = new Set(answer);
