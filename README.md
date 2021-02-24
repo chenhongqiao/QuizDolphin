@@ -10,7 +10,7 @@ This system allows teachers to freely create quizzes and add different types of 
 
 This system contains useful analytical functions so teachers can easily see how students did and students can easily see their improvements.
 
-This system stores all the information in the backend and limits user's access to data by verifying their identities on api request. This system only stores user's hashed password to ensure their password's plaintext won't be leaked even if our database is tempered.
+This system stores all the information in the backend and limits user's access to data by verifying their identities on api request. This system only stores user's hashed password to ensure their password's plaintext won't be leaked even if our database is tempered (To be specific, )
 
 Quiz Dolphin is production ready and can be deployed easily with docker. Try it out on your device!
 
@@ -21,6 +21,30 @@ Please refer to [Getting Started](docs/admin/Getting-Started.md) for program set
 ## Libraries and Templates
 
 Please refer to [Library List](LIBRARY.md) for libraries and permissions.
+
+## Design
+
+This project hs two parts, a frontend and a backend. Backend stores and processes data while frontend displays and recieves data from user.
+
+### Grading
+
+All grading happens in the backend to prevent tampering. User answers that will be graded are fetched from redis, not accepted from user's grading request. End time check is performed on progress update, grading can happen at anytime, but user can not update their answer once time runs out.
+
+### Data Storage
+
+All persistent data (including users, quizzes, questions, quiz attempts, results) are stored in MongoDB with appropriate index to boost performance. Temporary data such as user quiz progress are stored in Redis for performance reason. Specially, the 50 demo questions (specified by FBLA Guidelines) are stored in a flat json file, and are automatically injected to the database on first-run.
+
+### Data Validation
+
+Data is validated twice through out the workflow. The frontend ensures that the user cannot enter invalid data and notifies them if they do. The backend verifies the data again when constructing object to ensure that no invalid data is write to the database.
+
+### Permission Model
+
+User privileges (roles) are verified in api controllers, if their privileges are insufficient, api controller will refuse their request (401/403) or will ignore some part of their request (ignore viewAll=true).
+
+### Data Isolation
+
+Unless user has admin privileges, when searching for a record, backend always ensure that this record belongs to the user requesting. If they try to request a resource not owned by them, a 404 will be returned.
 
 ## Project Structure
 

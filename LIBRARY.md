@@ -244,6 +244,33 @@ https://github.com/axios/axios
 > OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 > THE SOFTWARE.
 
+### Material Design Icons
+
+Icon library Quiz Dolphin used for its user interface and favicon
+
+https://github.com/Templarian/MaterialDesign
+
+> Pictogrammers Free License
+> --------------------------
+> 
+> This icon collection is released as free, open source, and GPL friendly by
+> the [Pictogrammers](http://pictogrammers.com/) icon group. You may use it
+> for commercial projects, open source projects, or anything really.
+> 
+> Icons: Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+> Some of the icons are redistributed under the Apache 2.0 license. All other
+> icons are either redistributed under their respective licenses or are
+> distributed under the Apache 2.0 license.
+> 
+> Fonts: Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+> All web and desktop fonts are distributed under the Apache 2.0 license. Web
+> and desktop fonts contain some icons that are redistributed under the Apache
+> 2.0 license. All other icons are either redistributed under their respective
+> licenses or are distributed under the Apache 2.0 license.
+> 
+> Code: MIT (https://opensource.org/licenses/MIT)
+> The MIT license applies to all non-font and non-icon files.
+
 ## Backend
 
 ### Express.js
@@ -624,36 +651,6 @@ https://github.com/expressjs/cors
 > TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 > SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-### cookie-parser
-
-Library used by QuizDolphin to parse request cookie
-
-https://github.com/expressjs/cookie-parser
-
-> (The MIT License)
-> 
-> Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>
-> Copyright (c) 2015 Douglas Christopher Wilson <doug@somethingdoug.com>
-> 
-> Permission is hereby granted, free of charge, to any person obtaining
-> a copy of this software and associated documentation files (the
-> 'Software'), to deal in the Software without restriction, including
-> without limitation the rights to use, copy, modify, merge, publish,
-> distribute, sublicense, and/or sell copies of the Software, and to
-> permit persons to whom the Software is furnished to do so, subject to
-> the following conditions:
-> 
-> The above copyright notice and this permission notice shall be
-> included in all copies or substantial portions of the Software.
-> 
-> THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-> EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-> MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-> IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-> CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-> TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-> SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 ### connect-redis
 
 Library used to store user session into redis
@@ -766,3 +763,29 @@ https://github.com/agenda/agenda
 > COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 > IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 > CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+### bcrypt
+
+A library that implements bcrypt algorithm (a PBKDF algorithm), used by Quiz Dolphin to securely store user's password.
+
+https://github.com/kelektiv/node.bcrypt.js
+
+> Copyright (c) 2010 Nicholas Campbell
+> 
+> Permission is hereby granted, free of charge, to any person obtaining a copy
+> of this software and associated documentation files (the "Software"), to deal
+> in the Software without restriction, including without limitation the rights
+> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+> copies of the Software, and to permit persons to whom the Software is
+> furnished to do so, subject to the following conditions:
+> 
+> The above copyright notice and this permission notice shall be included in
+> all copies or substantial portions of the Software.
+> 
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+> THE SOFTWARE.
