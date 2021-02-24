@@ -39,21 +39,21 @@ The default email is `admin@example.com` and the default password is `CHANGEME`(
 
 ![home page](../images/empty_home.png)
 
-It's empty for now, but don't worry, we will learn how to create a quiz soon. Congratulations! You successefully setup Quiz Dolphin. Let's first take a look at the interface. 
+It's empty for now, but don't worry, we will learn how to create a quiz soon. Congratulations! You successfully setup Quiz Dolphin. Let's first take a look at the interface. 
 
 First, at the top-right corner, there's a user avatar. You can click on the avatar and it will show the user's information and a logout button. If the logged in user is an admin, the avatar background will be grey-bluish color, if the logged in user is a regular user, the background will be light blue.
 
-At the top-left corner, next to the hamburger menu and 'Quiz Dolphin' text, there's a top-bar breadcrumb navigation that shows where you are in the sytem. It's 'Home' for now but will change as you access different pages.
+At the top-left corner, next to the hamburger menu and 'Quiz Dolphin' text, there's a top-bar breadcrumb navigation that shows where you are in the system. It's 'Home' for now but will change as you access different pages.
 
-At the top-left corner, there's a hamburger menu that helps you navigate through different pannels (refered to as 'Views' in the documentation), please click on that.
+At the top-left corner, there's a hamburger menu that helps you navigate through different panels (referred to as 'Views' in the documentation), please click on that.
 
 ![menu](../images/menu.png)
 
-As you can see, there're totally 4 panels in the system. We will talk about them one by one. Now, please navigate to [Admin Home](Admin-Home.md)  to learn more about the *admin* homepage and quiz creation.
+As you can see, there are totally 4 panels in the system. We will talk about them one by one. Now, please navigate to [Admin Home](Admin-Home.md)  to learn more about the *admin* homepage and quiz creation.
 
 ## FBLA-Specific Information
 
-On the first-run of the program, a Demo Quiz will be added to the quiz list and it will contain 50 questions as specified by FBLA Event Guidlines. You can use the *PREVIEW* page (will be introduced later in this documentation) to view all 50 questions, or, you alsocan create and login to a regular user account (will be covered later in the documentation) to see the generated 5-questions quiz. Please notice that the generated 5-questions quiz may not contain all 5 types of questions, since generation is completely random.
+On the first-run of the program, a Demo Quiz will be added to the quiz list and it will contain 50 questions as specified by FBLA Event Guidelines. You can use the *PREVIEW* page (will be introduced later in this documentation) to view all 50 questions, or, you can create and login to a regular user account (will be covered later in the documentation) to see the generated 5-questions quiz. Please notice that the generated 5-questions quiz may not contain all 5 types of questions, since generation is completely random.
 
 ## Environment Variable
 
