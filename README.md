@@ -4,7 +4,7 @@ A FBLA 2021 Coding and Programming Project.
 
 ## Overview
 
-Quiz Dolphin is designed to be a very flexible multi-purpose quiz systems that can be used in different scenarios, including "FBLA-Quiz" as specified by FBLA Event Guideline.
+Quiz Dolphin is designed to be a very flexible multi-purpose quiz systems, it can not only be used to host "FBLA-Quiz" as specified by FBLA Event Guideline, but also in many other scenarios such as classroom quiz and competitive event.
 
 This system allows teachers to freely create quizzes and add different types of questions easily. This system also allows students to focus on the questions they are answering by handling all other hassles for them (such as auto progress-saving and non-distractive timer).
 
