@@ -163,9 +163,9 @@ class DataValidate {
     return true;
   }
 
-  static validateUserInfo(userInfo) {
+  static validateUserInfo(userInfo, password) {
     if (typeof userInfo.email !== 'string' || typeof userInfo.name !== 'string'
-    || (userInfo.role !== 'user' && userInfo.role !== 'admin') || typeof userInfo.password !== 'string') {
+    || (userInfo.role !== 'user' && userInfo.role !== 'admin') || typeof password !== 'string') {
       return false;
     }
     return true;

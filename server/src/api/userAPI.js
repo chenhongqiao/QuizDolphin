@@ -19,7 +19,7 @@ router.post('/session', async (req, res, next) => {
       return;
     }
     const response = await authService.login(req.body.data.email, req.body.data.password);
-    // Sleep for 100~300ms to prevent brute force and disguise auth behavior
+    // Sleep for 100~300ms to prevent timing attack and disguise auth behavior
     await new Promise((resolve) => setTimeout(resolve, randomUtil.integer(100, 300)));
     if (!response.success) {
       res.status(401).send('Invalid Login Information!');

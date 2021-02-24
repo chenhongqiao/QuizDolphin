@@ -1,13 +1,11 @@
-const passwordUtils = require('../utils/passwordUtil');
 const validateUtils = require('../utils/validateUtil');
 
-function User(userInfo) {
-  if (validateUtils.validateUserInfo(userInfo)) {
+function User(userInfo, password) {
+  if (validateUtils.validateUserInfo(userInfo, password)) {
     this.email = userInfo.email; // Email of this user
     this.name = userInfo.name; // Name of this user
     this.role = userInfo.role; // Role of this user
-    this.salt = passwordUtils.newSalt(); // The random salt
-    this.password = passwordUtils.saltedPassword(userInfo.password, this.salt); // Hashed password
+    this.password = password; // Hashed password
   } else {
     this.invalid = true;
   }

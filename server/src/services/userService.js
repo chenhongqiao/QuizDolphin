@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const mongodb = require('../databases/mongodb');
 const userModel = require('../models/userModel');
 
@@ -9,8 +10,10 @@ class UserService {
     if (await userWithSameEmail.count()) {
       return { success: false, message: 'Email Already Exists!' };
     }
+    const salt = await bcrypt.genSalt(12);
+    const saltedPassword = await bcrypt.hash(userInfo.password, salt);
     // Construct user record
-    const user = new userModel.User(userInfo);
+    const user = new userModel.User(userInfo, saltedPassword);
     if (user.invalid) {
       return { success: false, message: 'Invalid User Syntax!' };
     }
@@ -33,7 +36,9 @@ class UserService {
     const newInfo = userInfo;
     // Email should not be updated, since email is used as this identifier
     newInfo.email = email;
-    const user = new userModel.User(newInfo);
+    const salt = await bcrypt.genSalt(12);
+    const saltedPassword = await bcrypt.hash(userInfo.password, salt);
+    const user = new userModel.User(newInfo, saltedPassword);
     if (user.invalid) {
       return { success: false, message: 'Invalid User Syntax!' };
     }
