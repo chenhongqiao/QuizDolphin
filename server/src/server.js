@@ -4,7 +4,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const session = require('express-session');
-const cookieParser = require('cookie-parser');
 const RedisStore = require('connect-redis')(session);
 const rateLimit = require('express-rate-limit');
 const history = require('connect-history-api-fallback');
@@ -23,7 +22,6 @@ async function startServer() {
 
   // Add middleware to api service
   app.use(bodyParser.json());
-  app.use(cookieParser());
   app.use(cors({
     credentials: true,
   }));
