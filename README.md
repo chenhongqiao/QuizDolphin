@@ -4,7 +4,7 @@ A FBLA 2021 Coding and Programming Project.
 
 ## Overview
 
-Although FBLA Event Guidelines only requires contestant to create a system that generates a fixed 5-questions quiz, Quiz Dolphin is a very flexible multi-purpose quiz systems that can be used in different scenarios. 
+Quiz Dolphin is designed to be a very flexible multi-purpose quiz systems that can be used in different scenarios, including "FBLA-Quiz" as specified by FBLA Event Guideline.
 
 This system allows teachers to freely create quizzes and add different types of questions easily. This system also allows students to focus on the questions they are answering by handling all other hassles for them (such as auto progress-saving and non-distractive timer).
 
@@ -12,7 +12,7 @@ This system contains useful analytical functions so teachers can easily see how 
 
 This system stores all the information in the backend and limits user's access to data by verifying their identities on api request. This system only stores user's hashed password to ensure their password's plain text won't be leaked even if our database is tempered (To be specific, bcrypt, a PBKDF algorithm is used to hash the password)
 
-Quiz Dolphin is production ready and can be deployed easily with docker. Try it out on your device!
+Quiz Dolphin is production ready and can be deployed easily with docker.
 
 ## Getting Started
 
@@ -84,9 +84,7 @@ Unless user has admin privileges, when searching for a record, backend always en
         └── utils (utilities)
 ```
 
-## Event-specific Information
-
-This repository is made public on Feb 23, 2021. No collaboration is involved in the development process of this program. No modification is made to this project after Feb 24, 2021.
+## Commentary
 
 This project contains commentary with the purpose of assisting the reader to understand project logic and design, thus some files do not contain commentary because they are either
 
