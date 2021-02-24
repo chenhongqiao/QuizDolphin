@@ -2,10 +2,6 @@
 
 A FBLA 2021 Coding and Programming Project.
 
-## Getting Started
-
-Please refer to [Getting Started](docs/admin/Getting-Started.md) for program setup instructions.
-
 ## Overview
 
 Although FBLA Event Guidelines only requires contestant to create a system that generates a fixed 5-questions quiz, Quiz Dolphin is a very flexible multi-purpose quiz systems that can be used in different scenarios. 
@@ -17,6 +13,10 @@ This system contains useful analytical functions so teachers can easily see how 
 This system stores all the information in the backend and limits user's access to data by verifying their identities on api request. This system only stores user's hashed password to ensure their password's plaintext won't be leaked even if our database is tempered.
 
 Quiz Dolphin is production ready and can be deployed easily with docker. Try it out on your device!
+
+## Getting Started
+
+Please refer to [Getting Started](docs/admin/Getting-Started.md) for program setup instructions.
 
 ## Libraries and Templates
 
