@@ -71,10 +71,10 @@ On the first-run of the program, a Demo Quiz will be added to the quiz list and 
 
 - `RATELIMIT` How many API requests a user is allowed to perform in 2 seconds, default to `20`.
 
-- `USERNAME` Name of the initial admin user, default to `Example Admin`.
+- `ADMINNAME` Name of the initial admin user, default to `Example Admin`.
 
-- `USEREMAIL` Email of the initial admin user, default to `admin@example.com`.
+- `ADMINEMAIL` Email of the initial admin user, default to `admin@example.com`.
 
-- `USERPASSWORD` Password of the initial admin user, default to `CHANGEME`
+- `ADMINPASSWORD` Password of the initial admin user, default to `CHANGEME`
 
 Please refer to mongo docker image documentation and redis docker image documentation for information about environment variables of mongo and redis image.

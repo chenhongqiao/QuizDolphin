@@ -99,10 +99,10 @@ const questionService = require('./services/questionService');
       // Perform initialization only if there's no user exist in the system
       console.log(`Adding default user ${process.env.USEREMAIL} to database`);
       if (!(await userService.newUser({
-        name: process.env.USERNAME,
-        email: process.env.USEREMAIL,
+        name: process.env.ADMINNAME,
+        email: process.env.ADMINEMAIL,
         role: 'admin',
-        password: process.env.USERPASSWORD,
+        password: process.env.ADMINPASSWORD,
       })).success) {
         throw Error('Error while adding init user!');
       }

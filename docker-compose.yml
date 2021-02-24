@@ -10,9 +10,9 @@ services:
       - MONGODBNAME=production
       - COOKIESECRET=CHANGEME
       - RATELIMIT=20
-      - USERNAME=Example Admin
-      - USEREMAIL=admin@example.com
-      - USERPASSWORD=CHANGEME
+      - ADMINNAME=Example Admin
+      - ADMINEMAIL=admin@example.com
+      - ADMINPASSWORD=CHANGEME
     ports:
       - "80:80"
   mongo:
