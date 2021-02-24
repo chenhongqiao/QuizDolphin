@@ -6,11 +6,11 @@ A FBLA 2021 Coding and Programming Project.
 
 Although FBLA Event Guidelines only requires contestant to create a system that generates a fixed 5-questions quiz, Quiz Dolphin is a very flexible multi-purpose quiz systems that can be used in different scenarios. 
 
-This system allows teachers to freely create quizzes and add different types of questions easily. This system also allows students to focus on the questions they are answering by handling all other hassels for them (such as auto progress-saving and non-distractive timer).
+This system allows teachers to freely create quizzes and add different types of questions easily. This system also allows students to focus on the questions they are answering by handling all other hassles for them (such as auto progress-saving and non-distractive timer).
 
 This system contains useful analytical functions so teachers can easily see how students did and students can easily see their improvements.
 
-This system stores all the information in the backend and limits user's access to data by verifying their identities on api request. This system only stores user's hashed password to ensure their password's plaintext won't be leaked even if our database is tempered (To be specific, )
+This system stores all the information in the backend and limits user's access to data by verifying their identities on api request. This system only stores user's hashed password to ensure their password's plain text won't be leaked even if our database is tempered (To be specific, bcrypt, a PBKDF algorithm is used to hash the password)
 
 Quiz Dolphin is production ready and can be deployed easily with docker. Try it out on your device!
 
@@ -24,7 +24,7 @@ Please refer to [Library List](LIBRARY.md) for libraries and permissions.
 
 ## Design
 
-This project hs two parts, a frontend and a backend. Backend stores and processes data while frontend displays and recieves data from user.
+This project has two parts, a frontend and a backend. Backend stores and processes data while frontend displays and receives data from user.
 
 ### Grading
 
@@ -88,10 +88,10 @@ Unless user has admin privileges, when searching for a record, backend always en
 
 This repository is made public on Feb 23, 2021. No collaboration is involved in the development process of this program. No modification is made to this project after Feb 23, 2021.
 
-This project contains commentary with the purpose of assisting the reader to understand project logics and design, thus some files do not contain commentary because they are either
+This project contains commentary with the purpose of assisting the reader to understand project logic and design, thus some files do not contain commentary because they are either
 
-- Vue Templates, describes layout rather than logics (like html)
+- Vue Templates, describes layout rather than logic (like html)
 
-- API Controllers, self-explanatory, interpret API calls in a fixed-fasion and contain minimum logic
+- API Controllers, self-explanatory, interpret API calls in a fixed-fashion and contain minimum logic
 
 - Validation functions, self-explanatory, contain nothing other than if statements
