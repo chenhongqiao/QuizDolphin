@@ -24,7 +24,7 @@ router.get('/:attemptId', async (req, res, next) => {
       }
       throw new Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);

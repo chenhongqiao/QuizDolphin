@@ -26,7 +26,7 @@ router.get('/:attemptId/progress', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -98,7 +98,7 @@ router.get('/:attemptId', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -128,7 +128,7 @@ router.post('/:attemptId', async (req, res, next) => {
       throw Error('Unexpected Service Response!');
     } else {
       await jobsService.cancelJob(response.data, req.session.email);
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);

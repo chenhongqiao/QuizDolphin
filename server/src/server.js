@@ -95,7 +95,7 @@ const questionService = require('./services/questionService');
     await agenda.connect();
     if (!(await userService.getUserList()).data.length) {
       // Perform initialization only if there's no user exist in the system
-      console.log(`Adding default user ${process.env.USEREMAIL} to database`);
+      console.log(`Adding default user ${process.env.ADMINEMAIL} to database`);
       if (!(await userService.newUser({
         name: process.env.ADMINNAME,
         email: process.env.ADMINEMAIL,

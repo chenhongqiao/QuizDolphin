@@ -27,7 +27,7 @@ router.get('/:quizId?/ongoing', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -66,7 +66,7 @@ router.get('/:quizId/attempt', async (req, res, next) => {
       await jobsService.gradeQuiz(
         response.data.attemptId, response.data.email, response.data.endTime,
       );
-      res.send(response.data.attemptId);
+      res.json(response.data.attemptId);
     }
   } catch (err) {
     next(err);
@@ -94,7 +94,7 @@ router.get('/:quizId?/history', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -120,7 +120,7 @@ router.get('/:quizId/info', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -137,7 +137,7 @@ router.get('/list', async (req, res, next) => {
     if (!response.success) {
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -169,7 +169,7 @@ router.get('/:quizId/questions', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -258,7 +258,7 @@ router.post('/', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -322,7 +322,7 @@ router.put('/:quizId', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);

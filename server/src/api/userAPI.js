@@ -63,7 +63,7 @@ router.get('/session', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -84,7 +84,7 @@ router.get('/list', async (req, res, next) => {
     if (!response.success) {
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -117,7 +117,7 @@ router.post('/', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -189,7 +189,7 @@ router.put('/:email', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -219,7 +219,7 @@ router.get('/:email', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);

@@ -27,7 +27,7 @@ router.post('/', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -57,7 +57,7 @@ router.get('/:questionId', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
@@ -125,7 +125,7 @@ router.put('/:questionId', async (req, res, next) => {
       }
       throw Error('Unexpected Service Response!');
     } else {
-      res.send(response.data);
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
