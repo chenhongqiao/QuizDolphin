@@ -86,7 +86,7 @@ Unless user has admin privileges, when searching for a record, backend always en
 
 ## Event-specific Information
 
-This repository is made public on Feb 23, 2021. No collaboration is involved in the development process of this program. No modification is made to this project after Feb 23, 2021.
+This repository is made public on Feb 23, 2021. No collaboration is involved in the development process of this program. No modification is made to this project after Feb 24, 2021.
 
 This project contains commentary with the purpose of assisting the reader to understand project logic and design, thus some files do not contain commentary because they are either
 
