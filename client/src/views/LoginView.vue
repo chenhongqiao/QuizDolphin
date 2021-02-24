@@ -19,6 +19,26 @@
           >
             {{ loginResponse }}
           </v-alert>
+          <v-alert
+            type="info"
+            dismissible
+          >
+            <v-container>
+              <div> Hi FBLA! Welcome to Quiz Dolphin! </div>
+              <div>
+                Default Admin Email: <strong>admin@example.com</strong>
+                Password: <strong>FBLAPWD2021</strong>
+              </div>
+              <div>
+                Default User Email:  <strong>user@example.com</strong>
+                Password: <strong>FBLAPWD2021</strong>
+              </div>
+              <div>
+                Please refer to README.md in project source code archive for documentations.
+                Thank you!
+              </div>
+            </v-container>
+          </v-alert>
           <v-form
             v-model="loginInfoValid"
           >
