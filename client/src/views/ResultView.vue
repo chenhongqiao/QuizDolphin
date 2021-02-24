@@ -114,13 +114,15 @@
               <div v-if="quizResult.questions[currentQuestion-1].type==='short response'">
                 <v-text-field
                   :value="quizResult.results[currentQuestion-1].response"
-                  :background-color="quizResult.results[currentQuestion-1].response
-                    ===quizResult.results[currentQuestion-1].answer?'green':'red'"
+                  :background-color="quizResult.results[currentQuestion-1].response.trim()
+                    .toLowerCase()
+                    ===quizResult.results[currentQuestion-1].answer.trim().toLowerCase()
+                    ?'green':'red'"
                   disabled
                 />
                 <div
-                  v-if="quizResult.results[currentQuestion-1].response
-                    !==quizResult.results[currentQuestion-1].answer"
+                  v-if="quizResult.results[currentQuestion-1].response.trim().toLowerCase()
+                    !==quizResult.results[currentQuestion-1].answer.trim().toLowerCase()"
                 >
                   Correct Answer: {{ quizResult.results[currentQuestion-1].answer }}
                 </div>
