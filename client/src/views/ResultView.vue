@@ -24,10 +24,10 @@
             </div>
           </v-col>
           <v-spacer />
-          <div class="text-h5 mt-6">
+          <div class="text-h5 mt-4 ml-4">
             {{ quizResult.score.toFixed(2) }} / {{ quizResult.totalPoints.toFixed(2) }}
           </div>
-          <div class="text-h5 mt-6 ml-4">
+          <div class="text-h5 mt-4 ml-4">
             <span v-if="quizResult.score/quizResult.totalPoints>=0.9"> A </span>
             <span v-else-if="quizResult.score/quizResult.totalPoints>=0.8"> B </span>
             <span v-else-if="quizResult.score/quizResult.totalPoints>=0.7"> C </span>
@@ -35,7 +35,7 @@
             <span v-else> F </span>
           </div>
           <v-progress-circular
-            class="ma-5"
+            class="mx-4 mt-3"
             color="green"
             :size="40"
             :width="5"
@@ -53,11 +53,14 @@
             <v-container>
               <v-row>
                 <v-col>
-                  <div class="text-h5 font-weight-medium">
+                  <div
+                    class="text-h5 font-weight-medium"
+                    :style="'white-space: nowrap;'"
+                  >
                     Question #{{ currentQuestion }}
                   </div>
                   <div class="text-subtitle-2 font-weight-regular">
-                    Type: {{ quizResult.questions[currentQuestion-1].type }}
+                    {{ quizResult.questions[currentQuestion-1].type }}
                   </div>
                 </v-col>
                 <v-spacer />

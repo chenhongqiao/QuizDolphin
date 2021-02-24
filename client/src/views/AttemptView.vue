@@ -27,7 +27,10 @@
       <v-container>
         <v-card>
           <v-container>
-            <div class="text-h5 font-weight-medium">
+            <div
+              class="text-h5 font-weight-medium"
+              :style="'white-space: nowrap;'"
+            >
               Question #{{ questionIndex }}
             </div>
             <div class="text-subtitle-2 font-weight-regular">
