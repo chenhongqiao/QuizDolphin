@@ -20,4 +20,4 @@ After creating a new user, it should look similar to this.
 
 In this view, you can search for a specific user or sort by name. You can also group users by their role. For each user, you can edit their information or delete a user. Please notice that you *Cannot* delete your self. Additionally, when editing a user, you need to specify a new password as the system does not record user's plain text password in the database. To be specific, only user's salt (a random number) and salted (hashed) password are stored in the database.
 
-Congratulations! You completeted all modules of the admin's docs. You can also access user's docs if you would like to. [User's Docs - Getting Started](../user)
+Congratulations! You completeted all modules of the admin's docs. You can also access user's docs if you would like to. [User's Docs - Getting Started](../user/Getting-Started.md)
