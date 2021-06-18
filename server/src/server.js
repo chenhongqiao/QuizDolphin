@@ -26,7 +26,7 @@ async function startServer() {
     credentials: true,
   }));
   app.use(session({
-    secret: process.env.COOKIESECRET,
+    secret: process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -40,7 +40,7 @@ async function startServer() {
   });
   app.use('/api', rateLimit({
     windowMs: 2000,
-    max: process.env.RATELIMIT,
+    max: process.env.RATE_LIMIT,
     keyGenerator: (req) => {
       if (req.session.email) {
         return req.session.email;
@@ -79,7 +79,7 @@ async function startServer() {
   app.use(history());
   app.use(express.static(path.join(__dirname, '../dist')));
 
-  const port = process.env.PORT || 5000;
+  const port = process.env.SERVER_PORT || 5000;
   // eslint-disable-next-line no-console
   app.listen(port, () => console.log(`Server started on port ${port}`));
 }
@@ -95,12 +95,12 @@ const questionService = require('./services/questionService');
     await agenda.connect();
     if (!(await userService.getUserList()).data.length) {
       // Perform initialization only if there's no user exist in the system
-      console.log(`Adding default user ${process.env.ADMINEMAIL} to database`);
+      console.log(`Adding default user ${process.env.ADMIN_EMAIL} to database`);
       if (!(await userService.newUser({
-        name: process.env.ADMINNAME,
-        email: process.env.ADMINEMAIL,
+        name: process.env.ADMIN_NAME,
+        email: process.env.ADMIN_EMAIL,
         role: 'admin',
-        password: process.env.ADMINPASSWORD,
+        password: process.env.ADMIN_PASSWORD,
       })).success) {
         throw Error('Error while adding init user!');
       }

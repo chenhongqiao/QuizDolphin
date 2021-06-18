@@ -2,10 +2,7 @@ const redis = require('redis');
 const { promisify } = require('util');
 
 class Redis {
-  static client = redis.createClient({
-    port: process.env.REDISPORT,
-    host: process.env.REDISHOST,
-  });;
+  static client = redis.createClient(process.env.REDIS_URL);
 
   // Promisfying methods
   static get = promisify(this.client.get).bind(this.client);
