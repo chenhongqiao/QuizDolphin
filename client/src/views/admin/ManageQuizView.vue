@@ -59,6 +59,16 @@
                 </v-toolbar>
               </template>
               <!-- eslint-disable-next-line vue/valid-v-slot -->
+              <template #item.type="{ item }">
+                {{ item.type.split(" ").map((word) => {
+                  if(word==='in' || word ==='the'){
+                    return word
+                  } else {
+                    return word[0].toUpperCase() + word.substring(1)
+                  }
+                }).join(" ") }}
+              </template>
+              <!-- eslint-disable-next-line vue/valid-v-slot -->
               <template #item.actions="{ item }">
                 <v-icon
                   small

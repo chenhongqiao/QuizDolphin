@@ -60,7 +60,13 @@
                     Question #{{ currentQuestion }}
                   </div>
                   <div class="text-subtitle-2 font-weight-regular">
-                    {{ quizResult.questions[currentQuestion-1].type }}
+                    {{ quizResult.questions[currentQuestion-1].type.split(" ").map((word) => {
+                      if(word==='in' || word ==='the'){
+                        return word
+                      } else {
+                        return word[0].toUpperCase() + word.substring(1)
+                      }
+                    }).join(" ") }}
                   </div>
                 </v-col>
                 <v-spacer />

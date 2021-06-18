@@ -53,6 +53,16 @@
               mdi-pencil
             </v-icon>
           </template>
+          <!-- eslint-disable-next-line vue/valid-v-slot -->
+          <template #item.role="{ item }">
+            {{ item.role.split(" ").map((word) => {
+              if(word==='in' || word ==='the'){
+                return word
+              } else {
+                return word[0].toUpperCase() + word.substring(1)
+              }
+            }).join(" ") }}
+          </template>
         </v-data-table>
       </v-card>
     </v-container>

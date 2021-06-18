@@ -37,7 +37,13 @@
               Points: {{ questions[questionIndex-1].points }}
             </div>
             <div class="text-subtitle-2 font-weight-regular">
-              Type: {{ questions[questionIndex-1].type }}
+              Type: {{ questions[questionIndex-1].type.split(" ").map((word) => {
+                if(word==='in' || word ==='the'){
+                  return word
+                } else {
+                  return word[0].toUpperCase() + word.substring(1)
+                }
+              }).join(" ") }}
             </div>
           </v-container>
           <v-divider />
