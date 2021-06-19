@@ -45,6 +45,11 @@ const routes = [
     component: () => import('../views/ProgressView.vue'),
   },
   {
+    path: '/help',
+    name: 'Thread',
+    component: () => import('../views/ThreadView.vue'),
+  },
+  {
     path: '/',
     redirect: '/home',
   },

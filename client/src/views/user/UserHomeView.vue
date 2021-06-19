@@ -2,7 +2,7 @@
   <div>
     <div v-if="loaded">
       <v-container>
-        <div class="text-h6 pa-2">
+        <div class="text-h5 pa-2">
           Running Quizzes
         </div>
         <div
@@ -33,7 +33,7 @@
             </v-card-actions>
           </v-card>
         </div>
-        <div class="text-h6 pa-2">
+        <div class="text-h5 pa-2">
           Other Quizzes
         </div>
         <div
