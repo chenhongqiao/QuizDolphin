@@ -188,6 +188,16 @@ class DataValidate {
     }
     return true;
   }
+
+  static validateThread(email, question, answer, threadId) {
+    if (typeof email !== 'string' || typeof question !== 'string' || typeof answer !== 'string' || typeof threadId !== 'string') {
+      return false;
+    }
+    if (!email || !question || !threadId) {
+      return false;
+    }
+    return true;
+  }
 }
 
 module.exports = DataValidate;

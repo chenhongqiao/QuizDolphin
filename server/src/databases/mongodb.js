@@ -37,6 +37,11 @@ class MongoDB {
         { name: 'email', key: { email: 1 } },
       ],
     );
+    this.client.db(process.env.MONGO_DBNAME).collection('threads').createIndexes(
+      [
+        { name: 'threadId', key: { threadId: 1 } },
+      ],
+    );
   }
 
   static async loadCollection(collectionName) {
