@@ -16,6 +16,7 @@ const attemptAPI = require('./api/attemptAPI');
 const quizAPI = require('./api/quizAPI');
 const userAPI = require('./api/userAPI');
 const resultAPI = require('./api/resultAPI');
+const threadAPI = require('./api/threadAPI');
 
 async function startServer() {
   const app = express();
@@ -59,6 +60,8 @@ async function startServer() {
   app.use('/api/user', userAPI);
 
   app.use('/api/result', resultAPI);
+
+  app.use('/api/thread', threadAPI);
 
   app.use('/api', (req, res) => {
     res.status(404).send('Invalid API Endpoint');

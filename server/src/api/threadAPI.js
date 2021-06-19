@@ -100,3 +100,5 @@ router.delete('/:threadId', async (req, res, next) => {
     next(err);
   }
 });
+
+module.exports = router;

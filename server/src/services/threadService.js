@@ -4,7 +4,7 @@ const threadModel = require('../models/threadModel');
 
 class ThreadService {
   static async newQuestion(email, question) {
-    const threadsCollection = mongodb.loadCollection('threads');
+    const threadsCollection = await mongodb.loadCollection('threads');
     let threadId = nanoidUtils.charId();
     // Make sure id does not duplicate
     // eslint-disable-next-line no-await-in-loop
@@ -21,13 +21,14 @@ class ThreadService {
   }
 
   static async postAnswer(threadId, answer) {
-    const threadsCollection = mongodb.loadCollection('threads');
-    const threadContext = threadsCollection.findOne({ threadId });
+    const threadsCollection = await mongodb.loadCollection('threads');
+    const threadContext = await threadsCollection.findOne({ threadId });
+    console.log(threadId);
     if (!threadContext) {
       return { success: false, message: 'No Such Question!' };
     }
     const answeredThread = new threadModel.Thread(threadContext.email,
-      threadContext.question, answer, threadContext.threadId);
+      threadContext.question, answer, threadId);
     if (answeredThread.invalid) {
       return { success: false, message: 'Invalid Thread Syntax!' };
     }
@@ -36,7 +37,7 @@ class ThreadService {
   }
 
   static async deleteThread(threadId) {
-    const threadsCollection = mongodb.loadCollection('threads');
+    const threadsCollection = await mongodb.loadCollection('threads');
     const status = await threadsCollection.deleteOne({ threadId });
     // 404 if no matching question
     if (status.deletedCount === 0) {

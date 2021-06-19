@@ -9,7 +9,7 @@ class JobService {
 
   static async connect() {
     // Connect to job services
-    this.agenda = new Agenda({ mongo: mongodb.client.db('test') });
+    this.agenda = new Agenda({ mongo: mongodb.client.db(process.env.MONGO_DBNAME) });
     // Define grade quiz job
     this.agenda.define('grade quiz', async (job, done) => {
       const { attemptId } = job.attrs.data;
