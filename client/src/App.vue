@@ -151,7 +151,7 @@ export default {
     if (userInformation) {
       this.$store.commit('user/login', userInformation);
     } else {
-      this.$router.replace({ name: 'Login', query: '/home' });
+      this.$router.replace({ name: 'Login' });
     }
   },
   methods: {

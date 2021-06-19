@@ -69,6 +69,10 @@ export default {
     if (this.$store.state.quizView.id !== this.quizId) {
       this.$store.commit('quizView/clearState');
     }
+    // If no view record, set it to user's role
+    if (this.$store.state.user.role === 'user' || !this.$store.state.quizView.role) {
+      this.$store.commit('quizView/changeRole', { id: this.quizId, role: this.$store.state.user.role });
+    }
     this.loaded = true;
   },
 };
