@@ -3,16 +3,15 @@ services:
     build: .
     restart: always
     environment:
-      - PORT=80
-      - REDISHOST=redis
-      - REDISPORT=6379
-      - MONGOURL=mongodb://root:CHANGEME@mongo:27017?retryWrites=true&w=majority
-      - MONGODBNAME=production
-      - COOKIESECRET=CHANGEME
-      - RATELIMIT=20
-      - ADMINNAME=Example Admin
-      - ADMINEMAIL=admin@example.com
-      - ADMINPASSWORD=CHANGEME
+      - SERVER_PORT=5000
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=mongodb://root:CHANGEME@mongo:27017
+      - MONGO_DBNAME=production
+      - COOKIE_SECRET=CHANGEME
+      - RATE_LIMIT=20
+      - ADMIN_NAME=Example Admin
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=CHANGEME
     ports:
       - "80:80"
   mongo:
