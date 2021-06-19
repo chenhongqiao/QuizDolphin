@@ -23,7 +23,6 @@ class ThreadService {
   static async postAnswer(threadId, answer) {
     const threadsCollection = await mongodb.loadCollection('threads');
     const threadContext = await threadsCollection.findOne({ threadId });
-    console.log(threadId);
     if (!threadContext) {
       return { success: false, message: 'No Such Question!' };
     }
@@ -44,6 +43,12 @@ class ThreadService {
       return { success: false, message: 'No Matching Thread!' };
     }
     return { success: true };
+  }
+
+  static async fetchThreads() {
+    const threadsCollection = await mongodb.loadCollection('threads');
+    const threads = await threadsCollection.find().project({ _id: 0 }).toArray();
+    return { success: true, data: threads };
   }
 }
 

@@ -77,10 +77,6 @@ router.delete('/:threadId', async (req, res, next) => {
       res.status(403).send('Insufficient Privilege!');
       return;
     }
-    if (!req.body.data) {
-      res.status(400).send('Missing Body Data!');
-      return;
-    }
     const { threadId } = req.params;
     if (!threadId) {
       res.status(400).send('Missing Parameter!');
@@ -95,6 +91,23 @@ router.delete('/:threadId', async (req, res, next) => {
       throw Error('Unexpected Service Response!');
     } else {
       res.send('Success!');
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/', async (req, res, next) => {
+  try {
+    if (!req.session.loggedin || !req.session.email) {
+      res.status(401).send('Not Logged In!');
+      return;
+    }
+    const response = await threadService.fetchThreads();
+    if (!response.success) {
+      throw Error('Unexpected Service Response!');
+    } else {
+      res.json(response.data);
     }
   } catch (err) {
     next(err);
