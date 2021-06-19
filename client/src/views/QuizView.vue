@@ -53,15 +53,21 @@ export default {
     quizId: '',
     loaded: false,
   }),
+  watch: {
+    '$store.state.user.role': {
+      handler() {
+        // If no view record, set it to user's role
+        if (this.$store.state.user.role === 'user' || !this.$store.state.quizView.role) {
+          this.$store.commit('quizView/changeRole', { id: this.quizId, role: this.$store.state.user.role });
+        }
+      },
+    },
+  },
   mounted() {
     this.quizId = this.$route.params.id;
     // If view record is from another quiz, clear it
     if (this.$store.state.quizView.id !== this.quizId) {
       this.$store.commit('quizView/clearState');
-    }
-    // If no view record, set it to user's role
-    if (this.$store.state.user.role === 'user' || !this.$store.state.quizView.role) {
-      this.$store.commit('quizView/changeRole', { id: this.quizId, role: this.$store.state.user.role });
     }
     this.loaded = true;
   },
