@@ -57,24 +57,22 @@ On the first-run of the program, a Demo Quiz will be added to the quiz list and 
 
 ## Environment Variable
 
-- `PORT` The port Quiz Dolphin will be running on, default to `80`.
+- `SERVER_PORT` The port Quiz Dolphin will be running on, default to `80`.
 
-- `REDISHOST` Host of the redis server, default to `redis`. Please notice that docker-compose runs all services in one network.
+- `REDIS_URL` URL of the redis server, default to `redis://redis:6379`. Please notice that docker-compose runs all services in one network.
 
-- `REDISPORT` Port of the redis server, default to `6379`.
+- `MONGO_URL` URL of the mongodb server, default to `mongodb://root:CHANGEME@mongo:27017`, please refer to mongodb documentation for specs about this url.
 
-- `MONGOURL` URL of the mongodb server, default to `mongodb://root:CHANGEME@mongo:27017?retryWrites=true&w=majority`, please refer to mongodb documentation for specs about this url.
+- `MONGO_DBNAME` Database name for Quiz Dolphin to store information, default to `production`.
 
-- `MONGODBNAME` Database name for Quiz Dolphin to store information, default to `production`.
+- `COOKIE_SECRET` Secret used to generate cookie, default to `CHANGEME`.
 
-- `COOKIESECRET` Secret used to generate cookie, default to `CHANGEME`.
+- `RATE_LIMIT` How many API requests a user is allowed to perform in 2 seconds, default to `20`.
 
-- `RATELIMIT` How many API requests a user is allowed to perform in 2 seconds, default to `20`.
+- `ADMIN_NAME` Name of the initial admin user, default to `Example Admin`.
 
-- `ADMINNAME` Name of the initial admin user, default to `Example Admin`.
+- `ADMIN_EMAIL` Email of the initial admin user, default to `admin@example.com`.
 
-- `ADMINEMAIL` Email of the initial admin user, default to `admin@example.com`.
-
-- `ADMINPASSWORD` Password of the initial admin user, default to `CHANGEME`
+- `ADMIN_PASSWORD` Password of the initial admin user, default to `CHANGEME`
 
 Please refer to mongo docker image documentation and redis docker image documentation for information about environment variables of mongo and redis image.

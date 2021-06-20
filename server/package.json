@@ -6,7 +6,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js"
   },
-  "repository": "git@github.com:chenhongqiao/FBLA21CP.git",
+  "repository": "git@github.com:chenhongqiao/QuizDolphin.git",
   "author": "Harry Chen <harrychen0314@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
