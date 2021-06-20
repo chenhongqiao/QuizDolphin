@@ -25,7 +25,8 @@ module.exports = {
         'Progress-View',
         'User-Management'
       ],
-    }
+    },
+    base: '/QuizDolphin/'
   }
 }
 

@@ -77,7 +77,6 @@ async function startServer() {
       console.error(err);
     }
   });
-
   // Serve frontend statics
   app.use(history());
   app.use(express.static(path.join(__dirname, '../dist')));
