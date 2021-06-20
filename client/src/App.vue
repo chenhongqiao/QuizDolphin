@@ -42,6 +42,28 @@
         </v-list-item>
         <v-list-item
           v-if="$store.state.user.role==='admin'"
+          :href="'https://docs.quizdolphin.dev/admin'"
+        >
+          <v-list-item-icon>
+            <v-icon>mdi-help-circle</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title> Help </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item
+          v-if="$store.state.user.role==='user'"
+          :href="'https://docs.quizdolphin.dev/user'"
+        >
+          <v-list-item-icon>
+            <v-icon>mdi-help-circle</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title> Help </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item
+          v-if="$store.state.user.role==='admin'"
           to="/user"
         >
           <v-list-item-icon>
