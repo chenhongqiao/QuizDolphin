@@ -39,7 +39,7 @@ class QuizService {
         selectedQuestions.push(questions[index]);
       }
     } else {
-    // Fisher-Yates shuffle algorithm, creates shuffle questions
+      // Fisher-Yates shuffle algorithm, creates shuffle questions
       for (let index = questions.length - 1; index >= 1; index -= 1) {
         const pindex = randomUtils.integer(0, index + 1);
         const temp = questions[index];

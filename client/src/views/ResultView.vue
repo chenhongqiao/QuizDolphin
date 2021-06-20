@@ -142,18 +142,18 @@
                     cols="6"
                   >
                     <v-checkbox
-                      :color="isCorrect(option, rawQuizResult
-                        .questions[currentQuestion-1].answer)?'green':'red'"
-                      :on-icon="isCorrect(option, rawQuizResult
-                        .questions[currentQuestion-1].answer)?'mdi-checkbox-marked':'mdi-close-box'"
+                      :color="isCorrect(option,
+                                        quizQuestions[currentQuestion-1].answer)?'green':'red'"
+                      :on-icon="isCorrect(option,
+                                          quizQuestions[currentQuestion-1].answer)
+                        ?'mdi-checkbox-marked':'mdi-close-box'"
                       :input-value="isChosen(option ,quizQuestions[currentQuestion-1].
                         response)"
                       readonly
                     >
                       <template #label>
                         <span
-                          v-if="isCorrect(option, rawQuizResult
-                            .questions[currentQuestion-1].answer)"
+                          v-if="isCorrect(option, quizQuestions[currentQuestion-1].answer)"
                           style="color:green"
                         >
                           {{ option }}
@@ -196,18 +196,19 @@
                     cols="6"
                   >
                     <v-checkbox
-                      :color="isCorrect(option, rawQuizResult
-                        .questions[currentQuestion-1].answer)?'green':'red'"
-                      :on-icon="isCorrect(option, rawQuizResult
-                        .questions[currentQuestion-1].answer)?'mdi-checkbox-marked':'mdi-close-box'"
+                      :color="isCorrect(option,
+                                        quizQuestions[currentQuestion-1].answer)?
+                                          'green':'red'"
+                      :on-icon="isCorrect(option,
+                                          quizQuestions[currentQuestion-1].answer)?
+                                            'mdi-checkbox-marked':'mdi-close-box'"
                       :input-value="isChosen(option ,quizQuestions[currentQuestion-1].
                         response)"
                       readonly
                     >
                       <template #label>
                         <span
-                          v-if="isCorrect(option, rawQuizResult
-                            .questions[currentQuestion-1].answer)"
+                          v-if="isCorrect(option, quizQuestions[currentQuestion-1].answer)"
                           style="color:green"
                         >
                           {{ option }}

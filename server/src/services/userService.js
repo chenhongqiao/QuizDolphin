@@ -10,7 +10,9 @@ class UserService {
     if (await userWithSameEmail.count()) {
       return { success: false, message: 'Email Already Exists!' };
     }
+    // Generate salt
     const salt = await bcrypt.genSalt(12);
+    // Salt plain text password with salt
     const saltedPassword = await bcrypt.hash(userInfo.password, salt);
     // Construct user record
     const user = new userModel.User(userInfo, saltedPassword);
