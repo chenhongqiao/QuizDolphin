@@ -8,30 +8,30 @@
               class="text-h4"
               :style="'white-space: nowrap;'"
             >
-              {{ quizResult.quizName }} - Result
+              {{ rawQuizResult.quizName }} - Result
             </div>
             <div
-              v-if="quizResult.preview"
+              v-if="rawQuizResult.preview"
               class="text--primary"
             >
               Admin Preview
             </div>
             <div class="text--secondary">
-              {{ quizResult.userName }} &lt;{{ quizResult.email }}&gt;
+              {{ rawQuizResult.userName }} &lt;{{ rawQuizResult.email }}&gt;
             </div>
             <div class="text--secondary">
-              Attempt ID: {{ quizResult.attemptId }}
+              Attempt ID: {{ rawQuizResult.attemptId }}
             </div>
           </v-col>
           <v-spacer />
           <div class="text-h5 mt-4 ml-4">
-            {{ quizResult.score.toFixed(2) }} / {{ quizResult.totalPoints.toFixed(2) }}
+            {{ rawQuizResult.score.toFixed(2) }} / {{ rawQuizResult.totalPoints.toFixed(2) }}
           </div>
           <div class="text-h5 mt-4 ml-4">
-            <span v-if="quizResult.score/quizResult.totalPoints>=0.9"> A </span>
-            <span v-else-if="quizResult.score/quizResult.totalPoints>=0.8"> B </span>
-            <span v-else-if="quizResult.score/quizResult.totalPoints>=0.7"> C </span>
-            <span v-else-if="quizResult.score/quizResult.totalPoints>=0.6"> D </span>
+            <span v-if="rawQuizResult.score/rawQuizResult.totalPoints>=0.9"> A </span>
+            <span v-else-if="rawQuizResult.score/rawQuizResult.totalPoints>=0.8"> B </span>
+            <span v-else-if="rawQuizResult.score/rawQuizResult.totalPoints>=0.7"> C </span>
+            <span v-else-if="rawQuizResult.score/rawQuizResult.totalPoints>=0.6"> D </span>
             <span v-else> F </span>
           </div>
           <v-progress-circular
@@ -39,13 +39,63 @@
             color="green"
             :size="40"
             :width="5"
-            :value="(quizResult.score/quizResult.totalPoints)*100"
+            :value="(rawQuizResult.score/rawQuizResult.totalPoints)*100"
+          />
+        </v-row>
+      </v-container>
+      <v-container>
+        <v-row>
+          <div class="mt-5 ml-4">
+            Show
+          </div>
+          <v-checkbox
+            v-model="showCorrect"
+            class="mx-4"
+            label="Correct questions"
+          />
+          <v-checkbox
+            v-model="showIncorrect"
+            label="Incorrect questions"
+          />
+          <v-responsive
+            max-width="700"
+            class="mx-4 mt-1"
+          >
+            <v-select
+              v-model="showTypes"
+              chips
+              hint="select question types to show"
+              dense
+              multiple
+              :items="['single choice', 'multiple choice',
+                       'matching','short response','fill in the blanks']"
+            />
+          </v-responsive>
+        </v-row>
+        <v-row>
+          <div class="mt-5 ml-4">
+            Sort
+          </div>
+          <v-responsive
+            max-width="100"
+            class="mx-4 mt-3"
+          >
+            <v-select
+              v-model="sortBy"
+              dense
+              :items="['index','points','score']"
+            />
+          </v-responsive>
+          <v-checkbox
+            v-model="reverse"
+            class="mx-4"
+            label="Reverse"
           />
         </v-row>
       </v-container>
       <v-container>
         <div
-          v-for="currentQuestion in quizResult.questions.length"
+          v-for="currentQuestion in quizQuestions.length"
           :key="'d-'+currentQuestion"
           class="my-2"
         >
@@ -57,10 +107,10 @@
                     class="text-h5 font-weight-medium"
                     :style="'white-space: nowrap;'"
                   >
-                    Question #{{ currentQuestion }}
+                    Question #{{ quizQuestions[currentQuestion-1].index }}
                   </div>
                   <div class="text-subtitle-2 font-weight-regular">
-                    {{ quizResult.questions[currentQuestion-1].type.split(" ").map((word) => {
+                    {{ quizQuestions[currentQuestion-1].type.split(" ").map((word) => {
                       if(word==='in' || word ==='the'){
                         return word
                       } else {
@@ -71,39 +121,39 @@
                 </v-col>
                 <v-spacer />
                 <div class="text-h6 font-weight-regular py-3 px-4">
-                  {{ quizResult.results[currentQuestion-1].score.toFixed(2) }} /
-                  {{ quizResult.results[currentQuestion-1].points.toFixed(2) }}
+                  {{ quizQuestions[currentQuestion-1].score.toFixed(2) }} /
+                  {{ quizQuestions[currentQuestion-1].points.toFixed(2) }}
                 </div>
               </v-row>
             </v-container>
             <v-divider />
-            <v-container v-if="quizResult.questions[currentQuestion-1].type!=='fill in the blanks'">
+            <v-container v-if="quizQuestions[currentQuestion-1].type!=='fill in the blanks'">
               <div class="text-body-1 font-weight-medium text-center ma-4">
-                {{ quizResult.questions[currentQuestion-1].context }}
+                {{ quizQuestions[currentQuestion-1].context }}
               </div>
             </v-container>
             <v-container>
-              <div v-if="quizResult.questions[currentQuestion-1].type==='single choice'">
+              <div v-if="quizQuestions[currentQuestion-1].type==='single choice'">
                 <v-row wrap>
                   <v-col
-                    v-for="option in quizResult.questions[currentQuestion-1].options"
+                    v-for="option in quizQuestions[currentQuestion-1].options"
                     :key="'ds-'+option"
                     md="3"
                     cols="6"
                   >
                     <v-checkbox
-                      :color="isCorrect(option, quizResult
-                        .results[currentQuestion-1].answer)?'green':'red'"
-                      :on-icon="isCorrect(option, quizResult
-                        .results[currentQuestion-1].answer)?'mdi-checkbox-marked':'mdi-close-box'"
-                      :input-value="isChosen(option ,quizResult.results[currentQuestion-1].
+                      :color="isCorrect(option, rawQuizResult
+                        .questions[currentQuestion-1].answer)?'green':'red'"
+                      :on-icon="isCorrect(option, rawQuizResult
+                        .questions[currentQuestion-1].answer)?'mdi-checkbox-marked':'mdi-close-box'"
+                      :input-value="isChosen(option ,quizQuestions[currentQuestion-1].
                         response)"
                       readonly
                     >
                       <template #label>
                         <span
-                          v-if="isCorrect(option, quizResult
-                            .results[currentQuestion-1].answer)"
+                          v-if="isCorrect(option, rawQuizResult
+                            .questions[currentQuestion-1].answer)"
                           style="color:green"
                         >
                           {{ option }}
@@ -120,44 +170,44 @@
                 </v-row>
               </div>
 
-              <div v-if="quizResult.questions[currentQuestion-1].type==='short response'">
+              <div v-if="quizQuestions[currentQuestion-1].type==='short response'">
                 <v-text-field
-                  :value="quizResult.results[currentQuestion-1].response"
-                  :background-color="quizResult.results[currentQuestion-1].response.trim()
+                  :value="quizQuestions[currentQuestion-1].response"
+                  :background-color="quizQuestions[currentQuestion-1].response.trim()
                     .toLowerCase()
-                    ===quizResult.results[currentQuestion-1].answer.trim().toLowerCase()
+                    ===quizQuestions[currentQuestion-1].answer.trim().toLowerCase()
                     ?'green':'red'"
                   disabled
                 />
                 <div
-                  v-if="quizResult.results[currentQuestion-1].response.trim().toLowerCase()
-                    !==quizResult.results[currentQuestion-1].answer.trim().toLowerCase()"
+                  v-if="quizQuestions[currentQuestion-1].response.trim().toLowerCase()
+                    !==quizQuestions[currentQuestion-1].answer.trim().toLowerCase()"
                 >
-                  Correct Answer: {{ quizResult.results[currentQuestion-1].answer }}
+                  Correct Answer: {{ quizQuestions[currentQuestion-1].answer }}
                 </div>
               </div>
 
-              <div v-if="quizResult.questions[currentQuestion-1].type==='multiple choice'">
+              <div v-if="quizQuestions[currentQuestion-1].type==='multiple choice'">
                 <v-row wrap>
                   <v-col
-                    v-for="option in quizResult.questions[currentQuestion-1].options"
+                    v-for="option in quizQuestions[currentQuestion-1].options"
                     :key="'dm-'+option"
                     md="3"
                     cols="6"
                   >
                     <v-checkbox
-                      :color="isCorrect(option, quizResult
-                        .results[currentQuestion-1].answer)?'green':'red'"
-                      :on-icon="isCorrect(option, quizResult
-                        .results[currentQuestion-1].answer)?'mdi-checkbox-marked':'mdi-close-box'"
-                      :input-value="isChosen(option ,quizResult.results[currentQuestion-1].
+                      :color="isCorrect(option, rawQuizResult
+                        .questions[currentQuestion-1].answer)?'green':'red'"
+                      :on-icon="isCorrect(option, rawQuizResult
+                        .questions[currentQuestion-1].answer)?'mdi-checkbox-marked':'mdi-close-box'"
+                      :input-value="isChosen(option ,quizQuestions[currentQuestion-1].
                         response)"
                       readonly
                     >
                       <template #label>
                         <span
-                          v-if="isCorrect(option, quizResult
-                            .results[currentQuestion-1].answer)"
+                          v-if="isCorrect(option, rawQuizResult
+                            .questions[currentQuestion-1].answer)"
                           style="color:green"
                         >
                           {{ option }}
@@ -173,10 +223,10 @@
                 </v-row>
               </div>
 
-              <div v-if="quizResult.questions[currentQuestion-1].type==='matching'">
+              <div v-if="quizQuestions[currentQuestion-1].type==='matching'">
                 <v-row
-                  v-for="(left,index) in quizResult.questions[currentQuestion-1].leftcol"
-                  :key="'dma-'+quizResult.questions[currentQuestion-1]+left"
+                  v-for="(left,index) in quizQuestions[currentQuestion-1].leftcol"
+                  :key="'dma-'+quizQuestions[currentQuestion-1]+left"
                 >
                   <v-col md="8">
                     <v-container>
@@ -187,31 +237,31 @@
                     md="4"
                   >
                     <v-select
-                      :value="quizResult.results[currentQuestion-1].response[index]"
-                      :items="quizResult.questions[currentQuestion-1].rightcol"
-                      :background-color="quizResult.results[currentQuestion-1].response[index]===
-                        quizResult.results[currentQuestion-1].answer[index]?'green':'red'"
+                      :value="quizQuestions[currentQuestion-1].response[index]"
+                      :items="quizQuestions[currentQuestion-1].rightcol"
+                      :background-color="quizQuestions[currentQuestion-1].response[index]===
+                        quizQuestions[currentQuestion-1].answer[index]?'green':'red'"
                       disabled
                     />
                     <div
-                      v-if="quizResult.results[currentQuestion-1].response[index]!==
-                        quizResult.results[currentQuestion-1].answer[index]"
+                      v-if="quizQuestions[currentQuestion-1].response[index]!==
+                        quizQuestions[currentQuestion-1].answer[index]"
                     >
                       Correct Answer:
-                      {{ quizResult.results[currentQuestion-1].answer[index] }}
+                      {{ quizQuestions[currentQuestion-1].answer[index] }}
                     </div>
                   </v-col>
                 </v-row>
               </div>
 
               <div
-                v-if="quizResult.questions[currentQuestion-1].type==='fill in the blanks'"
+                v-if="quizQuestions[currentQuestion-1].type==='fill in the blanks'"
                 class="ma-4"
               >
                 <v-row>
                   <div
-                    v-for="(context, index) in quizResult.questions[currentQuestion-1].context"
-                    :key="'qz'+quizResult.questions[currentQuestion-1].questionId+context"
+                    v-for="(context, index) in quizQuestions[currentQuestion-1].context"
+                    :key="'qz'+quizQuestions[currentQuestion-1].questionId+context"
                   >
                     <v-col>
                       <v-row>
@@ -224,28 +274,28 @@
                           </span>
                         </v-col>
                         <v-col
-                          v-if="quizResult.questions[currentQuestion-1].options[index]"
+                          v-if="quizQuestions[currentQuestion-1].options[index]"
                           cols="auto"
                           class="px-1 pt-1"
                         >
                           <v-select
                             :style="'width: min-content;'"
-                            :value="quizResult.results[currentQuestion-1].response[index]"
+                            :value="quizQuestions[currentQuestion-1].response[index]"
                             disabled
-                            :items="quizResult.questions[currentQuestion-1].options[index]"
-                            :background-color="quizResult.results[currentQuestion-1].response[index]
-                              ===quizResult.results[currentQuestion-1].answer[index]?'green':'red'"
+                            :items="quizQuestions[currentQuestion-1].options[index]"
+                            :background-color="quizQuestions[currentQuestion-1].response[index]
+                              ===quizQuestions[currentQuestion-1].answer[index]?'green':'red'"
                             dense
                           />
                         </v-col>
                         <v-col
-                          v-if="quizResult.results[currentQuestion-1].response[index]!==
-                            quizResult.results[currentQuestion-1].answer[index]"
+                          v-if="quizQuestions[currentQuestion-1].response[index]!==
+                            quizQuestions[currentQuestion-1].answer[index]"
                           cols="auto"
                           class="px-0"
                         >
                           <span style="color:green">
-                            {{ quizResult.results[currentQuestion-1].answer[index] }}
+                            {{ quizQuestions[currentQuestion-1].answer[index] }}
                           </span>
                         </v-col>
                       </v-row>
@@ -300,10 +350,49 @@ export default {
   name: 'ResultView',
   data: () => ({
     attemptId: undefined,
-    quizResult: {},
+    rawQuizResult: {},
+    mergedQuizResult: {},
     resultLoaded: false,
     notFound: false,
+    showCorrect: true,
+    showIncorrect: true,
+    showTypes: ['single choice', 'multiple choice',
+      'matching', 'short response', 'fill in the blanks'],
+    sortBy: 'index',
+    reverse: false,
   }),
+  computed: {
+    quizQuestions() {
+      let filteredQuestions = this.mergedQuizResult.questions;
+      if (!this.showCorrect) {
+        filteredQuestions = filteredQuestions.filter((value) => (value.score !== value.points));
+      }
+      if (!this.showIncorrect) {
+        filteredQuestions = filteredQuestions.filter((value) => (value.score === value.points));
+      }
+      const showTypes = new Set(this.showTypes);
+      filteredQuestions = filteredQuestions.filter((value) => (showTypes.has(value.type)));
+      if (this.sortBy === 'points') {
+        filteredQuestions.sort((a, b) => {
+          if (a.points === b.points) {
+            return a.index > b.index ? 1 : -1;
+          }
+          return a.points < b.points ? 1 : -1;
+        });
+      } else if (this.sortBy === 'score') {
+        filteredQuestions.sort((a, b) => {
+          if (a.score === b.score) {
+            return a.index > b.index ? 1 : -1;
+          }
+          return a.score > b.score ? 1 : -1;
+        });
+      }
+      if (this.reverse) {
+        return filteredQuestions.reverse();
+      }
+      return filteredQuestions;
+    },
+  },
   async mounted() {
     this.attemptId = this.$route.params.id;
     await this.loadResult();
@@ -321,9 +410,9 @@ export default {
       this.$store.commit('navigation/replace', {
         index: 1,
         info: {
-          text: this.quizResult.quizName,
+          text: this.rawQuizResult.quizName,
           disabled: false,
-          to: `/quiz/${this.quizResult.quizId}`,
+          to: `/quiz/${this.rawQuizResult.quizId}`,
         },
       });
     }
@@ -340,7 +429,15 @@ export default {
   methods: {
     async loadResult() {
       try {
-        this.quizResult = await ResultService.getResult(this.attemptId);
+        this.rawQuizResult = await ResultService.getResult(this.attemptId);
+        this.mergedQuizResult = this.rawQuizResult;
+        for (let index = 0; index < this.rawQuizResult.questions.length; index += 1) {
+          this.mergedQuizResult.questions[index] = {
+            ...this.rawQuizResult.questions[index],
+            ...this.rawQuizResult.results[index],
+          };
+          this.mergedQuizResult.questions[index].index = index + 1;
+        }
       } catch (err) {
         if (err.response) {
           if (err.response.status === 401) {
@@ -373,10 +470,37 @@ export default {
       return response === answer;
     },
     generateReport() {
-      PDFReport.newReport(this.quizResult);
+      let filteredQuestions = this.mergedQuizResult.questions;
+      if (!this.showCorrect) {
+        filteredQuestions = filteredQuestions.filter((value) => (value.score !== value.points));
+      }
+      if (!this.showIncorrect) {
+        filteredQuestions = filteredQuestions.filter((value) => (value.score === value.points));
+      }
+      const showTypes = new Set(this.showTypes);
+      filteredQuestions = filteredQuestions.filter((value) => (showTypes.has(value.type)));
+      if (this.sortBy === 'points') {
+        filteredQuestions.sort((a, b) => {
+          if (a.points === b.points) {
+            return a.index > b.index ? 1 : -1;
+          }
+          return a.points < b.points ? 1 : -1;
+        });
+      } else if (this.sortBy === 'score') {
+        filteredQuestions.sort((a, b) => {
+          if (a.score === b.score) {
+            return a.index > b.index ? 1 : -1;
+          }
+          return a.score > b.score ? 1 : -1;
+        });
+      }
+      if (this.reverse) {
+        PDFReport.newReport(filteredQuestions.reverse());
+      }
+      PDFReport.newReport(filteredQuestions);
     },
     toQuizInfo() {
-      this.$router.push({ name: 'QuizInfo', params: { id: this.quizResult.quizId } });
+      this.$router.push({ name: 'QuizInfo', params: { id: this.rawQuizResult.quizId } });
     },
   },
 };
