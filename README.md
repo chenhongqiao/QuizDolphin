@@ -1,7 +1,7 @@
 # Quiz Dolphin
 
 
-[![DeepScan grade](https://deepscan.io/api/teams/12458/projects/16042/branches/334033/badge/grade.svg?token=a1fa0980263b30233c0ddf1e9c3ed778290db2ee)](https://deepscan.io/dashboard#view=project&tid=12458&pid=16042&bid=334033)
+[![DeepScan grade](https://deepscan.io/api/teams/12458/projects/17639/branches/409615/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=12458&pid=17639&bid=409615)
 
 FBLA 2021 Coding and Programming California Champion
 
@@ -19,7 +19,7 @@ Quiz Dolphin is production ready and can be deployed easily with docker.
 
 ## Getting Started
 
-Please refer to [Getting Started](docs/admin/Getting-Started.md) for program setup instructions.
+Please refer to [Getting Started](docs/admin/README.md) for program setup instructions.
 
 ## Libraries and Templates
 
