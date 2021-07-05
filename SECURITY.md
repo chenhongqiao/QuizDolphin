@@ -6,9 +6,8 @@ Only the newest release is supported.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.1.3   | :white_check_mark: |
-| 2.1.2   | :x:                |
-| < 2.1.2 | :x:                |
+| 2.2.0   | :white_check_mark: |
+| < 2.2.0 | :x:                |
 
 ## Reporting a Vulnerability
 
