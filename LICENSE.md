@@ -9,10 +9,12 @@ including without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to permit persons
 to whom the Software is furnished to do so, subject to the following conditions:
 
-Any portion of this Software may not be included in any other project submitted
-for any competition associated to the Future Business Leader of America under
-the name of a different author. The above copyright notice and this permission
-notice shall be included in all copies or substantial portions of the Software.
+You understand and agree that any portion of this Software may not be included 
+in any project submitted for any competition associated to the Future Business 
+Leader of America under the name of a different author. 
+
+The above copyright notice and this permission notice shall be included in all 
+copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
