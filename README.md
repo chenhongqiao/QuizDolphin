@@ -3,7 +3,7 @@
 
 [![DeepScan grade](https://deepscan.io/api/teams/12458/projects/17639/branches/409615/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=12458&pid=17639&bid=409615)
 
-FBLA 2021 Coding and Programming California Champion
+FBLA 2021 Coding and Programming 1st Place National
 
 ## Overview
 
