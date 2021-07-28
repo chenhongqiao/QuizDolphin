@@ -8579,10 +8579,10 @@ vue-cli-plugin-vuetify@~2.4.1:
     semver "^7.1.2"
     shelljs "^0.8.3"
 
-vue-eslint-parser@^7.3.0, vue-eslint-parser@^7.6.0:
-  version "7.7.2"
-  resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-7.7.2.tgz#a723080b29c27fa0b3737bedceaeebe30fd0f359"
-  integrity sha512-zkfxSttpwBW9SQEa+rLR+j6sFHGGhanVH3VuzHQwybCQWJsg/Yi1W619gXOW01U/zekN4D+J4/S4Zufd1sClZg==
+vue-eslint-parser@^7.10.0, vue-eslint-parser@^7.6.0:
+  version "7.10.0"
+  resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-7.10.0.tgz#ea4e4b10fd10aa35c8a79ac783488d8abcd29be8"
+  integrity sha512-7tc/ewS9Vq9Bn741pvpg8op2fWJPH3k32aL+jcIcWGCTzh/zXSdh7pZ5FV3W2aJancP9+ftPAv292zY5T5IPCg==
   dependencies:
     debug "^4.1.1"
     eslint-scope "^5.1.1"
