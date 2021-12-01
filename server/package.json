@@ -21,7 +21,7 @@
     "express": "^4.17.1",
     "express-rate-limit": "^5.2.3",
     "express-session": "^1.17.1",
-    "mongodb": "^3.6.3",
+    "mongodb": "^4.2.1",
     "nanoid": "^3.1.20",
     "redis": "^3.0.2"
   },
