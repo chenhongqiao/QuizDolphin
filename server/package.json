@@ -21,12 +21,12 @@
     "express": "^4.17.1",
     "express-rate-limit": "^5.2.3",
     "express-session": "^1.17.1",
-    "mongodb": "^3.6.3",
+    "mongodb": "^4.3.0",
     "nanoid": "^3.1.20",
     "redis": "^3.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.13",
+    "@babel/core": "^7.16.7",
     "@babel/eslint-parser": "^7.12.13",
     "@babel/plugin-proposal-class-properties": "^7.12.13",
     "eslint": "^7.16.0",
