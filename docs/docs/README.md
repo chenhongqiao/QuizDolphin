@@ -1,6 +1,6 @@
 # Quiz Dolphin
 
-FBLA 2021 Coding and Programming California Champion
+FBLA 2021 Coding and Programming National Champion
 
 ## Overview
 
