@@ -14,7 +14,7 @@
     "agenda": "^4.0.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.20.0",
-    "connect-history-api-fallback": "^1.6.0",
+    "connect-history-api-fallback": "^2.0.0",
     "connect-redis": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
