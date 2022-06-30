@@ -14,7 +14,7 @@
     "jspdf": "^2.2.0",
     "jspdf-autotable": "^3.5.13",
     "vue": "^2.6.11",
-    "vue-chartjs": "^3.5.1",
+    "vue-chartjs": "^4.1.1",
     "vue-router": "^3.2.0",
     "vuetify": "^2.6.7",
     "vuex": "^3.6.0"
