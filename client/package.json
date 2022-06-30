@@ -33,7 +33,7 @@
     "sass": "^1.53.0",
     "sass-loader": "^13.0.2",
     "vue-cli-plugin-vuetify": "~2.4.8",
-    "vue-eslint-parser": "^8.0.1",
+    "vue-eslint-parser": "^9.0.3",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.7.3"
   },
