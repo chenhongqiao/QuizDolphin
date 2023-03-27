@@ -19,7 +19,7 @@ Quiz Dolphin is production ready and can be deployed easily with docker.
 
 ## Getting Started
 
-Please refer to [Getting Started](docs/admin/README.md) for program setup instructions.
+Please refer to [Getting Started](docs/docs/admin/README.md) for program setup instructions.
 
 ## Libraries and Templates
 
