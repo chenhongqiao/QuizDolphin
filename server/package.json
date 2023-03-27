@@ -23,7 +23,7 @@
     "express-session": "^1.17.3",
     "mongodb": "^4.7.0",
     "nanoid": "^4.0.0",
-    "redis": "^4.1.0"
+    "redis": "^4.6.5"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",
